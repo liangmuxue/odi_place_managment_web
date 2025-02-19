@@ -1,0 +1,281 @@
+.app-main {
+  background: $mainBg;
+}
+
+.totalMoney_box {
+  padding-left: 15px;
+}
+
+.search_box {
+  margin: 10px;
+  height: 40px;
+  display: flex;
+
+  .search_content {
+    flex: 1;
+    margin-right: 10px;
+    display: flex;
+
+    .search_content_title {
+      width: 100px;
+      height: 36px;
+      line-height: 36px;
+      background: #fff;
+      border-left: 1px solid #dcdfe6;
+      border-top: 1px solid #dcdfe6;
+      border-bottom: 1px solid #dcdfe6;
+      border-radius: 4px 0px 0px 4px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .search_content_title2 {
+      width: 150px;
+      height: 36px;
+      line-height: 36px;
+      background: #fff;
+      border-left: 1px solid #dcdfe6;
+      border-top: 1px solid #dcdfe6;
+      border-bottom: 1px solid #dcdfe6;
+      border-radius: 4px 0px 0px 4px;
+      text-align: center;
+      font-size: 14px;
+    }
+  }
+
+  .search_content2 {
+    flex: 1;
+    max-width: 470px;
+    margin-right: 10px;
+    display: flex;
+
+    .search_content_title {
+      width: 100px;
+      height: 36px;
+      line-height: 36px;
+      background: #fff;
+      border-left: 1px solid #dcdfe6;
+      border-top: 1px solid #dcdfe6;
+      border-bottom: 1px solid #dcdfe6;
+      border-radius: 4px 0px 0px 4px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+  }
+}
+
+.btn_box {
+  margin: 10px;
+  height: 40px;
+  display: flex;
+}
+
+.content_box {
+  margin: 10px;
+  height: calc(100vh - 230px);
+  background: $mainBg;
+}
+
+.offLine_ball {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background: #828484;
+}
+
+.onLine_ball {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background: #33ae73;
+}
+
+.errLine_ball {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background: #ea2e1c;
+}
+
+.offLine {
+  color: #828484;
+}
+
+.onLine {
+  color: #33ae73;
+}
+
+.errLine {
+  color: #ea2e1c;
+}
+
+.operation_button {
+  color: $titleTextH;
+  display: inline-block;
+  height: 30px;
+  line-height: 30px;
+  width: 45px;
+  margin: 0 2px;
+  cursor: pointer;
+  text-align: center;
+
+}
+
+.base_dialog {
+  position: absolute;
+  left: 0;
+  top: -40px;
+  width: 100%;
+  height: calc(100vh - 100px);
+  z-index: 1;
+  background: $mainBg;
+  padding: 10px;
+
+  .base_dialog_top {
+    height: 40px;
+    line-height: 40px;
+    padding-left: 10px;
+    width: 100%;
+    border: 1px solid $titleTextH;
+    color: $titleTextH;
+    background: #fff;
+    font-weight: bold;
+    position: relative;
+
+    .base_dialog_close {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      line-height: 20px;
+      font-size: 20px;
+      top: 10px;
+      right: 10px;
+      color: $titleTextH;
+    }
+  }
+
+  .base_dialog_main {
+    margin-top: 10px;
+    height: calc(100vh - 180px);
+    width: 100%;
+    border: 1px solid $titleTextH;
+    background: #fff;
+
+    .base_dialog_main_top {
+      display: flex;
+
+      .step {
+        width: 120px;
+        height: 40px;
+        line-height: 40px;
+        color: #999;
+        background: #eee;
+        text-align: center;
+      }
+
+      .step2 {
+        width: 120px;
+        height: 40px;
+        line-height: 40px;
+        color: $titleTextH;
+        background: $mainBg;
+        text-align: center;
+        border-bottom: 2px solid $titleTextH;
+
+      }
+    }
+
+    .base_dialog_main_content {
+      height: calc(100vh - 280px);
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      overflow: auto;
+
+      .base_dialog_main_left {
+        flex: 1;
+        max-width: 50%;
+        padding: 20px 20px 0px 100px;
+      }
+
+      .base_dialog_main_right {
+        flex: 1;
+        padding: 20px 100px 0px 20px;
+
+      }
+
+      .el-form-item__label {
+        width: 130px;
+      }
+
+      .el-form-item__error {
+        margin-left: 130px;
+      }
+
+
+      .el-transfer-panel {
+        width: 400px;
+        height: 600px;
+        margin-top: 50px;
+        border: 1px solid $titleTextH;
+
+        .el-transfer-panel__header {
+          background: $menuBg;
+        }
+      }
+
+
+    }
+
+    .feelRules_content {
+      .el-form-item__label {
+        width: 180px;
+      }
+
+      .el-form-item__error {
+        margin-left: 180px;
+      }
+
+      .feelRules_content_ground_box_dayNight_box {
+        .el-form-item__label {
+          width: 140px;
+        }
+
+        .el-form-item__error {
+          margin-left: 140px;
+        }
+
+      }
+
+      .base_dialog_condit_hasprompt {
+        .el-form-item__content {
+          margin-bottom: 20px;
+        }
+
+        .el-form-item__error {
+          margin-top: 20px;
+        }
+
+      }
+    }
+
+    .base_dialog_main_btnBox {
+      width: 200px;
+      height: 40px;
+      margin: 10px auto 0;
+      display: flex;
+      justify-content: space-around;
+    }
+  }
+}
+
+.password_dialog_condit {
+  .el-form-item__label {
+    width: 200px !important;
+  }
+
+}

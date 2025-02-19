@@ -1,0 +1,67 @@
+/******通用样式--间隔********/
+.margin-top-20 {
+  margin-top: 20px;
+}
+
+.padding-20 {
+  padding: 20px;
+}
+
+.padding-10 {
+  padding: 10px;
+}
+
+.margin-left-5 {
+  margin-left: 5px;
+}
+
+.margin-left-16 {
+  margin-left: 16px;
+}
+
+.margin-left-10 {
+  margin-left: 10px;
+}
+
+.hide {
+  display: none;
+}
+
+/******通用样式--span标签过长是显示省略号********/
+.text-shenglue {
+  display: block;
+  word-break: keep-all;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+  -icab-text-overflow: ellipsis;
+  -khtml-text-overflow: ellipsis;
+  -moz-text-overflow: ellipsis;
+  -webkit-text-overflow: ellipsis;
+}
+
+/******通用样式--分割线_ele版本2.7没有分割线组件时可选用此替代********/
+.hrClass {
+  margin: 20px 0 20px 0;
+  border: 1px solid #e5e9f2
+}
+
+// 垂直分割线
+.verticalHr {
+  width: 1px;
+  height: 15px;
+  border: 1px solid #e5e9f2;
+  display: inline-block;
+  margin: 0 5px
+}
+
+@font-face {
+  font-family: 'led regular';
+  src: url('../assets/fonts/DS-DIGI.ttf');
+}
+
+//设置查询最大宽度
+.search_content {
+  max-width: 240px;
+}

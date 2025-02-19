@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+	<script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="map_load.js"></script>
+	<script type="text/javascript" src="//api.map.baidu.com/library/TextIconOverlay/1.2/src/TextIconOverlay_min.js"></script>
+	<script type="text/javascript" src="//api.map.baidu.com/library/MarkerClusterer/1.2/src/MarkerClusterer_min.js"></script>
+</head>
+
+<body>
+	<div id='MapBox'>
+		<div class='baiduMap' id='mapShow'></div>
+		<div class='right-tool-bar'>
+			<div class="tool-unit">
+				<span id="">地图类型、缩略图控件控制</span><br />
+				<button type="button" class="btn" onclick="app.add_control();">添加</button>
+				<button type="button" class="btn" onclick="app.delete_control();">删除</button>
+			</div>
+			<div class="tool-unit">
+				<span>鼠标滚轮缩放</span><br />
+				<button type="button" class="btn"
+					onclick="app.map.enableScrollWheelZoom();changeBtnSts(this);">开启</button>
+				<button type="button" class="btn on"
+					onclick="app.map.disableScrollWheelZoom();changeBtnSts(this);">关闭</button>
+			</div>
+			<div class="tool-unit">
+				<span id="">鼠标点击拾取经纬度</span><br />
+				<button type="button" class="btn" onclick="app.getLngLat();changeBtnSts(this);">开启</button>
+				<button type="button" class="btn on" onclick="app.cancelLngLat();changeBtnSts(this);">关闭</button>
+			</div>
+			<div class="tool-unit">
+				<span id="">鼠标拉框放大地图</span><br />
+				<button type="button" class="btn" onclick="app.map.dragZoom.open();changeBtnSts(this);">开启</button>
+				<button type="button" class="btn on" onclick="app.map.dragZoom.close();changeBtnSts(this);">关闭</button>
+			</div>
+			<div class="tool-unit">
+				<span id="">鼠标绘制点线面-工具栏</span><br />
+				<button type="button" class="btn"
+					onclick="$('div.BMapLib_Drawing').show();changeBtnSts(this);">开启</button>
+				<button type="button" class="btn on"
+					onclick="$('div.BMapLib_Drawing').hide();changeBtnSts(this);">关闭</button>
+				<button type="button" class="btn" onclick="app.map.clearOverlays();">清除所有覆盖物</button>
+				<button type="button" class="btn" onclick="showOverlays();">显示所有覆盖物</button>
+			</div>
+			<div class="tool-unit">
+				<span id="">经纬度定位（标记点包含信息窗口）</span><br />
+				经度<input id="longitude" type="text" style="width:50px; margin-right:10px;" />
+				纬度<input id="latitude" type="text" style="width:50px; margin-right:10px;" />
+				<input type="button" value="定位" onclick="app.toLocation()" />
+			</div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+	var map = new BMap.Map("mapShow");
+	// 初始化绘制对象
+	var overlays = ["121.538565,38.873869;121.537757,38.872935;121.537757,38.87283;121.538619,38.872374;121.539302,38.873476;121.538565,38.873869"];
+
+	var app = new Vue({
+		el: '#mapShow',
+		data: {
+			map: undefined,
+			overView: undefined,
+			marker: undefined,
+			gisArea: "121.538565,38.873869;121.537757,38.872935;121.537757,38.87283;121.538619,38.872374;121.539302,38.873476;121.538565,38.873869",
+			gisCenter: "",
+		},
+		mounted() {
+			this.baiduMap();
+		},
+		methods: {
+			baiduMap: function () {
+				this.map = new BMap.Map("mapShow", {
+					minZoom: 3,
+					maxZoom: 18
+				})
+				// 动态设置级别：
+				//					this.map.setMaxZoom(10);
+				//					this.map.setMinZoom(2);
+				var point = new BMap.Point(121.542329, 38.875049); // 创建点坐标  
+				this.map.centerAndZoom(point, 18); // 初始化地图，设置中心点坐标和地图级别  
+				this.map.setCurrentCity("大连"); // 设置地图显示的城市 此项是必须设置的
+				// 添加一个标注
+				/*this.marker = new BMap.Marker(point);	
+				this.map.addOverlay(this.marker);*/
+				// 初始化地图类型和缩略图控件变量
+				this.map.mapType1 = new BMap.MapTypeControl({
+					mapTypes: [BMAP_NORMAL_MAP, BMAP_HYBRID_MAP],
+					anchor: BMAP_ANCHOR_TOP_RIGHT
+				});
+				this.map.overView = new BMap.OverviewMapControl();
+				this.map.overViewOpen = new BMap.OverviewMapControl({
+					isOpen: true,
+					anchor: BMAP_ANCHOR_BOTTOM_RIGHT
+				});
+				// 初始化鼠标拉框放大变量
+				this.map.dragZoom = new BMapLib.RectangleZoom(this.map, {
+					followText: "拖拽鼠标进行操作"
+				});
+				// 初始化鼠标绘制工具
+				var styleOptions = {
+					strokeColor: "blue", //边线颜色。
+					fillColor: "blue", //填充颜色。当参数为空时，圆形将没有填充效果。
+					strokeWeight: 1, //边线的宽度，以像素为单位。
+					strokeOpacity: 0.8, //边线透明度，取值范围0 - 1。
+					fillOpacity: 0.2, //填充的透明度，取值范围0 - 1。
+					strokeStyle: 'dashed' //边线的样式，solid或dashed。
+				};
+				this.map.drawingManager = new BMapLib.DrawingManager(this.map, {
+					isOpen: false, //是否开启绘制模式
+					enableDrawingTool: true, //是否显示工具栏
+					drawingToolOptions: {
+						anchor: BMAP_ANCHOR_TOP_RIGHT, //位置
+						offset: new BMap.Size(5, 5), //偏离值
+					},
+					circleOptions: styleOptions, //圆的样式
+					polylineOptions: styleOptions, //线的样式
+					polygonOptions: styleOptions, //多边形的样式
+					rectangleOptions: styleOptions //矩形的样式
+				});
+				$('div.BMapLib_Drawing').hide();
+				// 添加鼠标绘制工具监听事件，用于获取绘制结果
+				this.map.drawingManager.addEventListener('overlaycomplete', function (e) {
+					// console.log(e.overlay)
+					const lays = []
+					var lng_sum = 0;
+					var lat_sum = 0;
+					const arr_lay = e.overlay.ja
+					for (var i = 0; i < arr_lay.length; i++) {
+						lng_sum += arr_lay[i].lng;
+						lat_sum += arr_lay[i].lat;
+						lays.push(arr_lay[i].lng + ":" + arr_lay[i].lat + ";")
+					}
+					var lngc = Number((lng_sum / arr_lay.length).toFixed(6));
+					var latc = Number((lat_sum / arr_lay.length).toFixed(6));
+					// console.log(lngc)
+					// console.log(latc)
+					// console.log(lays)
+					overlays.push(lays.toString().replace(/,/g, '').replace(/:/g, ',')); //获取不规则样式的坐标
+					this.gisArea = lays.toString().replace(/,/g, '').replace(/:/g, ',')
+					this.gisCenter = lngc + "," + latc
+					console.log(overlays)
+					console.log(this.gisArea)
+					// console.log(this.gisArea)
+					// console.log(this.gisCenter)
+
+				});
+			},
+			/* **************地图类型、缩略图控件控制************** */
+			add_control: function () {
+				this.map.addControl(this.map.mapType1); //2D图，混合图
+				this.map.addControl(this.map.overView); //添加默认缩略地图控件
+				this.map.addControl(this.map.overViewOpen); //右下角，打开
+			},
+			delete_control: function () {
+				this.map.removeControl(this.map.mapType1); //移除2D图，混合图
+				this.map.removeControl(this.map.overView);
+				this.map.removeControl(this.map.overViewOpen);
+			},
+			/* **************鼠标点击拾取经纬度************** */
+			getLngLat: function () {
+				this.map.addEventListener("click", lngLatEvent);
+			},
+			cancelLngLat: function () {
+				this.map.removeEventListener("click", lngLatEvent);
+			},
+			/* **************经纬度定位************** */
+			toLocation: function () {
+				if ($("#longitude").val() && $("#latitude").val()) {
+					this.map.clearOverlays();
+					var new_point = new BMap.Point($("#longitude").val(), $("#latitude").val());
+					var marker = new BMap.Marker(new_point); // 创建标注
+					this.map.addOverlay(marker); // 将标注添加到地图中
+					this.map.panTo(new_point);
+					// 添加信息窗口
+					var opts = {
+						width: 200, // 信息窗口宽度
+						height: 100, // 信息窗口高度
+						title: "定位坐标提示", // 信息窗口标题
+						enableMessage: true //设置允许信息窗发送短息
+					}
+					var infoWindow = new BMap.InfoWindow("当前定位坐标：" + $("#longitude").val() + "," + $(
+						"#latitude").val(), opts); // 创建信息窗口对象 
+					marker.addEventListener("click", function () {
+						this.map.openInfoWindow(infoWindow, new_point); //开启信息窗口
+					});
+				}
+			},
+
+		}
+	});
+	//显示覆盖物
+	var pointArr = [];
+	function showOverlays() {
+		// map.addOverlay(marker); //增加点
+		// map.addOverlay(polyline); //增加折线
+		// map.addOverlay(circle); //增加圆
+		console.log(polygon)
+		console.log(overlays)
+		var overlays2 = overlays[0].split(";")
+		var overlays3 = overlays[0].split(",")
+		console.log(111,overlays2)
+		console.log(222,overlays3)
+		for(var n = 0 ; n< overlays2.length;n++){
+			pointArr.push(new BMap.Point(parseFloat(overlays2[n]),parseFloat(overlays3[n+1])))
+		}
+		console.log(pointArr)
+		app.map.addOverlay(polygon); //增加多边形
+		// map.addOverlay(rectangle); //增加矩形
+	};
+	//添加多边形
+	var polygon = new BMap.Polygon([
+		new BMap.Point(121.54329, 38.87427),
+		new BMap.Point(121.542284, 38.872935),
+		new BMap.Point(121.543479, 38.872465),
+		new BMap.Point(121.544314, 38.873841),
+		new BMap.Point(121.54329, 38.87427)
+	], {
+		strokeColor: "blue",
+		fillColor: "blue",
+		strokeWeight: 1,
+		strokeOpacity: 0.8,
+		fillOpacity: 0.2,
+		strokeStyle: 'dashed'
+	}); //创建多边形
+
+
+	var changeBtnSts = function (btn) {
+		$(btn).closest('div.tool-unit').find('button.btn').removeClass('on');
+		$(btn).addClass('on');
+	};
+	var lngLatEvent = function (e) {
+		alert(e.point.lng + "," + e.point.lat);
+	};
+</script>
+<style>
+	html {
+		height: 100%
+	}
+
+	body {
+		height: 100%;
+		margin: 0px;
+		padding: 0px
+	}
+
+	/* 地图父级容器 */
+	#MapBox {
+		width: 100%;
+		height: 100%;
+		/*padding: 10px;*/
+		position: relative;
+	}
+
+	/* 地图 */
+	.baiduMap {
+		height: 99%;
+		width: 80%;
+		display: inline-block;
+	}
+
+	.right-tool-bar {
+		height: 100%;
+		width: 18%;
+		display: inline-block;
+		float: right;
+	}
+
+	.btn:hover {
+		cursor: pointer;
+	}
+
+	/* 去除地图上，左下字体标注 */
+	.anchorBL {
+		display: none;
+	}
+
+	.btn.on {
+		background: skyblue;
+		color: #fff;
+	}
+</style>
+
+</html>

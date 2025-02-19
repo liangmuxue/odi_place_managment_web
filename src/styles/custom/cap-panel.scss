@@ -1,0 +1,31 @@
+
+/******定制样式--抓拍照片********/
+.capture-row{
+  margin-top:16px;
+}
+.capture-card{
+  width:100%;
+  // height:240px;
+}
+.capture-card .image-area{
+  width:100%;height:120px;margin-top:10px;margin-bottom:10px;
+}
+.capture-card .text-area{
+  font-size:14px;width:100%;margin-top:10px;
+}
+.capture-card .text-area .label{
+  text-align:center;font-weight:bold
+}
+.capture-card .text-area .content{
+
+}
+.more-row{
+  margin-top:32px;
+  div{
+    float:right;
+    cursor: pointer;
+    margin-right:32px;
+    color:blue;
+    text-decoration: underline;
+  }
+}

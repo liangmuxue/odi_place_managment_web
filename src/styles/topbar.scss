@@ -1,0 +1,100 @@
+.top-nav {
+  // margin-left: $sideBarWidth;
+  width: 100%;
+  height: 40px;
+  overflow: hidden;
+
+  .el-menu {
+    float: left;
+    border: none !important;
+    height: 40px;
+    background: transparent !important;
+
+    .nav-item {
+      float: left;
+
+      .el-menu-item {
+        height: 38px;
+        line-height: 38px;
+        color: #333;
+        margin: 0 10px;
+        font-size: 16px;
+
+        &:hover {
+          background-color: transparent !important;
+        }
+
+        &:focus {
+          background-color: transparent !important;
+          // color: $subMenuActiveText !important;
+        }
+      }
+
+      .is-active {
+        color: $titleTextH !important;
+        border-bottom: 2px solid $titleTextH !important;
+      }
+
+      .router-link-active .el-menu-item {
+        color: $titleTextH !important;
+        border-bottom: 2px solid $titleTextH !important;
+
+      }
+
+      .svg-icon {
+        margin-right: 5px !important;
+      }
+    }
+  }
+
+  .right-menu {
+    float: right;
+    height: 100%;
+
+    &:focus {
+      outline: none;
+    }
+
+    .right-menu-item {
+      display: inline-block;
+      padding: 0 8px;
+      height: 100%;
+      font-size: 18px;
+      color: #fff;
+      vertical-align: text-bottom;
+
+      &.hover-effect {
+        cursor: pointer;
+        transition: background .3s;
+
+        &:hover {
+          background: rgba(0, 0, 0, .025)
+        }
+      }
+    }
+
+    .avatar-container {
+      margin-right: 30px;
+
+      .avatar-wrapper {
+        margin-top: 5px;
+        position: relative;
+
+        .user-avatar {
+          cursor: pointer;
+          width: 40px;
+          height: 40px;
+          border-radius: 10px;
+        }
+
+        .el-icon-caret-bottom {
+          cursor: pointer;
+          position: absolute;
+          right: -20px;
+          top: 25px;
+          font-size: 12px;
+        }
+      }
+    }
+  }
+}

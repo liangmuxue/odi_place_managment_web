@@ -1,0 +1,461 @@
+// cover some element-ui styles
+//滚动条的宽度
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+//滚动条的滑块
+::-webkit-scrollbar-thumb {
+  background-color: #999;
+  border-radius: 3px;
+}
+
+.el-loading-mask {
+  background: rgba($color: #333, $alpha: 0.5) !important;
+
+  .el-loading-text {
+    color: #fff;
+  }
+}
+
+.hasSidebar.is-fullscreen {
+  top: 100px !important;
+  left: 200px !important;
+}
+
+.noSidebar.is-fullscreen {
+  top: 100px !important;
+  left: 200px !important;
+}
+
+.sidebarHide.is-fullscreen {
+  top: 70px !important;
+  left: 0px !important;
+}
+
+.el-message {
+  top: 20px !important;
+}
+
+.el-input-group__prepend {
+  // border: 1px solid $inputBorder;
+  color: #333;
+}
+
+.el-dialog__headerbtn {
+  width: 20px;
+  height: 20px;
+
+  .el-dialog__close {
+    width: 20px;
+    height: 20px;
+    font-size: 20px
+  }
+
+}
+
+
+.el-breadcrumb__inner,
+.el-breadcrumb__inner a {
+  font-weight: 400 !important;
+}
+
+.el-notification {
+  padding: 0;
+  width: 300px;
+  height: 150px;
+
+  .el-notification__group {
+    margin: 0;
+
+    .el-notification__closeBtn {
+      position: absolute;
+      right: 5px;
+      top: 5px;
+      z-index: 10000;
+      color: #fff;
+    }
+  }
+
+  .alarm_card {
+    position: absolute;
+    z-index: 110;
+    width: 300px;
+    height: 150px;
+    background: #fff;
+    right: 0px;
+    bottom: 0px;
+    border-radius: 5px;
+    overflow: hidden;
+    border: 1px solid #6ca6e8;
+
+    .alarm_card_top {
+      width: 300px;
+      height: 26px;
+      background: #6ca6e8;
+      display: flex;
+
+      .alarm_card_top_name {
+        width: 250px;
+        height: 26px;
+        line-height: 26px;
+        margin: 0 10px;
+        color: #fff;
+      }
+
+      .alarm_card_top_close {
+        width: 16px;
+        height: 16px;
+        line-height: 26px;
+        margin: 5px;
+        background-image: url("../assets/images/equipmentList/close2.png");
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+      }
+    }
+
+    .alarm_card_content {
+      width: 300px;
+      height: 100px;
+      background: #fff;
+      display: flex;
+
+      .alarm_card_content_left {
+        width: 80px;
+        height: 100px;
+
+        .alarm_card_content_left_pic {
+          width: 66px;
+          height: 85px;
+          margin: 7px;
+        }
+      }
+
+      .alarm_card_content_right {
+        height: 100px;
+        flex: 1;
+        padding: 10px;
+
+        .alarm_card_alarmName {
+          height: 24px;
+          line-height: 24px;
+          font-size: 16px;
+          color: #333;
+        }
+
+        .alarm_card_peopleName {
+          height: 36px;
+          line-height: 36px;
+          font-size: 20px;
+          color: #d91512;
+        }
+
+        .alarm_card_alarmTime {
+          height: 20px;
+          line-height: 20px;
+          color: #333;
+          font-size: 14px;
+        }
+      }
+    }
+
+    .alarm_card_footer {
+      height: 24px;
+      display: flex;
+      color: #333;
+      font-size: 14px;
+
+      .alarm_card_icon {
+        width: 14px;
+        height: 14px;
+        margin: 3px 8px;
+        background-image: url("../assets/images/equipmentList/camera2.png");
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+      }
+
+      .alarm_card_cameraName {
+        height: 24px;
+        line-height: 20px;
+        color: #6ca6e8;
+      }
+    }
+
+    .alarm_card_button {
+      position: absolute;
+      right: 5px;
+      bottom: 5px;
+      width: 66px;
+      height: 25px;
+      line-height: 25px;
+      text-align: center;
+      color: #6ca6e8;
+      border: 1px solid #6ca6e8;
+      border-radius: 5px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+  }
+
+}
+
+.el-upload {
+  input[type="file"] {
+    display: none !important;
+  }
+}
+
+.el-badge__content {
+  background: transparent;
+}
+
+.hasPeople .el-badge__content {
+  animation-name: mytext;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+
+}
+
+.el-radio-button {
+
+  .el-radio-button__inner {
+    padding-left: 10px;
+    padding-right: 10px;
+    text-align: center;
+    min-width: 46px;
+  }
+}
+
+@keyframes mytext {
+  0% {
+    background: #ff4949;
+  }
+
+  50% {
+    background: #2b22d6;
+  }
+
+  100% {
+    background: #ff4949;
+  }
+
+}
+
+.hasCar .el-badge__content {
+  animation-name: mytext;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+.el-upload__input {
+  display: none;
+}
+
+.el-cascader {
+  width: 100%;
+}
+
+.cell {
+  padding: 0 5px !important;
+
+  .el-tag {
+    margin-right: 0px;
+  }
+
+  .el-checkbox {
+    margin: 0 10px;
+  }
+}
+
+.small-padding {
+  .cell {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+}
+
+.status-col {
+  .cell {
+    padding: 0 10px;
+    text-align: center;
+
+    .el-tag {
+      margin-right: 0px;
+    }
+  }
+}
+
+.el-select__tags {
+  .el-tag {
+    padding: 0 5px;
+  }
+
+  .el-tag__close {
+    left: 4px;
+  }
+}
+
+// to fixed https://github.com/ElemeFE/element/issues/2461
+
+// refine element ui upload
+.upload-container {
+  .el-upload {
+    width: 100%;
+
+    .el-upload-dragger {
+      width: 100%;
+      height: 200px;
+    }
+  }
+}
+
+// dropdown
+.el-dropdown-menu {
+  a {
+    display: block
+  }
+}
+
+// fix date-picker ui bug in filter-item
+.el-range-editor.el-input__inner {
+  display: inline-flex !important;
+}
+
+
+.el-form-item__label {
+  color: #8e8989;
+}
+
+/******Card相关********/
+.el-card__header {
+  background: rgb(48, 65, 86);
+  color: white;
+  padding: 10px 16px;
+}
+
+.el-card__body {
+  padding-bottom: 0px;
+}
+
+/******el-slider********/
+.el-slider__runway {
+  margin: 0 !important;
+}
+
+/******vue-selecttree******/
+.orgTree .el-select-dropdown__item {
+  background: #FFF !important;
+  padding: 0 10px;
+}
+
+.el-select-dropdown__item:hover {
+  background: #FFF;
+}
+
+.el-select {
+  width: 100%;
+}
+
+.el-table {
+  border: $titleTextH 1px solid;
+
+  .el-table__header-wrapper {
+
+    .el-table__header {
+
+      .has-gutter {
+
+        background: $menuBg;
+
+        tr {
+          height: 50px;
+          border-bottom: $menuBg 1px solid;
+
+          th {
+            font-size: 14px;
+            color: #333;
+          }
+        }
+
+      }
+    }
+  }
+
+  .el-table__body-wrapper {
+    background: #fff;
+
+    .el-table__body {
+      background: #fff;
+
+      .el-table__row {
+        background: $menuBg;
+      }
+
+      .current-row {
+        background: $menuBg !important;
+      }
+
+      .current-row.el-table__row--striped td {
+        background: #fff !important;
+      }
+
+      .current-row td {
+        background: transparent !important;
+      }
+
+      .el-table__row:hover td {
+        background: $menuHover !important;
+      }
+
+      tr {
+        height: 50px;
+
+        td {
+          font-size: 14px;
+        }
+
+
+      }
+    }
+  }
+}
+
+.el-button--medium {
+  height: 36px;
+  padding: 10px 15px;
+}
+
+.el-tooltip {
+
+  .el-tag--success {
+    background: #36A628;
+    color: #fff;
+  }
+
+  .el-tag--info {
+    background: #a3a6a8;
+    color: #fff;
+  }
+
+  .el-tag--danger {
+    background: #e86c6c;
+    color: #FFF;
+  }
+}
+
+.el-checkbox-button .el-checkbox-button__inner {
+  padding: 10px 15px !important;
+}
+
+.el-range-editor--medium {
+  width: 390px !important;
+}
+
+//breadcrumb组件样式
+.app-breadcrumb.el-breadcrumb .no-redirect {
+  color: $titleTextH;
+  cursor: text;
+}
