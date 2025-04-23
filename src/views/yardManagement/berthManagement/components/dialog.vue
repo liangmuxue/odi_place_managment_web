@@ -102,7 +102,7 @@
           </div>
         </div>
       </el-form>
-      <div class="base_dialog_main_btnBox">
+      <div class="base_dialog_main_btnBox" v-show="pageType < 3">
         <el-button type="info" icon="el-icon-circle-plus" @click="toSave"
           >保存</el-button
         ><el-button type="danger" icon="el-icon-error" @click="closeDialog"
@@ -181,7 +181,7 @@ export default {
         parkingSpaceId: [
           { required: true, message: "请输入泊位号", trigger: "blur" },
           {
-            pattern: /[\u4E00-\u9FA5a-zA-Z0-9_\-]{1,10}$/,
+            pattern: /^[\u4E00-\u9FA5a-zA-Z0-9_\-]{1,10}$/,
             message: "请输入10以内字符，且不含特殊字符",
             trigger: "blur"
           },
@@ -194,7 +194,7 @@ export default {
         ],
         geomagnetismId: [
           {
-            pattern: /[\u4E00-\u9FA5a-zA-Z0-9_\-]{1,20}$/,
+            pattern: /^[\u4E00-\u9FA5a-zA-Z0-9_\-]{1,20}$/,
             message: "请输入20以内字符，且不含特殊字符",
             trigger: "blur"
           },
@@ -243,6 +243,9 @@ export default {
           parkingSpaceId: "", //车位ID 泊位号
           geomagnetismId: "" //地磁ID
         };
+        this.editParkingSpaceId = null;
+        this.editGeomagnetismId = null;
+
         if (this.$refs["parkingForm"]) {
           this.$nextTick(() => {
             this.$refs["parkingForm"].clearValidate();

@@ -50,13 +50,45 @@
             </span>
             <span class="base_dialog_condit">
               <el-form-item label="行驶证：" prop="drivingLicense">
-                <img :src="newList.drivingLicense" width="36" height="48" />
+                <el-popover placement="top-start" width="500" trigger="click">
+                  <img
+                    :src="
+                      newList.drivingLicense
+                        ? newList.drivingLicense
+                        : newList.drivingLicense
+                    "
+                    width="100%"
+                  />
+                  <img
+                    v-if="
+                      newList.drivingLicense !== '' &&
+                        newList.drivingLicense !== null
+                    "
+                    slot="reference"
+                    :src="
+                      newList.drivingLicense +
+                        '?x-oss-process=image/resize,h_36,w_48'
+                    "
+                    width="48"
+                    height="36"
+                  />
+                  <span v-else>
+                    <div min-width="48" height="36"></div>
+                  </span>
+                </el-popover>
               </el-form-item>
             </span>
             <span class="base_dialog_condit">
               <el-form-item label="审核类型：" prop="auditType">
                 <span class="base_dialog_condit_text">
                   {{ newList.auditType == 1 ? "车辆认证" : "车辆申诉" }}
+                </span>
+              </el-form-item>
+            </span>
+            <span class="base_dialog_condit" v-if="pageType != 2">
+              <el-form-item label="状态：" prop="auditType">
+                <span class="base_dialog_condit_text">
+                  {{ getStatusName(newList.status) }}
                 </span>
               </el-form-item>
             </span>
@@ -77,10 +109,10 @@
       title="不通过原因"
       center
       class="dialog_vehicle"
-      :modal="false"
+      append-to-body
     >
-      <div class="base_dialog_main_content">
-        <el-form :model="newList" ref="userForm">
+      <div class="base_dialog_content">
+        <el-form :model="newList" :rules="rules" ref="userForm">
           <div class="base_dialog_main_content">
             <div class="base_dialog_main_left" style="padding:20px 80px">
               <span class="base_dialog_condit">
@@ -115,6 +147,7 @@
 
 <script>
 import {
+  listByVehicle, //申诉时查是否有认证的
   certificationGetInfo, //车辆认证详情
   certificationAudit, //车辆人证审批
   getPhoneByVehicle //通过车牌号查原绑定手机号
@@ -127,6 +160,7 @@ export default {
       pageType: 1,
       title: "详情",
       isShow: false,
+      hasExamine: false, //是否含有审核数据
       phone: null, //车辆绑定手机号
       newList: {
         vehicle: "", //车牌号：
@@ -137,7 +171,12 @@ export default {
         drivingLicense: "", //行驶证：
         auditType: null //审核类型：
       }, //详情
-      dialogFormVisible: false //不同意弹窗
+      dialogFormVisible: false, //不同意弹窗
+      rules: {
+        reason: [
+          { required: true, message: "请输入不通过原因描述", trigger: "blur" }
+        ]
+      }
     };
   },
   created() {},
@@ -160,29 +199,49 @@ export default {
         //1车辆认证
         this.passNext();
       } else {
-        //2车辆申诉
-        this.$confirm(
-          "申诉通过后，" +
-            this.newList.vehicle +
-            " 该车辆与原 " +
-            this.phone +
-            " 用户自动解绑，并绑定至申诉用户 " +
-            this.newList.phone +
-            "  名下。是否确认通过该申诉？",
-          "提示",
-          {
-            confirmButtonText: "确定",
-            cancelButtonText: "取消",
-            type: "warning",
-            center: true
-          }
-        )
-          .then(() => {
-            this.passNext();
-          })
-          .catch(() => {});
+        if (this.hasExamine) {
+          this.$message({
+            message: "该车辆有待审核车辆认证，请优先处理！",
+            type: "warning"
+          });
+        } else {
+          //2车辆申诉
+          this.$confirm(
+            "申诉通过后，" +
+              this.newList.vehicle +
+              " 该车辆与原 " +
+              this.phone +
+              " 用户自动解绑，并绑定至申诉用户 " +
+              this.newList.phone +
+              "  名下。是否确认通过该申诉？",
+            "提示",
+            {
+              confirmButtonText: "确定",
+              cancelButtonText: "取消",
+              type: "warning",
+              center: true
+            }
+          )
+            .then(() => {
+              this.passNext();
+            })
+            .catch(() => {});
+        }
       }
     },
+    //获取状态名称
+    getStatusName(e) {
+      let name;
+      if (e == 0) {
+        name = "待审核";
+      } else if (e == 1) {
+        name = "审核通过";
+      } else {
+        name = "不通过";
+      }
+      return name;
+    },
+
     //通过
     passNext() {
       this.isShow = false;
@@ -274,6 +333,20 @@ export default {
       certificationGetInfo(para).then(response => {
         this.newList = response.data;
         this.getPhone(response.data.vehicle);
+        this.getExamine();
+      });
+    },
+    //获取是否有审核数据
+    getExamine() {
+      let para = {
+        vehicle: this.newList.vehicle //车牌号
+      };
+      listByVehicle(para).then(response => {
+        if (response.data && response.data.length > 0) {
+          this.hasExamine = true;
+        } else {
+          this.hasExamine = false;
+        }
       });
     },
     //车辆手机号
@@ -297,6 +370,9 @@ export default {
   .el-form-item__label {
     width: 120px;
     text-align: left;
+  }
+  .el-form-item__error {
+    margin-left: 120px;
   }
 }
 </style>

@@ -24,14 +24,28 @@
       <div class="tool-unit">
         <span id>地图类型、缩略图控件控制</span>
         <br />
-        <button type="button" class="btn" @click="add_control">添加</button>
-        <button type="button" class="btn on" @click="delete_control">删除</button>
+        <button type="button" class="btn" @click="add_control">新增</button>
+        <button type="button" class="btn on" @click="delete_control">
+          删除
+        </button>
       </div>
       <div class="tool-unit">
         <span>鼠标滚轮缩放</span>
         <br />
-        <button type="button" class="btn" onclick="app.map.enableScrollWheelZoom()">开启</button>
-        <button type="button" class="btn on" onclick="app.map.disableScrollWheelZoom()">关闭</button>
+        <button
+          type="button"
+          class="btn"
+          onclick="app.map.enableScrollWheelZoom()"
+        >
+          开启
+        </button>
+        <button
+          type="button"
+          class="btn on"
+          onclick="app.map.disableScrollWheelZoom()"
+        >
+          关闭
+        </button>
       </div>
       <div class="tool-unit">
         <span id>鼠标点击拾取经纬度</span>
@@ -42,21 +56,28 @@
       <div class="tool-unit">
         <span id>鼠标拉框放大地图</span>
         <br />
-        <button type="button" class="btn" @click="map.dragZoom.open()">开启</button>
-        <button type="button" class="btn on" @click="map.dragZoom.close()">关闭</button>
+        <button type="button" class="btn" @click="map.dragZoom.open()">
+          开启
+        </button>
+        <button type="button" class="btn on" @click="map.dragZoom.close()">
+          关闭
+        </button>
       </div>
       <div class="tool-unit">
         <span id>鼠标绘制点线面-工具栏</span>
         <br />
         <button type="button" class="btn" @click="DrawingShow">开启</button>
         <button type="button" class="btn on" @click="DrawingClose">关闭</button>
-        <button type="button" class="btn" @click="clearOverlays">清除所有覆盖物</button>
-        <button type="button" class="btn" @click="showOverlays">显示所有覆盖物</button>
+        <button type="button" class="btn" @click="clearOverlays">
+          清除所有覆盖物
+        </button>
+        <button type="button" class="btn" @click="showOverlays">
+          显示所有覆盖物
+        </button>
       </div>
     </div>
   </div>
 </template>
-
 
 <script>
 import { OneClubOneFileInfo } from "@/api/article";
@@ -255,7 +276,7 @@ export default {
       var point = new BMap.Point(121.534528, 38.865049); // 创建点坐标
       this.map.centerAndZoom(point, this.mapZoom); // 初始化地图，设置中心点坐标和地图级别
       // if (localStorage.getItem("skinColer") == "darkColor") {
-        this.map.setMapStyle({ style: "normal" });
+      this.map.setMapStyle({ style: "normal" });
       // }
       var top_left_control = new BMap.ScaleControl({
         anchor: BMAP_ANCHOR_TOP_LEFT

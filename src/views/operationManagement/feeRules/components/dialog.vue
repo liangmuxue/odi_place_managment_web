@@ -73,6 +73,13 @@
                   </el-select>
                 </el-form-item>
               </span>
+              <span class="base_dialog_condit" v-if="pageType == 3">
+                <el-form-item label="在用车场" prop="parkNames">
+                  <span class="base_dialog_condit_text">
+                    {{ parkingLots }}
+                  </span>
+                </el-form-item>
+              </span>
             </div>
             <div class="feelRules_content_box_right">
               <span class="base_dialog_condit">
@@ -167,7 +174,10 @@
               <span class="base_dialog_condit base_dialog_condit_hasprompt">
                 <el-form-item label="每日最高收费限额" prop="smallCarMaxCharge">
                   <span v-if="newList.isVehicleType == 1">小型车</span>
-                  <span class="base_dialog_condit_text" v-if="pageType == 3">
+                  <span
+                    class="base_dialog_condit_text small_text2"
+                    v-if="pageType == 3"
+                  >
                     {{ newList.smallCarMaxCharge }}</span
                   >
                   <el-input
@@ -181,7 +191,7 @@
                   <span v-if="newList.isVehicleType == 1">
                     元，中型车
                     <span
-                      class="base_dialog_condit_text"
+                      class="base_dialog_condit_text small_text2"
                       v-if="pageType == 3 && newList.isVehicleType == 1"
                     >
                       {{ newList.midCarMaxCharge }}</span
@@ -198,7 +208,10 @@
 
                   <span v-if="newList.isVehicleType == 1">
                     元，大型车
-                    <span class="base_dialog_condit_text" v-if="pageType == 3">
+                    <span
+                      class="base_dialog_condit_text small_text2"
+                      v-if="pageType == 3"
+                    >
                       {{ newList.bigCarMaxCharge }}</span
                     >
                     <el-input
@@ -222,6 +235,7 @@
                     {{ newList.dayBegin }}</span
                   >
                   <el-time-picker
+                    v-else
                     v-model="newList.dayBegin"
                     :picker-options="{
                       selectableRange: '00:00:00 - 23:59:59'
@@ -282,6 +296,7 @@
                     {{ newList.nightBegin }}</span
                   >
                   <el-time-picker
+                    v-else
                     v-model="newList.nightBegin"
                     :picker-options="{
                       selectableRange: '00:00:00 - 23:59:59'
@@ -300,7 +315,7 @@
           <div class="feelRules_content_title" style="margin:0">
             按停车场时长收费设置
             <span class="feelRules_content_title_prompt"
-              >(不足耽误时长部分，按单位时长计费)</span
+              >(不足单位时长部分，按单位时长计费)</span
             >
           </div>
           <div class="feelRules_content_ground" v-if="newList.isGround == 1">
@@ -314,9 +329,12 @@
           </div>
           <div class="feelRules_content_ground_box">
             <div class="feelRules_content_ground_titlebox">
-              <div class="feelRules_content_ground_box_holiday">
+              <div
+                class="feelRules_content_ground_box_holiday"
+                v-if="newList.isHoliday == 1"
+              >
                 <div class="feelRules_content_ground_box_holiday_title">
-                  <span v-if="newList.isHoliday == 1">工作日</span>
+                  <span>工作日</span>
                 </div>
                 <div>
                   <div class="feelRules_content_ground_box_dayNight">
@@ -341,7 +359,7 @@
                 <div class="feelRules_content_ground_box_holiday_title">
                   <span v-if="newList.isHoliday == 1">节假日</span>
                 </div>
-                <div v-if="newList.isHoliday == 1">
+                <div v-if="newList.isDayNight == 1">
                   <div class="feelRules_content_ground_box_dayNight">
                     <div
                       class="feelRules_content_ground_box_dayNight_title"
@@ -378,12 +396,13 @@
                     <div>
                       0-
                       <span
-                        class="base_dialog_condit_text"
+                        class="base_dialog_condit_text small_text"
                         v-if="pageType == 3"
                       >
                         {{ item.afterFreeTime }}</span
                       >
                       <el-input
+                        v-else
                         v-model="item.afterFreeTime"
                         placeholder="请输入"
                         style="width: 90px"
@@ -394,7 +413,7 @@
                         分钟 | 单位时长
                       </span>
                       <span
-                        class="base_dialog_condit_text"
+                        class="base_dialog_condit_text small_text"
                         v-if="pageType == 3"
                       >
                         {{ item.unitTime }}</span
@@ -417,7 +436,7 @@
                       <span>分钟 | 单位金额</span>
                       <span v-if="newList.isVehicleType == 1"> 小型车</span>
                       <span
-                        class="base_dialog_condit_text"
+                        class="base_dialog_condit_text small_text"
                         v-if="pageType == 3"
                       >
                         {{ item.smallCarPay }}</span
@@ -433,7 +452,7 @@
                       <span v-if="newList.isVehicleType == 1"
                         >元，中型车
                         <span
-                          class="base_dialog_condit_text"
+                          class="base_dialog_condit_text small_text"
                           v-if="pageType == 3"
                         >
                           {{ item.midCarPay }}</span
@@ -451,7 +470,7 @@
                         元，大型车
 
                         <span
-                          class="base_dialog_condit_text"
+                          class="base_dialog_condit_text small_text"
                           v-if="pageType == 3"
                         >
                           {{ item.bigCarPay }}</span
@@ -472,7 +491,7 @@
                         超出后 | 单位时长
                       </span>
                       <span
-                        class="base_dialog_condit_text"
+                        class="base_dialog_condit_text small_text"
                         v-if="pageType == 3"
                       >
                         {{ item.beyondUnitTime }}</span
@@ -495,7 +514,7 @@
                       <span>分钟 | 单位金额</span>
                       <span v-if="newList.isVehicleType == 1"> 小型车</span>
                       <span
-                        class="base_dialog_condit_text"
+                        class="base_dialog_condit_text small_text"
                         v-if="pageType == 3"
                       >
                         {{ item.beyondSmallCarPay }}</span
@@ -511,7 +530,7 @@
                       <span v-if="newList.isVehicleType == 1"
                         >元，中型车
                         <span
-                          class="base_dialog_condit_text"
+                          class="base_dialog_condit_text small_text"
                           v-if="pageType == 3"
                         >
                           {{ item.beyondMidCarPay }}</span
@@ -529,7 +548,7 @@
                         元，大型车
 
                         <span
-                          class="base_dialog_condit_text"
+                          class="base_dialog_condit_text small_text"
                           v-if="pageType == 3"
                         >
                           {{ item.beyondBigCarPay }}</span
@@ -564,9 +583,12 @@
             v-if="newList.isGround == 1"
           >
             <div class="feelRules_content_ground_titlebox">
-              <div class="feelRules_content_ground_box_holiday">
+              <div
+                class="feelRules_content_ground_box_holiday"
+                v-if="newList.isHoliday == 1"
+              >
                 <div class="feelRules_content_ground_box_holiday_title">
-                  <span v-if="newList.isHoliday == 1">工作日</span>
+                  <span>工作日</span>
                 </div>
                 <div>
                   <div class="feelRules_content_ground_box_dayNight">
@@ -628,12 +650,13 @@
                     <div>
                       0-
                       <span
-                        class="base_dialog_condit_text"
+                        class="base_dialog_condit_text small_text"
                         v-if="pageType == 3"
                       >
                         {{ item.afterFreeTime }}</span
                       >
                       <el-input
+                        v-else
                         v-model="item.afterFreeTime"
                         placeholder="请输入"
                         style="width: 90px"
@@ -644,7 +667,7 @@
                         分钟 | 单位时长
                       </span>
                       <span
-                        class="base_dialog_condit_text"
+                        class="base_dialog_condit_text small_text"
                         v-if="pageType == 3"
                       >
                         {{ item.unitTime }}</span
@@ -667,7 +690,7 @@
                       <span>分钟 | 单位金额</span>
                       <span v-if="newList.isVehicleType == 1"> 小型车</span>
                       <span
-                        class="base_dialog_condit_text"
+                        class="base_dialog_condit_text small_text"
                         v-if="pageType == 3"
                       >
                         {{ item.smallCarPay }}</span
@@ -683,7 +706,7 @@
                       <span v-if="newList.isVehicleType == 1"
                         >元，中型车
                         <span
-                          class="base_dialog_condit_text"
+                          class="base_dialog_condit_text small_text"
                           v-if="pageType == 3"
                         >
                           {{ item.midCarPay }}</span
@@ -701,7 +724,7 @@
                         元，大型车
 
                         <span
-                          class="base_dialog_condit_text"
+                          class="base_dialog_condit_text small_text"
                           v-if="pageType == 3"
                         >
                           {{ item.bigCarPay }}</span
@@ -722,7 +745,7 @@
                         超出后 | 单位时长
                       </span>
                       <span
-                        class="base_dialog_condit_text"
+                        class="base_dialog_condit_text small_text"
                         v-if="pageType == 3"
                       >
                         {{ item.beyondUnitTime }}</span
@@ -745,7 +768,7 @@
                       <span>分钟 | 单位金额</span>
                       <span v-if="newList.isVehicleType == 1"> 小型车</span>
                       <span
-                        class="base_dialog_condit_text"
+                        class="base_dialog_condit_text small_text"
                         v-if="pageType == 3"
                       >
                         {{ item.beyondSmallCarPay }}</span
@@ -761,7 +784,7 @@
                       <span v-if="newList.isVehicleType == 1"
                         >元，中型车
                         <span
-                          class="base_dialog_condit_text"
+                          class="base_dialog_condit_text small_text"
                           v-if="pageType == 3"
                         >
                           {{ item.beyondMidCarPay }}</span
@@ -779,7 +802,7 @@
                         元，大型车
 
                         <span
-                          class="base_dialog_condit_text"
+                          class="base_dialog_condit_text small_text"
                           v-if="pageType == 3"
                         >
                           {{ item.beyondBigCarPay }}</span
@@ -842,32 +865,32 @@ export default {
       }
     };
     const validateSmallCarMaxCharge = (rule, value, callback) => {
-      if (this.newList.isGround == 1) {
+      if (this.newList.isVehicleType == 1) {
         if (
           this.newList.smallCarMaxCharge &&
           this.newList.midCarMaxCharge &&
           this.newList.bigCarMaxCharge
         ) {
-          const regex = /^(?!0)\d+(\.\d{1})?$/;
+          const regex = /^\d+(\.\d{1})?$/;
           const isValids = regex.test(this.newList.smallCarMaxCharge);
           const isValidm = regex.test(this.newList.midCarMaxCharge);
           const isValidb = regex.test(this.newList.bigCarMaxCharge);
           if (isValids && isValidm && isValidb) {
             callback();
           } else {
-            callback(new Error("请输入大于0的数字，最多保留一位小数"));
+            callback(new Error("请输入不小于0的数字，最多保留一位小数"));
           }
         } else {
           callback(new Error("请输入每日最高收费限额"));
         }
       } else {
         if (this.newList.smallCarMaxCharge) {
-          const regex = /^(?!0)\d+(\.\d{1})?$/;
+          const regex = /^\d+(\.\d{1})?$/;
           const isValid = regex.test(this.newList.smallCarMaxCharge);
           if (isValid) {
             callback();
           } else {
-            callback(new Error("请输入大于0的数字，最多保留一位小数"));
+            callback(new Error("请输入不小于0的数字，最多保留一位小数"));
           }
         } else {
           callback(new Error("请输入每日最高收费限额"));
@@ -899,7 +922,7 @@ export default {
     const validateTolls = (rule, value, callback) => {
       console.log(2, value);
       const regex1440 = /^(0|[1-9]\d{0,2}|1[0-3]\d{2}|14[0-3][0-9]|1440)$/;
-      const regexNo = /^(?!0)\d+(\.\d{1})?$/;
+      const regexNo = /^\d+(\.\d{1})?$/;
       if (!value.afterFreeTime) {
         callback(new Error("请输入免费时长后停放时间"));
       } else {
@@ -911,34 +934,34 @@ export default {
       if (!value.unitTime) {
         callback(new Error("请选择单位时长"));
       }
-      if (this.newList.isGround == 1) {
+      if (this.newList.isVehicleType == 1) {
+        // if (
+        //   !value.smallCarPay ||
+        //   !value.midCarPay ||
+        //   !value.bigCarPay ||
+        //   !value.beyondSmallCarPay ||
+        //   !value.beyondMidCarPay ||
+        //   !value.beyondBigCarPay
+        // ) {
+        //   callback(new Error("请输入单位金额"));
+        // } else {
+        const isValids = regexNo.test(value.smallCarPay);
+        const isValidm = regexNo.test(value.midCarPay);
+        const isValidb = regexNo.test(value.bigCarPay);
+        const isValidbs = regexNo.test(value.beyondSmallCarPay);
+        const isValidbm = regexNo.test(value.beyondMidCarPay);
+        const isValidbb = regexNo.test(value.beyondBigCarPay);
         if (
-          !value.smallCarPay ||
-          !value.midCarPay ||
-          !value.bigCarPay ||
-          !value.beyondSmallCarPay ||
-          !value.beyondMidCarPay ||
-          !value.beyondBigCarPay
+          !isValids ||
+          !isValidm ||
+          !isValidb ||
+          !isValidbs ||
+          !isValidbm ||
+          !isValidbb
         ) {
-          callback(new Error("请输入单位金额"));
-        } else {
-          const isValids = regexNo.test(value.smallCarPay);
-          const isValidm = regexNo.test(value.midCarPay);
-          const isValidb = regexNo.test(value.bigCarPay);
-          const isValidbs = regexNo.test(value.beyondSmallCarPay);
-          const isValidbm = regexNo.test(value.beyondMidCarPay);
-          const isValidbb = regexNo.test(value.beyondBigCarPay);
-          if (
-            !isValids ||
-            !isValidm ||
-            !isValidb ||
-            !isValidbs ||
-            !isValidbm ||
-            !isValidbb
-          ) {
-            callback(new Error("单位金额请输入大于0的数字，最多保留一位小数"));
-          }
+          callback(new Error("单位金额请输入大于0的数字，最多保留一位小数"));
         }
+        // }
       } else {
         if (!value.smallCarPay || !value.beyondSmallCarPay) {
           callback(new Error("请输入单位金额"));
@@ -946,7 +969,9 @@ export default {
           const isValids = regexNo.test(value.smallCarPay);
           const isValidbs = regexNo.test(value.beyondSmallCarPay);
           if (!isValids || !isValidbs) {
-            callback(new Error("单位金额请输入大于0的数字，最多保留一位小数"));
+            callback(
+              new Error("单位金额请输入不小于0的数字，最多保留一位小数")
+            );
           }
         }
       }
@@ -971,8 +996,8 @@ export default {
         smallCarMaxCharge: null, //每日最高收取额度小型车
         midCarMaxCharge: null, //每日最高收取额度中型车
         bigCarMaxCharge: null, //每日最高收取额度大型车
-        dayBegin: null, //白天开始时间
-        nightBegin: null, //夜晚开始时间
+        dayBegin: "06:00:00", //白天开始时间
+        nightBegin: "18:00:00", //夜晚开始时间
         createTime: null, //创建时间
         status: 1, //使用状态 0-未使用 1-使用中',
         afterChargeFreeTime: null, //充电后免费时长
@@ -1007,7 +1032,7 @@ export default {
         ruleName: [
           { required: true, message: "请输入规则名", trigger: "blur" },
           {
-            pattern: /[\u4E00-\u9FA5a-zA-Z0-9_\-]{1,20}$/,
+            pattern: /^[\u4E00-\u9FA5a-zA-Z0-9_\-]{1,20}$/,
             message: "请输入20以内字符，且不含特殊字符",
             trigger: "blur"
           },
@@ -1097,6 +1122,12 @@ export default {
             message: "",
             trigger: "blur",
             validator: validateTolls
+          },
+          {
+            required: true,
+            message: "",
+            trigger: "change",
+            validator: validateTolls
           }
         ]
       },
@@ -1149,7 +1180,7 @@ export default {
         tollsList.push(this.getObj(2, 0, 1));
         tollsList.push(this.getObj(1, 0, 2));
         tollsList.push(this.getObj(2, 0, 2));
-        this.tollsList = tollsList;
+        this.newList.tolls = tollsList;
       } else if (
         this.newList.isGround == 1 &&
         this.newList.isHoliday == 1 &&
@@ -1215,22 +1246,6 @@ export default {
       };
       return obj;
     },
-    handleInput1(value) {
-      // 限制输入为0到999之间的整数
-      this.newList.maxBuy = value.toString().replace(/[^0-9]/g, "");
-      if (this.newList.maxBuy > 999) {
-        this.newList.maxBuy = 999; // 如果超过999，设置为999
-      } else if (this.newList.maxBuy < 0) {
-        this.newList.maxBuy = 0; // 如果小于0，设置为0
-      }
-    },
-    handleInput2(value) {
-      // 限制输入为大于等于0
-      this.newList.unitPrice = value.toString().replace(/[^0-9]/g, "");
-      if (this.newList.unitPrice < 0) {
-        this.newList.unitPrice = 0; // 如果小于0，设置为0
-      }
-    },
     getFieldTable() {
       fieldTable(this.Dictionaries).then(response => {
         this.enumsData = response.data;
@@ -1264,8 +1279,8 @@ export default {
           smallCarMaxCharge: null, //每日最高收取额度小型车
           midCarMaxCharge: null, //每日最高收取额度中型车
           bigCarMaxCharge: null, //每日最高收取额度大型车
-          dayBegin: null, //白天开始时间
-          nightBegin: null, //夜晚开始时间
+          dayBegin: "06:00:00", //白天开始时间
+          nightBegin: "18:00:00", //夜晚开始时间
           createTime: null, //创建时间
           status: 1, //使用状态 0-未使用 1-使用中',
           afterChargeFreeTime: null, //充电后免费时长
@@ -1287,6 +1302,7 @@ export default {
           ], //收费信息
           parkingLots: [] //车场信息
         };
+        this.editRuleName = null;
         if (this.$refs["parkingForm"]) {
           this.$nextTick(() => {
             this.$refs["parkingForm"].clearValidate();
@@ -1527,6 +1543,14 @@ export default {
       left: 180px;
       font-size: 12px;
     }
+  }
+  .small_text {
+    width: 90px;
+    text-align: center;
+  }
+  .small_text2 {
+    width: 10%;
+    text-align: center;
   }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="parkingManagement_page">
+  <div class="commit_page">
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">停车场</div>
@@ -67,7 +67,36 @@
         </el-table-column>
         <el-table-column label="已停车" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.usedNum }}</span>
+            <span class="content" v-if="!scope.row.usedEdit"
+              >{{ scope.row.usedNum }}
+              <i
+                class="el-icon-edit"
+                style="color: #037659;margin-left: 5px;cursor: pointer;"
+                @click="toEditUsed(scope.row)"
+              ></i>
+            </span>
+            <span class="content" v-else
+              ><el-input
+                v-model="scope.row.usedNum"
+                placeholder="请输入"
+                type="number"
+                min="0"
+                :max="scope.row.number"
+                step="1"
+                style="width:100px"
+              >
+              </el-input>
+              <i
+                class="el-icon-circle-check"
+                style="color: #037659;margin-left: 5px;cursor: pointer;"
+                @click="editUsed(scope.row)"
+              ></i>
+              <i
+                class="el-icon-circle-close"
+                style="color: #EA2E1C ;margin-left: 5px;cursor: pointer;"
+                @click="closeEditUsed(scope.row)"
+              ></i>
+            </span>
           </template>
         </el-table-column>
         <el-table-column label="空闲数" align="center" show-overflow-tooltip>
@@ -77,7 +106,36 @@
         </el-table-column>
         <el-table-column label="故障数" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.faultNum }}</span>
+            <span class="content" v-if="!scope.row.faulEdit"
+              >{{ scope.row.faultNum }}
+              <i
+                class="el-icon-edit"
+                style="color: #037659;margin-left: 5px;cursor: pointer;"
+                @click="toEditFaul(scope.row)"
+              ></i>
+            </span>
+            <span class="content" v-else
+              ><el-input
+                v-model="scope.row.faultNum"
+                placeholder="请输入"
+                type="number"
+                min="0"
+                :max="scope.row.number"
+                step="1"
+                style="width:100px"
+              >
+              </el-input>
+              <i
+                class="el-icon-circle-check"
+                style="color: #037659;margin-left: 5px;cursor: pointer;"
+                @click="editFaul(scope.row)"
+              ></i>
+              <i
+                class="el-icon-circle-close"
+                style="color: #EA2E1C ;margin-left: 5px;cursor: pointer;"
+                @click="closeEditFaul(scope.row)"
+              ></i>
+            </span>
           </template>
         </el-table-column>
         <el-table-column
@@ -126,6 +184,7 @@ export default {
       },
       enumsData: {}, //字典表返回数据
       listLoading: false, //加载
+      curDate: null,
       list: [] //信息
     };
   },
@@ -178,7 +237,12 @@ export default {
       let para = this.listQuery;
       monitorSpace(para)
         .then(response => {
-          this.list = response.rows;
+          let list = response.rows;
+          list.forEach(el => {
+            el.usedEdit = false;
+            el.faulEdit = false;
+          });
+          this.list = list;
           if (response.total > 0) {
             this.listQuery.total = response.total; // 数据总条数
           } else {
@@ -199,7 +263,38 @@ export default {
           }, 300);
         });
     },
-
+    //开启修改已停车
+    toEditUsed(item) {
+      item.usedEdit = true;
+      this.curDate = item;
+    },
+    //修改已停车
+    editUsed(item) {
+      item.usedEdit = false;
+      this.curDate = item;
+    },
+    //关闭修改已停车
+    closeEditUsed(item) {
+      item.usedEdit = false;
+      this.curDate = item;
+    },
+    //开启修改故障数
+    toEditFaul(item) {
+      item.faulEdit = true;
+      this.curDate = item;
+    },
+    //修改故障数
+    editFaul(item) {
+      item.faulEdit = false;
+      this.curDate = item;
+    },
+    //关闭修改故障数
+    closeEditFaul(item) {
+      item.faulEdit = false;
+      this.curDate = item;
+    },
+    //获取修改的数据
+    getEdit() {},
     // 切换页码方法
     handleSizeChange(val) {
       this.listQuery.pageNum = 1;
@@ -218,7 +313,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.parkingManagement_page {
+.content_edit {
+}
+.commit_page {
   position: relative;
 }
 .content_box {

@@ -12,7 +12,10 @@
           > 基础信息
         </div>
         <div :class="step == 2 ? 'step2' : 'step'" @click="toStep(2)">
-          > 收费规则
+          > 临停规则
+        </div>
+        <div :class="step == 3 ? 'step2' : 'step'" @click="toStep(3)">
+          > 长租规则
         </div>
       </div>
       <el-form
@@ -21,7 +24,10 @@
         ref="parkingForm"
         v-show="step == 1"
       >
-        <div class="base_dialog_main_content">
+        <div
+          class="base_dialog_main_content"
+          :style="pageType == 3 ? 'height: calc(100vh - 240px);' : ''"
+        >
           <div class="base_dialog_main_left">
             <span class="base_dialog_condit">
               <el-form-item label="停车场名称" prop="name">
@@ -156,7 +162,7 @@
                 </el-select>
               </el-form-item>
             </span>
-            <span class="base_dialog_condit">
+            <!-- <span class="base_dialog_condit">
               <el-form-item label="是否支持优惠券" prop="coupon">
                 <span class="base_dialog_condit_text" v-if="pageType == 3">
                   {{ newList.coupon == 1 ? "支持" : "不支持" }}
@@ -179,10 +185,35 @@
                   />
                 </el-select>
               </el-form-item>
+            </span> -->
+            <span class="base_dialog_condit">
+              <el-form-item label="是否支持充电" prop="charge">
+                <span class="base_dialog_condit_text" v-if="pageType == 3">
+                  {{ newList.charge == 1 ? "支持" : "不支持" }}
+                </span>
+
+                <el-select
+                  v-else
+                  v-model="newList.charge"
+                  placeholder="选择是否支持优惠券"
+                  clearable
+                  class="filter-item"
+                  style="width: 72%"
+                  size="small"
+                >
+                  <el-option
+                    v-for="item in couponTypes"
+                    :key="item.enumValue"
+                    :label="item.enumName"
+                    :value="item.enumValue"
+                  />
+                </el-select>
+              </el-form-item>
             </span>
+
             <div
               class="wenzi"
-              style="font-size: 12px;padding-left: 120px;color:#ccc;height:20px;ling-height:20px"
+              style="font-size: 12px;padding-left: 136px;color:#ccc;height:20px;ling-height:20px"
             >
               *最多支持上传4张，上格式jpg/jpeg/png/bmp
             </div>
@@ -232,14 +263,129 @@
               </el-form-item>
             </span>
             <span class="base_dialog_condit" v-if="pageType == 3">
-              <el-form-item label="收费规则" prop="feeRules">
+              <el-form-item label="临停规则" prop="feeRules">
                 <span class="base_dialog_condit_text">
                   {{ feeRuleNames }}
                 </span>
-              </el-form-item></span
-            >
+              </el-form-item>
+            </span>
+            <span class="base_dialog_condit" v-if="pageType == 3">
+              <el-form-item label="长租规则" prop="feeRules">
+                <span class="base_dialog_condit_text">
+                  {{
+                    newList.ruleParkingLeases.length > 0
+                      ? newList.ruleParkingLeases[0].ruleName
+                      : ""
+                  }}
+                </span>
+              </el-form-item>
+            </span>
           </div>
           <div class="base_dialog_main_right">
+            <div
+              class="base_dialog_main_right_wenzi"
+              style="font-size: 12px;padding-left: 148px;color:#ccc;height:20px;ling-height:20px"
+            >
+              达到此车位占用率后，仅限长租车可进入，临停车禁止进入
+            </div>
+
+            <span class="base_dialog_condit">
+              <el-form-item label="长租车位保障临界值" prop="criticalValue">
+                <span v-if="pageType == 3"> {{ newList.criticalValue }}</span>
+                <el-input
+                  v-else
+                  v-model.number="newList.criticalValue"
+                  @input="handleInput2"
+                  placeholder="请输入0-100的数值，最多保留一位小数"
+                  style="width: 72%"
+                  class="filter-item"
+                  size="small"
+                />%
+              </el-form-item>
+            </span>
+            <span class="base_dialog_condit">
+              <el-form-item
+                label="临停收入分成比例"
+                prop="temporaryStopSharing"
+              >
+                <span>建设发展公司</span>
+                <span v-if="pageType == 3">
+                  {{ newList.temporaryStopSharing || " -- " }}</span
+                >
+                <el-input
+                  v-else
+                  v-model.number="newList.temporaryStopSharing"
+                  placeholder="输入0-100的数值，最多保留一位小数"
+                  style="width: 100px"
+                  class="filter-item"
+                  size="small"
+                />%
+                <span>海创物业公司</span>
+                <span v-if="pageType == 3">
+                  {{ newList.temporaryStopSharingTwo || " -- " }}</span
+                >
+                <el-input
+                  v-else
+                  v-model.number="newList.temporaryStopSharingTwo"
+                  placeholder="输入0-100的数值，最多保留一位小数"
+                  style="width: 100px"
+                  class="filter-item"
+                  size="small"
+                />%
+              </el-form-item>
+            </span>
+            <span class="base_dialog_condit">
+              <el-form-item
+                label="长租收入分成比例"
+                prop="longTermRentalSharing"
+              >
+                <span>建设发展公司</span>
+                <span v-if="pageType == 3">
+                  {{ newList.longTermRentalSharing || " -- " }}</span
+                >
+                <el-input
+                  v-else
+                  v-model.number="newList.longTermRentalSharing"
+                  placeholder="输入0-100的数值，最多保留一位小数"
+                  style="width: 100px"
+                  class="filter-item"
+                  size="small"
+                />%
+                <span>海创物业公司</span>
+                <span v-if="pageType == 3">
+                  {{ newList.longTermRentalSharingTwo || " -- " }}</span
+                >
+                <el-input
+                  v-else
+                  v-model.number="newList.longTermRentalSharingTwo"
+                  placeholder="输入0-100的数值，最多保留一位小数"
+                  style="width: 100px"
+                  class="filter-item"
+                  size="small"
+                />%
+              </el-form-item>
+            </span>
+            <span class="base_dialog_condit">
+              <el-form-item label="放行规则" prop="accessType">
+                <el-radio-group
+                  v-model="newList.accessType"
+                  :disabled="pageType == 2 || pageType == 3"
+                >
+                  <el-radio :label="0">不限</el-radio>
+                  <el-radio :label="1"
+                    >仅限白名单、限免车、长租车可进入</el-radio
+                  >
+                </el-radio-group>
+              </el-form-item>
+              <div
+                v-if="pageType < 3"
+                class="base_dialog_main_prompt
+"
+              >
+                首次配置后不可修改，如需修改，需由技术人员配合调试相关硬件参数
+              </div>
+            </span>
+
             <span class="base_dialog_condit">
               <el-form-item label="停车场区域地址" prop="addressId">
                 <span class="base_dialog_condit_text" v-if="pageType == 3">
@@ -253,63 +399,6 @@
                   style="display: inline-block;width: 72%"
                   @selectAddress="selectAddress"
                 ></Cascader>
-              </el-form-item>
-            </span>
-            <span class="base_dialog_condit">
-              <el-form-item label="临停收入分成比例" prop="new">
-                <span class="base_dialog_condit_text" v-if="pageType == 3">
-                  {{ newList.new }}</span
-                >
-                <el-input
-                  v-else
-                  v-model="newList.new"
-                  @blur="handleInput1"
-                  placeholder="输入0-100的数值，最多保留一位小数"
-                  style="width: 72%"
-                  class="filter-item"
-                  size="small"
-                />%
-              </el-form-item>
-            </span>
-            <span class="base_dialog_condit">
-              <el-form-item label="临停收入分成比例" prop="new">
-                <span class="base_dialog_condit_text" v-if="pageType == 3">
-                  {{ newList.new }}</span
-                >
-                <el-input
-                  v-else
-                  v-model="newList.new"
-                  @input="handleInput2"
-                  placeholder="输入0-100的数值，最多保留一位小数"
-                  style="width: 72%"
-                  class="filter-item"
-                  size="small"
-                />%
-              </el-form-item>
-            </span>
-
-            <span class="base_dialog_condit">
-              <el-form-item label="是否支持充电" prop="charge">
-                <span class="base_dialog_condit_text" v-if="pageType == 3">
-                  {{ newList.charge == 1 ? "支持" : "不支持" }}
-                </span>
-
-                <el-select
-                  v-else
-                  v-model="newList.charge"
-                  placeholder="选择是否支持优惠券"
-                  clearable
-                  class="filter-item"
-                  style="width: 72%"
-                  size="small"
-                >
-                  <el-option
-                    v-for="item in couponTypes"
-                    :key="item.enumValue"
-                    :label="item.enumName"
-                    :value="item.enumValue"
-                  />
-                </el-select>
               </el-form-item>
             </span>
 
@@ -342,19 +431,40 @@
           filterable
           :props="{
             key: 'id',
-            label: 'name'
+            label: 'ruleName'
           }"
           :titles="['待选择', '已选择']"
           :format="{
             noChecked: '${total}',
             hasChecked: '${checked}/${total}'
           }"
+          @left-check-change="leftRules"
           @change="getRules"
           :data="ruleList"
         >
         </el-transfer>
       </div>
-      <div class="base_dialog_main_btnBox" v-show="pageType < 3">
+      <div class="base_dialog_main_content" v-show="step == 3">
+        <el-transfer
+          style="text-align: left; display: inline-block;"
+          v-model="newList.ruleParkingLeasesIds"
+          filterable
+          :props="{
+            key: 'id',
+            label: 'ruleName'
+          }"
+          @left-check-change="leftRulesLong"
+          :titles="['待选择', '已选择']"
+          :format="{
+            noChecked: '${total}',
+            hasChecked: '${checked}/${total}'
+          }"
+          @change="getRulesLong"
+          :data="ruleListLong"
+        >
+        </el-transfer>
+      </div>
+      <div class="base_dialog_main_btnBox" style="" v-show="pageType < 3">
         <el-button type="info" icon="el-icon-circle-plus" @click="toSave"
           >保存</el-button
         ><el-button type="danger" icon="el-icon-error" @click="closeDialog"
@@ -370,7 +480,9 @@ import {
   checkName,
   parkingInfo,
   parkingAdd,
-  parkingUpadte
+  parkingUpadte,
+  ruleParkingLeasesListNoPage,
+  ruleTemporaryParkingList
 } from "@/api/yardManagement";
 
 import Cascader from "@/components/Cascader/cascader_regionIdAndNames.vue";
@@ -396,6 +508,65 @@ export default {
         callback();
       }
     };
+    const validateTemporaryStop = (rule, value, callback) => {
+      const inputValue = this.newList.temporaryStopSharing;
+      const inputValue2 = this.newList.temporaryStopSharingTwo;
+      if (inputValue + inputValue2 > 100) {
+        callback(new Error("临停收入分成比例总和不得超过100%"));
+      }
+      // 使用正则表达式限制输入为0-100之间的数字，最多一位小数
+      const regex = /^(([1-9]?\d{0,1}(\.\d{1,2})?)|100|100\.(0){1,2})$/; // 匹配数字和最多一位小数的数字
+      if (!inputValue) {
+        if (!inputValue2) {
+          callback();
+        } else if (!regex.test(inputValue2)) {
+          callback(new Error("输入0-100的数值，最多保留一位小数"));
+        } else {
+          callback();
+        }
+      } else if (!regex.test(inputValue)) {
+        // 如果不符合正则，则报错
+        callback(new Error("输入0-100的数值，最多保留一位小数"));
+      } else {
+        if (!inputValue2) {
+          callback();
+        } else if (!regex.test(inputValue2)) {
+          callback(new Error("输入0-100的数值，最多保留一位小数"));
+        } else {
+          callback();
+        }
+      }
+    };
+    const validateLongTermRental = (rule, value, callback) => {
+      const inputValue = this.newList.longTermRentalSharing;
+      const inputValue2 = this.newList.longTermRentalSharingTwo;
+      if (inputValue + inputValue2 > 100) {
+        callback(new Error("长租收入分成比例总和不得超过100%"));
+      }
+
+      // 使用正则表达式限制输入为0-100之间的数字，最多一位小数
+      const regex = /^(([1-9]?\d{0,1}(\.\d{1,2})?)|100|100\.(0){1,2})$/; // 匹配数字和最多一位小数的数字
+      if (!inputValue) {
+        if (!inputValue2) {
+          callback();
+        } else if (!regex.test(inputValue2)) {
+          callback(new Error("输入0-100的数值，最多保留一位小数"));
+        } else {
+          callback();
+        }
+      } else if (!regex.test(inputValue)) {
+        // 如果不符合正则，则报错
+        callback(new Error("输入0-100的数值，最多保留一位小数"));
+      } else {
+        if (!inputValue2) {
+          callback();
+        } else if (!regex.test(inputValue2)) {
+          callback(new Error("输入0-100的数值，最多保留一位小数"));
+        } else {
+          callback();
+        }
+      }
+    };
 
     return {
       step: 1,
@@ -415,22 +586,27 @@ export default {
         operator: null, //运营商网络
         charge: null, //是否支持充电
         coupon: null, //是否支持优惠券
+        accessType: 0, //是否仅限白名单及限免车
         photos: "", //停车场图片
+        criticalValue: 90, //长租车位保障临界值
+        ruleParkingLeases: [],
+        temporaryStopSharing: null, //临停分成建设发展公司
+        temporaryStopSharingTwo: null, //临停分成海创物业公司
+        longTermRentalSharing: null, //长租分成建设发展公司
+        longTermRentalSharingTwo: null, //长租分成海创物业公司
         address: "", //停车场区域地址
         addressId: "", //停车场区域地址id
         coordinate: "", //地图坐标
-        feeRules: "" //收费规则
+        feeRules: null, //临停收费规则
+        ruleParkingLeasesIds: [] //长租收费规则
       }, //车场详情
       timeList: ["00:00:00", "23:59:59"], //营业时间
       photos: [], //图片列表
-      feeRules: [1, 2, 3], //收费规则id
+      feeRules: [], //收费规则id
+
       feeRuleNames: "", //收费规则名称
-      ruleList: [
-        { id: 1, name: "规则1" },
-        { id: 2, name: "规则2" },
-        { id: 3, name: "规则3" },
-        { id: 4, name: "规则4" }
-      ],
+      ruleList: [],
+      ruleListLong: [],
       operators: [
         { enumName: "移动", enumValue: "移动" },
         { enumName: "联通", enumValue: "联通" },
@@ -445,7 +621,7 @@ export default {
         name: [
           { required: true, message: "请输入停车场名称", trigger: "blur" },
           {
-            pattern: /[\u4E00-\u9FA5a-zA-Z0-9_\-]{1,20}$/,
+            pattern: /^[\u4E00-\u9FA5a-zA-Z0-9_\-]{1,20}$/,
             message: "请输入20以内字符，且不含特殊字符",
             trigger: "blur"
           },
@@ -469,18 +645,15 @@ export default {
           { required: true, message: "请输入总车位数", trigger: "blur" }
         ],
         phone: [
-          { required: true, message: "请输入联系电话", trigger: "blur" },
-          {
-            pattern: /^1\d{10}$/,
-            message: "请输入正确手机号码",
-            trigger: "blur"
-          }
+          { required: true, message: "请输入联系电话", trigger: "blur" }
+          // {
+          //   pattern: /^1\d{10}$/,
+          //   message: "请输入正确手机号码",
+          //   trigger: "blur"
+          // }
         ],
         operator: [
-          { required: true, message: "请选择运营商网络", trigger: "blur" }
-        ],
-        charge: [
-          { required: true, message: "请输入是否支持充电", trigger: "blur" }
+          { required: false, message: "请选择运营商网络", trigger: "blur" }
         ],
         coupon: [
           { required: true, message: "请输入是否支持优惠券", trigger: "blur" }
@@ -491,34 +664,61 @@ export default {
         addressId: [
           { required: true, message: "请选择停车场区域地址", trigger: "blur" }
         ],
+        charge: [
+          { required: true, message: "请选择是否支持充电", trigger: "blur" }
+        ],
+        accessType: [
+          { required: true, message: "请选择放行规则", trigger: "blur" }
+        ],
+        criticalValue: [
+          {
+            required: true,
+            message: "请输入长租车位保障临界值",
+            trigger: "blur"
+          }
+        ],
+        temporaryStopSharing: [
+          {
+            required: false,
+            message: "",
+            trigger: "blur",
+            validator: validateTemporaryStop
+          }
+        ],
+        longTermRentalSharing: [
+          {
+            required: false,
+            message: "",
+            trigger: "blur",
+            validator: validateLongTermRental
+          }
+        ],
+
         coordinate: [
           { required: true, message: "请选择地图坐标", trigger: "blur" }
         ]
       }
     };
   },
-  created() {},
+  created() {
+    this.getRulesList();
+  },
   methods: {
-    handleInput1(value) {
-      // 限制输入为0到100之间的一位小数
-      this.newList.new = value
-        .toString()
-        .replace(/[^\d.]/g, "")
-        .replace(/\.{2,}/g, ".")
-        .replace(/^\./g, "")
-        .replace(".", "$#$")
-        .replace(/\./g, "")
-        .replace("$#$", ".")
-        .replace(/^(\-)*(\d+)\.(\d).*$/, "$1$2.$3");
-      if (this.newList.new > 100) {
-        this.newList.new = 100; // 如果超过100，设置为100
-      } else if (this.newList.new < 0) {
-        this.newList.new = 0; // 如果小于0，设置为0
-      }
+    getRulesList() {
+      //长租规则列表
+      ruleParkingLeasesListNoPage().then(response => {
+        this.ruleListLong = response.data;
+      });
+      let para = {};
+      //临停规则列表
+      ruleTemporaryParkingList(para).then(response => {
+        this.ruleList = response.data;
+      });
     },
+
     handleInput2(value) {
       // 限制输入为0到100之间的一位小数
-      this.newList.new = value
+      this.newList.criticalValue = value
         .toString()
         .replace(/[^\d.]/g, "")
         .replace(/\.{2,}/g, ".")
@@ -527,10 +727,10 @@ export default {
         .replace(/\./g, "")
         .replace("$#$", ".")
         .replace(/^(\-)*(\d+)\.(\d).*$/, "$1$2.$3");
-      if (this.newList.new > 100) {
-        this.newList.new = 100; // 如果超过100，设置为100
-      } else if (this.newList.new < 0) {
-        this.newList.new = 0; // 如果小于0，设置为0
+      if (this.newList.criticalValue > 100) {
+        this.newList.criticalValue = 100; // 如果超过100，设置为100
+      } else if (this.newList.criticalValue < 0) {
+        this.newList.criticalValue = 0; // 如果小于0，设置为0
       }
     },
 
@@ -553,9 +753,9 @@ export default {
     },
     //停车场图片验证
     beforeAvatarUpload(file) {
-      const isLt100M = file.size / 1024 < 100000;
+      const isLt100M = file.size / 1024 < 10000;
       if (!isLt100M) {
-        this.$message.error("上传图片大小不能超过1M!");
+        this.$message.error("上传图片大小不能超过10M!");
       }
       return isLt100M;
     },
@@ -583,9 +783,30 @@ export default {
       let arr = [data.coordinate.longitude, data.coordinate.latitude];
       this.newList.coordinate = arr.toString();
     },
-    //收费规则选择
+    leftRules(data) {
+      if (data.length > 1) {
+        data.splice(0, 1);
+      }
+    },
+
+    //临停规则选择
     getRules(data) {
+      if (data.length > 1) {
+        data.splice(0, 1);
+      }
       this.newList.feeRules = data.toString();
+    },
+    leftRulesLong(data) {
+      if (data.length > 1) {
+        data.splice(0, 1);
+      }
+    },
+
+    //长租规则选择
+    getRulesLong(data) {
+      if (data.length > 1) {
+        data.splice(0, 1);
+      }
     },
     //打开注册、编辑弹窗
     showDialog(id, pageType) {
@@ -610,6 +831,9 @@ export default {
         this.timeList = ["00:00:00", "23:59:59"]; //营业时间
         this.photos = [];
         this.feeRules = [];
+        // this.ruleList = [];
+        // this.ruleListLong = [];
+
         this.newList = {
           id: null,
           name: "", //停车场名称
@@ -623,11 +847,21 @@ export default {
           charge: null, //是否支持充电
           coupon: null, //是否支持优惠券
           photos: "", //停车场图片
+          accessType: 0, //放行规则
+          criticalValue: 90, //长租车位保障临界值
+          ruleParkingLeases: [],
+          temporaryStopSharing: null, //临停分成建设发展公司
+          temporaryStopSharingTwo: null, //临停分成海创物业公司
+          longTermRentalSharing: null, //长租分成建设发展公司
+          longTermRentalSharingTwo: null, //长租分成海创物业公司
           address: "", //停车场区域地址
           addressId: "", //停车场区域地址id
           coordinate: "", //地图坐标
-          feeRules: "" //收费规则
+          feeRules: null, //临停收费规则
+          ruleParkingLeasesIds: [] //长租收费规则
         };
+        this.editName = null;
+
         if (this.$refs["parkingForm"]) {
           this.$nextTick(() => {
             this.$refs["parkingForm"].clearValidate();
@@ -641,10 +875,26 @@ export default {
       }
     },
     //获取详情
-    getDetials(id) {
+    getDetials(id, isAdd) {
       let para = { id: id };
       parkingInfo(para).then(response => {
         this.newList = response.data;
+        if (isAdd) {
+          this.toStep(2);
+        }
+        if (!this.newList.ruleParkingLeasesIds) {
+          this.newList.ruleParkingLeasesIds = [];
+        }
+        if (
+          this.newList.ruleParkingLeases &&
+          this.newList.ruleParkingLeases.length > 0
+        ) {
+          this.newList.ruleParkingLeasesIds = [
+            this.newList.ruleParkingLeases[0].id
+          ];
+        } else {
+          this.newList.ruleParkingLeasesIds = [];
+        }
         this.newList.addressId = this.newList.addressId * 1;
         if (this.pageType == 2) {
           this.$refs.treedata.selectRegion(this.newList.addressId);
@@ -661,6 +911,8 @@ export default {
             response.data.feeRules.split(",")
           );
           this.feeRules = response.data.feeRules.split(",").map(Number);
+        } else {
+          this.feeRules = [];
         }
         let coordinate = response.data.coordinate.split(",");
         this.$nextTick(() => {
@@ -676,9 +928,19 @@ export default {
     //获取收费规则名称
     getFeeRuleNames(feeRules) {
       let arr = [];
+      // if (feeRules.length == 1 && feeRules[0] === "全") {
+      //   this.ruleList.forEach(el => {
+      //     arr.push(el.name);
+      //   });
+      // } else {
       feeRules.map(item1 => {
-        arr.push(this.ruleList.find(item2 => item2.id == item1).name);
+        let item = this.ruleList.find(item2 => item2.id == item1);
+        if (item) {
+          arr.push(item.ruleName);
+        }
       });
+      // }
+
       this.feeRuleNames = arr.toString();
     },
     //关闭新增/编辑弹窗
@@ -710,7 +972,7 @@ export default {
                     type: "success",
                     message: "提交成功"
                   });
-                  // this.getDetials(response.id);
+                  this.getDetials(response.data.id, true);
                 } else {
                   this.$message({
                     type: "warning",
@@ -735,7 +997,7 @@ export default {
           this.$confirm("确认提交编辑的停车场信息吗?", "提示", {
             type: "warning"
           }).then(() => {
-            if (this.step == 2) {
+            if (this.step == 2 || this.step == 3) {
               this.isShow = false;
               this.$emit("openLoading", {});
             }
@@ -753,11 +1015,11 @@ export default {
                     message: "提交失败"
                   });
                 }
-                if (this.step == 2) {
+                if (this.step == 3 || this.step == 2) {
                   setTimeout(() => {
                     this.$emit("getList", {});
                   }, 300);
-                } else {
+                } else if (this.step == 1) {
                   this.step = 2;
                 }
               })
@@ -787,7 +1049,7 @@ export default {
 <style lang="scss" scoped>
 .map_box {
   margin-left: 20px;
-  height: 340px;
+  height: 270px;
 }
 .base_dialog_condit {
   .photos_div {
@@ -858,5 +1120,30 @@ export default {
     width: 110px;
     height: 110px;
   }
+}
+.base_dialog_main_right {
+  position: relative;
+  .base_dialog_main_right_wenzi {
+    position: absolute;
+    top: 10px;
+  }
+}
+.base_dialog_main_prompt {
+  width: 72%;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  margin-left: 148px;
+  background: rgba($color: #ffd986, $alpha: 0.3);
+  color: #f50e0e;
+  margin-top: -24px;
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+</style>
+
+<style>
+.el-transfer-panel__list {
+  height: 500px !important;
 }
 </style>

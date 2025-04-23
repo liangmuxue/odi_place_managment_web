@@ -21,6 +21,34 @@ NProgress.configure({
 
 const whiteList = ['/login', '/auth-redirect'] // no redirect whitelist
 
+const findCanTo = (path, resourceList) => {
+  let index = path.lastIndexOf('/'); // 获取最后一个/的位置
+  let lastSegment = path.substring(index + 1); // 截取最后一个/后的值        
+  const name = resourceList.find(item => item.resEname === lastSegment);
+  if (name) {
+    return true
+  } else {
+    return false
+  }
+
+};
+const findFirstRoutePath = (menuList) => {
+  for (const menu of menuList) {
+    if (menu.resType == 3) {
+      if (menu.parentId) {
+        const name = menuList.find(item => item.resourceId === menu.parentId);
+        const path = name.resCode + '/' + menu.resEname;
+        if (path) return path;
+
+      } else {
+
+        const path = menu.resCode;
+        if (path) return path;
+      }
+    }
+  }
+  return '/homePage'; // 默认兜底路径
+};
 //点击登录之后，在加载router之前触发
 router.beforeEach(async (to, from, next) => {
   // start progress bar
@@ -46,6 +74,7 @@ router.beforeEach(async (to, from, next) => {
       // determine whether the user has obtained his permission roles through getInfo     判断用户是否已通过getinfo获得其权限角色
       const hasRoles = store.getters.roles && store.getters.roles.length > 0
       if (hasRoles) {
+
         next()
       } else {
         try {
@@ -63,10 +92,21 @@ router.beforeEach(async (to, from, next) => {
           router.addRoutes(accessRoutes)
           // hack method to ensure that addRoutes is complete
           // set the replace: true, so the navigation will not leave a history record
-          next({
-            ...to,
-            replace: true
-          })
+          const canTo = findCanTo(to.fullPath, resourceList)
+          if (canTo) {
+            next({
+              ...to,
+              replace: true
+            })
+          } else {
+            // //获取第一个权限页面并跳转
+            const firstPath = findFirstRoutePath(resourceList);
+            next({
+              path: firstPath,
+              replace: true
+            });
+          }
+
         } catch (error) {
           // remove token and go to login page to re-login
           await store.dispatch('user/resetToken')

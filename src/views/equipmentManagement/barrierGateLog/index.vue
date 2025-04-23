@@ -1,5 +1,5 @@
 <template>
-  <div class="parkingManagement_page">
+  <div class="commit_page">
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">停车场</div>
@@ -36,8 +36,8 @@
           range-separator="-"
           start-placeholder="请选择时间"
           end-placeholder
+          :default-time="['00:00:00', '23:59:59']"
         ></el-date-picker>
-        <!-- :default-time="['00:00:00', '23:59:59']" -->
       </span>
       <el-button icon="el-icon-refresh-right" @click="resetList"
         >重置</el-button
@@ -303,7 +303,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.parkingManagement_page {
+.commit_page {
   position: relative;
 }
 .content_box {

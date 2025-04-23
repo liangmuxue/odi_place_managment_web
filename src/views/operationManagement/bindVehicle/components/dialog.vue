@@ -41,7 +41,7 @@
                 </span>
               </el-form-item>
             </span>
-            <span class="base_dialog_condit">
+            <!-- <span class="base_dialog_condit">
               <el-form-item label="车辆品牌：" prop="vehicleBrandName">
                 <span class="base_dialog_condit_text">
                   {{ newList.vehicleBrandName }}
@@ -54,7 +54,7 @@
                   {{ newList.vehicleColorName }}
                 </span>
               </el-form-item>
-            </span>
+            </span> -->
             <span class="base_dialog_condit">
               <el-form-item label="是否认证：" prop="isAuth">
                 <span class="base_dialog_condit_text">

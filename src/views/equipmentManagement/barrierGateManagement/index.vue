@@ -1,5 +1,5 @@
 <template>
-  <div class="parkingManagement_page">
+  <div class="commit_page">
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">停车场</div>
@@ -35,10 +35,10 @@
     </div>
     <div class="btn_box">
       <el-button type="info" icon="el-icon-circle-plus-outline" @click="toAdd"
-        >添加</el-button
+        >新增</el-button
       >
       <!-- v-has="{ red: 'addBox', type: 1 }" -->
-      <el-button type="danger" icon="el-icon-circle-plus-outline" @click="toDel"
+      <el-button type="danger" icon="el-icon-circle-close" @click="toDel"
         >删除</el-button
       >
       <!-- v-has="{ red: 'deleteBox', type: 1 }" -->
@@ -55,6 +55,7 @@
         stripe
         height="calc(100vh - 320px)"
         @selection-change="handleSelectionChange"
+        ref="selTable"
         align="left"
       >
         <el-table-column type="selection" width="34"></el-table-column>
@@ -73,14 +74,14 @@
             <span class="content">{{ scope.row.parkName }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="道闸编号" align="center" show-overflow-tooltip>
-          <template slot-scope="scope">
-            <span class="content">{{ scope.row.id }}</span>
-          </template>
-        </el-table-column>
         <el-table-column label="道闸名称" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="content">{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="道闸编号" align="center" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span class="content">{{ scope.row.barrierNumber }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -163,20 +164,20 @@
             <span>
               <el-button
                 type="info"
-                v-if="scope.row.online == 1"
                 icon="el-icon-unlock"
-                @click="openDoor"
+                @click="openDoorAlways"
                 size="mini"
                 >一键常开</el-button
               >
-              <el-button
+              <!-- v-if="scope.row.online == 1" -->
+              <!-- <el-button
                 type="danger"
                 v-else
                 icon="el-icon-lock"
-                @click="openDoor"
+                @click="openDoorCancel"
                 size="mini"
                 >取消常开</el-button
-              >
+              > -->
             </span>
 
             <span
@@ -214,6 +215,7 @@
 <script>
 import {
   gateList, //道闸管理分页查询
+  openGate, //远程开闸
   gateDelete //删除道闸
 } from "@/api/equipmentManagement";
 import Dialog from "./components/dialog";
@@ -365,12 +367,17 @@ export default {
 
     //批量删除
     toDel() {
-      let arr = [];
-      this.selGateway.forEach(el => {
-        arr.push(el.id);
-      });
-      if (this.selGateway.length > 0) {
-        this.$confirm("确认批量删除道闸吗?", "提示", {
+      if (this.selGateway && this.selGateway.length > 0) {
+        let arr = [];
+        this.selGateway.forEach(el => {
+          arr.push(el.id);
+        });
+        let text = "确认批量删除道闸吗?";
+        if (this.selGateway.length == 1) {
+          text = "确认删除该道闸吗?";
+        }
+
+        this.$confirm(text, "提示", {
           type: "warning"
         }).then(() => {
           gateDelete(arr.toString()).then(response => {
@@ -392,12 +399,55 @@ export default {
       } else {
         this.$message({
           type: "warning",
-          message: "请选择删除的泊位"
+          message: "请选择删除的道闸"
         });
       }
     },
     //远程开闸
-    openDoor() {},
+    openDoor() {
+      function createObjectFromArrays(keys, values) {
+        return keys
+          .map((key, index) => [key, values[index]])
+          .reduce((obj, [key, value]) => {
+            obj[key] = value;
+            return obj;
+          }, {});
+      }
+      if (this.selGateway && this.selGateway.length > 0) {
+        let arr = [];
+        let arr2 = [];
+        this.selGateway.forEach(el => {
+          arr.push(el.barrierNumber);
+          arr2.push(el.parkId);
+        });
+        const result = createObjectFromArrays(arr, arr2);
+        console.log(123, result);
+        let para = { gateMap: result };
+        openGate(para).then(response => {
+          if (response.code == "200") {
+            this.$message({
+              type: "success",
+              message: "开闸成功"
+            });
+          } else {
+            this.$message({
+              type: "warning",
+              message: "开闸失败"
+            });
+          }
+        });
+        this.$refs.selTable.clearSelection();
+      }
+    },
+    //常开
+    openDoorAlways() {
+      this.$message({
+        type: "warning",
+        message: "该设备暂不支持此功能"
+      });
+    },
+    //取消常开
+    openDoorCancel() {},
     //打开编辑道闸
     toEdit(e) {
       let id = e.id;
@@ -428,7 +478,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.parkingManagement_page {
+.commit_page {
   position: relative;
 }
 .content_box {

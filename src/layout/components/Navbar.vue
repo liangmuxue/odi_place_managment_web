@@ -24,7 +24,9 @@
       >
         <div class="avatar-wrapper">
           <div class="user-avatar">
-            <div class="el-icon-caret-name">超级管理员： {{ username }}</div>
+            <div class="el-icon-caret-name">
+              {{ roleName }}： {{ username }}
+            </div>
           </div>
           <img src="@/assets/images/user-pic.png" alt="" class="user-pic" />
         </div>
@@ -114,7 +116,7 @@ import user from "@/store/modules/user"; // has directive
 // import { uesrDetail } from "@/api/systemset";
 // import { infoMap } from "@/api/systemset";
 
-import { getUserName } from "@/utils/auth"; // get token from cookie
+import { getUserName, getRoleName } from "@/utils/auth"; // get token from cookie
 import {
   userUpdatePwd //重置密码
 } from "@/api/systemset";
@@ -153,6 +155,7 @@ export default {
         eqBoxId: "" //盒子编号
       },
       username: "",
+      roleName: "",
       dateTime: "", //时间
       gisTypeOption: [], // 坐标体系数据源
       selectVillageGis: {
@@ -228,6 +231,7 @@ export default {
     this.userId = this.$store.getters.userId;
     // this.getcode(); //生成随机码
     this.username = getUserName();
+    this.roleName = getRoleName();
   },
   methods: {
     getList() {
@@ -426,9 +430,9 @@ export default {
 
 <style lang="scss" scoped>
 .el-dropdown-menu {
-  width: 12%;
+  width: 240px;
   // background: #20262d;
-  margin-right: -25px;
+  margin-right: -15px;
   .el-dropdown-menu__item {
     // color: #fff;
     font-weight: bold;
@@ -592,7 +596,7 @@ export default {
     }
     .avatar-container {
       float: right;
-      width: 200px;
+      width: 240px;
       margin-right: 15px;
 
       .avatar-wrapper {
@@ -608,7 +612,7 @@ export default {
         }
         .user-avatar {
           float: right;
-          width: 190px;
+          width: 210px;
           display: inline-block;
           height: 24px;
           line-height: 24px;
@@ -616,7 +620,7 @@ export default {
           cursor: pointer;
           padding-left: 5px;
           .el-icon-caret-name {
-            width: 190px;
+            width: 200px;
             height: 24px;
             line-height: 24px;
             overflow: hidden;

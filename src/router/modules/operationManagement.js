@@ -55,7 +55,7 @@ const operationManagement = {
       component: () => import('@/views/operationManagement/monthlyRentalCarManagement/index'),
       name: 'MonthlyRentalCarManagement',
       meta: {
-        title: '长租车辆',
+        title: '长租车辆审核',
         icon: 'specificVehicleManagement'
       },
     },
@@ -101,7 +101,7 @@ const operationManagement = {
       component: () => import('@/views/operationManagement/discountRules/index'),
       name: 'DiscountRules',
       meta: {
-        title: '优惠规则',
+        title: '优惠活动',
         icon: 'discountRules'
 
       },

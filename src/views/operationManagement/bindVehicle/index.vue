@@ -1,5 +1,5 @@
 <template>
-  <div class="parkingManagement_page">
+  <div class="commit_page">
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">车牌号</div>
@@ -86,7 +86,7 @@
       >
     </div>
     <div class="btn_box">
-      <el-button type="danger" icon="el-icon-circle-plus-outline" @click="toDel"
+      <el-button type="danger" icon="el-icon-remove-outline" @click="toDel"
         >解除绑定</el-button
       >
       <!-- v-has="{ red: 'deleteBox', type: 1 }" -->
@@ -134,7 +134,7 @@
             <span class="content">{{ scope.row.vehicleTypeName }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="车辆品牌" align="center" show-overflow-tooltip>
+        <!-- <el-table-column label="车辆品牌" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="content">{{ scope.row.vehicleBrandName }}</span>
           </template>
@@ -143,7 +143,7 @@
           <template slot-scope="scope">
             <span class="content">{{ scope.row.vehicleColorName }}</span>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column label="是否认证" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="content">{{
@@ -242,6 +242,9 @@ export default {
     getFieldTable() {
       fieldTable(this.Dictionaries).then(response => {
         this.enumsData = response.data;
+        let list = response.data.VEHICLE_TYPE;
+        [list[0], list[1]] = [list[1], list[0]];
+        this.enumsData.VEHICLE_TYPE = list;
       });
     },
 
@@ -309,12 +312,17 @@ export default {
     },
     //取消绑定
     toDel() {
-      let arr = [];
-      this.selGateway.forEach(el => {
-        arr.push(el.id);
-      });
       if (this.selGateway.length > 0) {
-        this.$confirm("确认批量解除绑定车辆吗?", "提示", {
+        let arr = [];
+        this.selGateway.forEach(el => {
+          arr.push(el.id);
+        });
+        let text = "确认批量解除绑定车辆吗?";
+        if (this.selGateway.length == 1) {
+          text = "确认解除该绑定车辆吗?";
+        }
+
+        this.$confirm(text, "提示", {
           type: "warning"
         }).then(() => {
           let para = {
@@ -394,7 +402,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.parkingManagement_page {
+.commit_page {
   position: relative;
 }
 .content_box {

@@ -1,5 +1,5 @@
 <template>
-  <div class="parkingManagement_page">
+  <div class="commit_page">
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">用户名</div>
@@ -48,10 +48,10 @@
     </div>
     <div class="btn_box">
       <el-button type="info" icon="el-icon-circle-plus-outline" @click="toAdd"
-        >添加</el-button
+        >新增</el-button
       >
       <!-- v-has="{ red: 'addBox', type: 1 }" -->
-      <el-button type="danger" icon="el-icon-circle-plus-outline" @click="toDel"
+      <el-button type="danger" icon="el-icon-circle-close" @click="toDel"
         >删除</el-button
       >
       <!-- v-has="{ red: 'deleteBox', type: 1 }" -->
@@ -99,7 +99,7 @@
         <el-table-column label="状态" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="content">{{
-              scope.row.status == 1 ? "停用" : "正常"
+              scope.row.status == 1 ? "禁用" : "启用"
             }}</span>
           </template>
         </el-table-column>
@@ -124,6 +124,7 @@
             </span>
             <span
               class="operation_button update_btn"
+              style="width:80px"
               @click="toChangePassword(scope.row)"
             >
               重置密码
@@ -177,8 +178,8 @@ export default {
       },
       selGateway: null,
       statusList: [
-        { enumName: "正常", enumValue: 0 },
-        { enumName: "停用", enumValue: 1 }
+        { enumName: "启用", enumValue: 0 },
+        { enumName: "禁用", enumValue: 1 }
       ],
       roleList: [],
       Dictionaries: {
@@ -279,13 +280,17 @@ export default {
 
     //批量删除
     toDel() {
-      let arr = [];
-      console.log(111, this.selGateway);
-      this.selGateway.forEach(el => {
-        arr.push(el.userId);
-      });
       if (this.selGateway.length > 0) {
-        this.$confirm("确认批量删除用户吗?", "提示", {
+        let arr = [];
+        this.selGateway.forEach(el => {
+          arr.push(el.userId);
+        });
+        let text = "确认批量删除用户吗?";
+        if (this.selGateway.length == 1) {
+          text = "确认删除该用户吗?";
+        }
+
+        this.$confirm(text, "提示", {
           type: "warning"
         }).then(() => {
           let para = {
@@ -342,7 +347,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.parkingManagement_page {
+.commit_page {
   position: relative;
 }
 .content_box {

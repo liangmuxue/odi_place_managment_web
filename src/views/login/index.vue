@@ -245,7 +245,8 @@ export default {
             .then(() => {
               console.log("login ok"); //点击登录之后，在加载router之前会触发permission中的router.beforeEach周期
               this.$router.push({
-                path: this.redirect || "/homePage",
+                // path: this.redirect || "/",
+                path: "/",
                 query: this.otherQuery
               }); //登录成功，向首页跳转
               this.loading = false;

@@ -80,6 +80,21 @@ export const constantRoutes = [
     hidden: true
   },
 
+  // homePage, //首页
+  // operationManagement, //运营管理
+  // reconciliationCenter, //对账中心
+  // yardManagement, //车场管理
+  // specificVehicleManagement, //特定车管理
+  // equipmentManagement, //设备管理
+  // statisticalAnalysis, //统计分析
+  // systemSettings, //系统设置
+]
+
+/**
+ * asyncRoutes
+ * the routes that need to be dynamically loaded based on user roles
+ */
+export const asyncRoutes = [
   homePage, //首页
   operationManagement, //运营管理
   reconciliationCenter, //对账中心
@@ -88,14 +103,6 @@ export const constantRoutes = [
   equipmentManagement, //设备管理
   statisticalAnalysis, //统计分析
   systemSettings, //系统设置
-]
-
-/**
- * asyncRoutes
- * the routes that need to be dynamically loaded based on user roles
- */
-export const asyncRoutes = [
-  // homePage, //首页
 
 
 

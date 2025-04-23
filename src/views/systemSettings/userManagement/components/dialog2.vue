@@ -9,7 +9,7 @@
     <div class="base_dialog_main">
       <el-form :model="newList" :rules="rules" ref="userForm">
         <div class="base_dialog_main_content">
-          <div class="base_dialog_main_left" style="padding:100px">
+          <div class="base_dialog_main_left" style="padding:100px 0">
             <span class="password_dialog_condit">
               <el-form-item
                 :label="'请输入 ' + newList.userName + ' 的新密码'"
@@ -18,7 +18,7 @@
                 <el-input
                   v-model="newList.password"
                   placeholder="请输入6-32个以内的字符，输入字符必须包含大小写、数字、特殊字符等三种以上组合"
-                  style="width: 72%"
+                  style="width: 560px"
                   class="filter-item"
                   size="small"
                 />
@@ -58,7 +58,7 @@ export default {
         password: [
           { required: true, message: "请输入新密码", trigger: "blur" },
           {
-            pattern: /^(?![a-zA-Z]+$)(?![A-Z0-9]+$)(?![A-Z\\W_!@#$%^&*`~()-+=]+$)(?![a-z0-9]+$)(?![a-z\\W_!@#$%^&*`~()-+=]+$)(?![0-9\\W_!@#$%^&*`~()-+=]+$)[a-zA-Z0-9\\W_!@#$%^&*`~()-+=]{6,32}$/,
+            pattern: /^(?![a-zA-Z]+$)(?![A-Z0-9]+$)(?![A-Z\\W_!@#$%^&*`~()-+=]+$)(?![a-z0-9]+$)(?![a-z\\W_!@#$%^&*`~()-+=]+$)(?![0-9\\W_!@#$%^&*`~()-+=]+$)[a-zA-Z0-9\\W_!@#$%^&*`~()\-+=]{6,32}$/,
             message:
               "请输入6-32个以内的字符，输入字符必须包含大小写、数字、特殊字符等三种以上组合",
             trigger: "blur"

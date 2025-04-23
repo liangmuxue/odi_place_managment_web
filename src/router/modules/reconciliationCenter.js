@@ -36,7 +36,7 @@ const reconciliationCenter = {
       component: () => import('@/views/reconciliationCenter/monthlyRentalRecord/index'),
       name: 'MonthlyRentalRecord',
       meta: {
-        title: '月租记录',
+        title: '长租记录',
         icon: 'monthlyRentalRecord',
 
       },

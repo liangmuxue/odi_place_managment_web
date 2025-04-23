@@ -1,5 +1,5 @@
 <template>
-  <div class="parkingManagement_page">
+  <div class="commit_page">
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">角色名称</div>
@@ -14,10 +14,10 @@
     </div>
     <div class="btn_box">
       <el-button type="info" icon="el-icon-circle-plus-outline" @click="toAdd"
-        >添加</el-button
+        >新增</el-button
       >
       <!-- v-has="{ red: 'addBox', type: 1 }" -->
-      <el-button type="danger" icon="el-icon-circle-plus-outline" @click="toDel"
+      <el-button type="danger" icon="el-icon-circle-close" @click="toDel"
         >删除</el-button
       >
       <!-- v-has="{ red: 'deleteBox', type: 1 }" -->
@@ -240,12 +240,17 @@ export default {
 
     //批量删除
     toDel() {
-      let arr = [];
-      this.selGateway.forEach(el => {
-        arr.push(el.roleId);
-      });
       if (this.selGateway.length > 0) {
-        this.$confirm("确认批量删除角色吗?", "提示", {
+        let arr = [];
+        this.selGateway.forEach(el => {
+          arr.push(el.roleId);
+        });
+        let text = "确认批量删除角色吗?";
+        if (this.selGateway.length == 1) {
+          text = "确认删除该角色吗?";
+        }
+
+        this.$confirm(text, "提示", {
           type: "warning"
         }).then(() => {
           let para = {
@@ -270,7 +275,7 @@ export default {
       } else {
         this.$message({
           type: "warning",
-          message: "请选择删除的用户"
+          message: "请选择删除角色"
         });
       }
     },
@@ -303,7 +308,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.parkingManagement_page {
+.commit_page {
   position: relative;
 }
 .content_box {

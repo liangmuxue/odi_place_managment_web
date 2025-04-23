@@ -140,3 +140,19 @@ export function lotSelect() {
 
   })
 }
+//获取长租规则
+export function ruleParkingLeasesListNoPage() {
+  return request({
+    url: '/system/ruleParkingLeases/listNoPage',
+    method: 'get',
+
+  })
+}
+//获取临停规则
+export function ruleTemporaryParkingList(data) {
+  return request({
+    url: '/system/ruleTemporaryParking/list',
+    method: 'POST',
+    data
+  })
+}

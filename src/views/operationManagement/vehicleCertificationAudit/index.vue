@@ -1,5 +1,5 @@
 <template>
-  <div class="parkingManagement_page">
+  <div class="commit_page">
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">车主手机</div>
@@ -32,7 +32,7 @@
       </span>
 
       <span class="search_content2">
-        <div class="search_content_title">注册时间</div>
+        <div class="search_content_title">申请时间</div>
         <!-- value-format="yyyy-MM-dd HH:mm:ss" -->
         <el-date-picker
           style="width: 72%"
@@ -58,7 +58,7 @@
         @input="toSearchList"
         style="margin-right:10px"
       >
-        <el-radio-button :label="0">未审批</el-radio-button>
+        <el-radio-button :label="0">待审批</el-radio-button>
         <el-radio-button :label="1">审核通过</el-radio-button>
         <el-radio-button :label="-1">不通过</el-radio-button>
       </el-radio-group>
@@ -127,12 +127,32 @@
         <el-table-column label="车辆行驶证" min-width="90px" align="center">
           <template slot-scope="scope">
             <div class="content">
-              <img
-                slot="reference"
-                :src="scope.row.drivingLicense"
-                width="36"
-                height="48"
-              />
+              <el-popover placement="top-start" width="500" trigger="click">
+                <img
+                  :src="
+                    scope.row.drivingLicense
+                      ? scope.row.drivingLicense
+                      : scope.row.drivingLicense
+                  "
+                  width="100%"
+                />
+                <img
+                  v-if="
+                    scope.row.drivingLicense !== '' &&
+                      scope.row.drivingLicense !== null
+                  "
+                  slot="reference"
+                  :src="
+                    scope.row.drivingLicense +
+                      '?x-oss-process=image/resize,h_36,w_48'
+                  "
+                  width="48"
+                  height="36"
+                />
+                <span v-else>
+                  <div min-width="48" height="36"></div>
+                </span>
+              </el-popover>
             </div>
           </template>
         </el-table-column>
@@ -430,15 +450,18 @@ export default {
         this.$confirm("请选择以上批量审核操作", "提示", {
           confirmButtonText: "批量通过",
           cancelButtonText: "批量不通过",
+          distinguishCancelAndClose: true,
           type: "warning",
           center: true
         })
           .then(() => {
             this.toPass(arr);
           })
-          .catch(() => {
-            this.dialogFormVisible = true;
-            this.ids = arr;
+          .catch(action => {
+            if (action === "cancel") {
+              this.dialogFormVisible = true;
+              this.ids = arr;
+            }
           });
       } else {
         this.$message({
@@ -544,7 +567,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.parkingManagement_page {
+.commit_page {
   position: relative;
 }
 .content_box {

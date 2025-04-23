@@ -1,5 +1,6 @@
 <template>
-  <div class="parkingManagement_page">
+  <div class="commit_page">
+    <div class="totalMoney_box">充值统计：{{ totalMoney }}元</div>
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">用户ID</div>
@@ -127,6 +128,7 @@ export default {
   components: {},
   data() {
     return {
+      totalMoney: null,
       listQuery: {
         pageNum: 1,
         pageSize: 10,
@@ -219,7 +221,8 @@ export default {
       let para = this.listQuery;
       rechargeList(para)
         .then(response => {
-          this.list = response.rows;
+          this.list = response.data.list;
+          this.totalMoney = response.data.totalMoney;
           if (response.total > 0) {
             this.listQuery.total = response.total; // 数据总条数
           } else {
@@ -287,7 +290,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.parkingManagement_page {
+.commit_page {
   position: relative;
 }
 .content_box {

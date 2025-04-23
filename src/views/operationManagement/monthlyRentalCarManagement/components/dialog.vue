@@ -42,16 +42,87 @@
               </el-form-item>
             </span>
             <span class="base_dialog_condit">
+              <el-form-item label="用户类型：" prop="name">
+                <span class="base_dialog_condit_text">
+                  {{ newList.userType == 1 ? "普通用户" : "企业员工" }}
+                </span>
+              </el-form-item>
+            </span>
+            <span class="base_dialog_condit">
               <el-form-item label="车主身份证：" prop="idcard">
                 <span class="base_dialog_condit_text">
                   {{ newList.idcard }}
                 </span>
               </el-form-item>
             </span>
+            <span class="base_dialog_condit" v-if="newList.verify != 1">
+              <el-form-item label="行驶证：" prop="idcard">
+                <span class="base_dialog_condit_text">
+                  <el-popover placement="top-start" width="500" trigger="click">
+                    <img
+                      :src="
+                        newList.drivingLicense
+                          ? newList.drivingLicense
+                          : newList.drivingLicense
+                      "
+                      width="100%"
+                    />
+                    <img
+                      v-if="
+                        newList.drivingLicense !== '' &&
+                          newList.drivingLicense !== null
+                      "
+                      slot="reference"
+                      :src="
+                        newList.drivingLicense +
+                          '?x-oss-process=image/resize,h_36,w_48'
+                      "
+                      width="48"
+                      height="36"
+                    />
+                    <span v-else>
+                      <div min-width="48" height="36"></div>
+                    </span>
+                  </el-popover>
+                </span>
+              </el-form-item>
+            </span>
+            <span class="base_dialog_condit" v-if="newList.verify != 1">
+              <el-form-item label="企业盖章申请：" prop="idcard">
+                <span class="base_dialog_condit_text">
+                  <el-popover placement="top-start" width="500" trigger="click">
+                    <img
+                      :src="
+                        newList.enterpriseSeal
+                          ? newList.enterpriseSeal
+                          : newList.enterpriseSeal
+                      "
+                      width="100%"
+                    />
+                    <img
+                      v-if="
+                        newList.enterpriseSeal !== '' &&
+                          newList.enterpriseSeal !== null
+                      "
+                      slot="reference"
+                      :src="
+                        newList.enterpriseSeal +
+                          '?x-oss-process=image/resize,h_36,w_48'
+                      "
+                      width="48"
+                      height="36"
+                    />
+                    <span v-else>
+                      <div min-width="48" height="36"></div>
+                    </span>
+                  </el-popover>
+                </span>
+              </el-form-item>
+            </span>
             <span class="base_dialog_condit">
               <el-form-item label="停车场名称：" prop="idcard">
                 <span class="base_dialog_condit_text">
-                  {{ newList.park }}
+                  {{ newList.parkName ? newList.parkName : newList.park }}
                 </span>
               </el-form-item>
             </span>
@@ -62,64 +133,158 @@
                 </span>
               </el-form-item>
             </span>
-            <span class="base_dialog_condit">
-              <el-form-item label="状态：" prop="auditType">
-                <span class="content">
-                  <span
-                    class="errLine_ball"
-                    v-show="newList.status == 0"
-                  ></span>
-                  <span v-show="newList.status == 0" class="errLine">
-                    已禁用</span
-                  >
-                  <span
-                    class="offLine_ball"
-                    v-show="newList.status == -1"
-                  ></span>
-                  <span v-show="newList.status == -1" class="offLine">
-                    已过期</span
-                  >
-                  <span class="onLine_ball" v-show="newList.status == 1"></span>
-                  <span v-show="newList.status == 1" class="onLine">
-                    使用中</span
-                  >
-                  <span
-                    class="offLine_ball"
-                    v-show="newList.status == 2"
-                  ></span>
-                  <span v-show="newList.status == 2" class="offLine">
-                    未开始</span
-                  >
-                  <span
-                    class="offLine_ball"
-                    v-show="newList.status == 3"
-                  ></span>
-                  <span v-show="newList.status == 3" class="offLine">
-                    未开始</span
-                  >
-                  <span v-show="newList.status == 3" class="errLine">
-                    (已禁用)</span
-                  >
+            <span class="base_dialog_condit" v-if="newList.verify != 1">
+              <el-form-item label="申请时间：" prop="idcard">
+                <span class="base_dialog_condit_text">
+                  {{ newList.createTime }}
                 </span>
               </el-form-item>
             </span>
-            <span class="base_dialog_condit">
+            <span class="base_dialog_condit" v-if="newList.verify != 0">
+              <el-form-item label="审核时间：" prop="idcard">
+                <span class="base_dialog_condit_text">
+                  {{ newList.passTime }}
+                </span>
+              </el-form-item>
+            </span>
+            <span class="base_dialog_condit" v-if="newList.verify == 1">
               <el-form-item label="支付时间：" prop="idcard">
                 <span class="base_dialog_condit_text">
                   {{ newList.payTime }}
                 </span>
               </el-form-item>
             </span>
+            <span class="base_dialog_condit" v-if="newList.verify == -1">
+              <el-form-item label="不通过原因：" prop="idcard">
+                <span class="base_dialog_condit_text">
+                  {{ newList.reason }}
+                </span>
+              </el-form-item>
+            </span>
+
+            <span class="base_dialog_condit">
+              <el-form-item label="状态：" prop="auditType">
+                <span class="content">
+                  <span v-show="newList.verify == 0" class="offLine">
+                    待审核</span
+                  >
+                  <span v-show="newList.verify == -1" class="offLine">
+                    不通过</span
+                  >
+                  <span v-show="newList.verify == 1">
+                    <span
+                      class="errLine_ball"
+                      v-show="newList.status == 0"
+                    ></span>
+                    <span v-show="newList.status == 0" class="errLine">
+                      已禁用</span
+                    >
+                    <span
+                      class="offLine_ball"
+                      v-show="newList.status == -1"
+                    ></span>
+                    <span v-show="newList.status == -1" class="offLine">
+                      已过期</span
+                    >
+                    <span
+                      class="onLine_ball"
+                      v-show="newList.status == 1"
+                    ></span>
+                    <span v-show="newList.status == 1" class="onLine">
+                      使用中</span
+                    >
+                    <span
+                      class="offLine_ball"
+                      v-show="newList.status == 2"
+                    ></span>
+                    <span v-show="newList.status == 2" class="offLine">
+                      未开始</span
+                    >
+                    <span
+                      class="offLine_ball"
+                      v-show="newList.status == -2"
+                    ></span>
+                    <span v-show="newList.status == -2" class="offLine">
+                      未支付</span
+                    >
+                    <span
+                      class="blueLine_ball"
+                      v-show="newList.status == 4"
+                    ></span>
+                    <span v-show="newList.status == 4" class="blueLine">
+                      待支付</span
+                    >
+                    <span
+                      class="offLine_ball"
+                      v-show="newList.status == 3"
+                    ></span>
+                    <span v-show="newList.status == 3" class="offLine">
+                      未开始</span
+                    >
+                    <span v-show="newList.status == 3" class="errLine">
+                      (已禁用)</span
+                    >
+                  </span>
+                </span>
+              </el-form-item>
+            </span>
           </div>
         </div>
       </el-form>
+      <div class="base_dialog_main_btnBox" v-if="pageType == 2">
+        <el-button type="info" icon="el-icon-circle-plus" @click="toPass"
+          >通过</el-button
+        ><el-button type="danger" icon="el-icon-error" @click="tonoPass"
+          >不通过</el-button
+        >
+      </div>
     </div>
+    <el-dialog
+      :visible.sync="dialogFormVisible"
+      width="700px"
+      title="不通过原因"
+      center
+      class="dialog_vehicle"
+      :modal="false"
+    >
+      <div class="base_dialog_main_content">
+        <el-form :model="newList" ref="userForm">
+          <div class="base_dialog_main_content">
+            <div class="base_dialog_main_left" style="padding:20px 80px">
+              <span class="base_dialog_condit2" style="">
+                <el-form-item label="不通过原因描述" prop="reason">
+                  <el-input
+                    v-model="newList.reason"
+                    placeholder="请输入"
+                    type="textarea"
+                    :rows="3"
+                    style="width: 72%"
+                    class="filter-item"
+                    maxlength="200"
+                    show-word-limit
+                    size="small"
+                  />
+                </el-form-item>
+              </span>
+            </div>
+          </div>
+        </el-form>
+        <div class="base_dialog_main_btnBox" style="padding:0px 240px 30px">
+          <el-button type="info" icon="el-icon-circle-plus" @click="noPass"
+            >保存</el-button
+          ><el-button type="danger" icon="el-icon-error" @click="closeDialog2"
+            >取消</el-button
+          >
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import {
-  vehiclesGetInfo //月租车辆详情
+  vehiclesGetInfo, //月租车辆详情
+  vehiclesToExamine //月租车辆审核/批量审核
 } from "@/api/operationManagement";
 
 export default {
@@ -140,7 +305,8 @@ export default {
         payTime: "", //支付时间
         beginTime: "", //长租开始时间
         dueTime: "" //长租结束时间
-      } //详情
+      }, //详情
+      dialogFormVisible: false //不同意弹窗
     };
   },
   created() {},
@@ -149,12 +315,124 @@ export default {
     showDialog(id, type) {
       this.isShow = true;
       this.pageType = type;
+      if (type == 1) {
+        this.title = "详情";
+      } else {
+        this.title = "审核";
+      }
       this.getDetials(id);
+    },
+
+    //通过
+    toPass() {
+      // if (this.newList.auditType == 1) {
+      this.passNext();
+      // } else {
+      //   this.$confirm(
+      //     "申诉通过后，" +
+      //       this.newList.vehicle +
+      //       " 该车辆与原 " +
+      //       this.phone +
+      //       " 用户自动解绑，并绑定至申诉用户 " +
+      //       this.newList.phone +
+      //       "  名下。是否确认通过该申诉？",
+      //     "提示",
+      //     {
+      //       confirmButtonText: "确定",
+      //       cancelButtonText: "取消",
+      //       type: "warning",
+      //       center: true
+      //     }
+      //   )
+      //     .then(() => {
+      //       this.passNext();
+      //     })
+      //     .catch(() => {});
+      // }
+    },
+    //通过
+    passNext() {
+      this.isShow = false;
+      let arr = [];
+      arr.push(this.newList.id);
+      let para = {
+        ids: arr,
+        verify: 1,
+        reason: ""
+      };
+      vehiclesToExamine(para).then(response => {
+        if (response.code == "200") {
+          this.$message({
+            type: "success",
+            message: "审核成功"
+          });
+          this.$emit("openLoading", {});
+          this.$emit("getList", {});
+        } else {
+          this.$message({
+            type: "warning",
+            message: "审核失败"
+          });
+        }
+      });
+    },
+    //开启不通过弹窗
+    tonoPass() {
+      this.dialogFormVisible = true;
+    },
+    //不通过
+    noPass() {
+      this.$refs["userForm"].validate(valid => {
+        if (valid) {
+          let arr = [];
+          arr.push(this.newList.id);
+
+          let para = {
+            ids: arr,
+            verify: -1,
+            reason: this.newList.reason
+          };
+
+          vehiclesToExamine(para)
+            .then(response => {
+              if (response.code == "200") {
+                this.dialogFormVisible = false;
+                this.isShow = false;
+                this.$emit("openLoading", {});
+                this.$emit("getList", {});
+                this.$message({
+                  type: "success",
+                  message: "审核成功"
+                });
+              } else {
+                this.$message({
+                  type: "warning",
+                  message: "审核失败"
+                });
+              }
+            })
+            .catch(() => {
+              this.$message({
+                type: "warning",
+                message: "审核失败"
+              });
+            });
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
     },
 
     //关闭弹窗
     closeDialog() {
       this.isShow = false;
+    },
+    //关闭新增/编辑设备弹窗
+    closeDialog2() {
+      this.dialogFormVisible = false;
+      this.openLoading();
+      this.getList();
     },
 
     //获取详情
@@ -168,7 +446,14 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.base_dialog_condit {
+  display: block;
+  height: 40px;
+  width: 100%;
+  overflow: hidden;
+}
+</style>
 <style lang="scss">
 .dialog_vehicle {
   .el-dialog__headerbtn {

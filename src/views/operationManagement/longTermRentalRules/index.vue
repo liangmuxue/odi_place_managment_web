@@ -1,11 +1,11 @@
 <template>
-  <div class="parkingManagement_page">
+  <div class="commit_page">
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">规则名称</div>
         <el-input v-model="listQuery.ruleName" placeholder="请输入"> </el-input>
       </span>
-      <span class="search_content">
+      <!-- <span class="search_content">
         <div class="search_content_title">停车场</div>
         <el-input v-model="listQuery.parkName" placeholder="请输入"> </el-input>
       </span>
@@ -42,7 +42,7 @@
             :value="item.enumValue"
           />
         </el-select>
-      </span>
+      </span> -->
       <span class="search_content2">
         <div class="search_content_title">创建时间</div>
         <el-date-picker
@@ -82,10 +82,10 @@
     </div>
     <div class="btn_box">
       <el-button type="info" icon="el-icon-circle-plus-outline" @click="toAdd"
-        >添加</el-button
+        >新增</el-button
       >
       <!-- v-has="{ red: 'addBox', type: 1 }" -->
-      <el-button type="danger" icon="el-icon-circle-plus-outline" @click="toDel"
+      <el-button type="danger" icon="el-icon-circle-close" @click="toDel"
         >删除</el-button
       >
       <!-- v-has="{ red: 'deleteBox', type: 1 }" -->
@@ -113,7 +113,7 @@
             <span class="content">{{ scope.row.ruleName }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="购买单位" align="center" show-overflow-tooltip>
+        <!-- <el-table-column label="购买单位" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="content">{{ scope.row.buyUnitName }}</span>
           </template>
@@ -149,7 +149,7 @@
               scope.row.ruleParkingDirectionName
             }}</span>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column label="创建时间" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="content">{{
@@ -157,7 +157,57 @@
             }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="使用状态" align="center" show-overflow-tooltip>
+        <el-table-column
+          label="是否区分(非)入驻企业员工计费"
+          align="center"
+          width="240"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">{{
+              scope.row.isWorker == 1 ? "是" : "否"
+            }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="是否区分大中小型车计费"
+          align="center"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">{{
+              scope.row.isVehicleType == 1 ? "是" : "否"
+            }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="是否区分地上地下计费"
+          align="center"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">{{
+              scope.row.isGround == 1 ? "是" : "否"
+            }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="长租截止时间"
+          align="center"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">{{
+              scope.row.leaseEndTime | parseTime("{y}-{m}-{d} {h}:{i}:{s}")
+            }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="使用状态"
+          align="center"
+          width="100"
+          show-overflow-tooltip
+        >
           <template slot-scope="scope">
             <span class="content">{{
               scope.row.status == 1 ? "使用中" : "未使用"
@@ -365,12 +415,17 @@ export default {
 
     //批量删除
     toDel() {
-      let arr = [];
-      this.selGateway.forEach(el => {
-        arr.push(el.id);
-      });
       if (this.selGateway.length > 0) {
-        this.$confirm("确认批量删除长租规则吗?", "提示", {
+        let arr = [];
+        this.selGateway.forEach(el => {
+          arr.push(el.id);
+        });
+        let text = "确认批量删除长租规则吗?";
+        if (this.selGateway.length == 1) {
+          text = "确认删除该长租规则吗?";
+        }
+
+        this.$confirm(text, "提示", {
           type: "warning"
         }).then(() => {
           let para = {
@@ -395,7 +450,7 @@ export default {
       } else {
         this.$message({
           type: "warning",
-          message: "请选择删除的泊位"
+          message: "请选择删除的长租规则"
         });
       }
     },
@@ -430,7 +485,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.parkingManagement_page {
+.commit_page {
   position: relative;
 }
 .content_box {

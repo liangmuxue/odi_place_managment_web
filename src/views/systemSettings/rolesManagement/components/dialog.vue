@@ -21,7 +21,7 @@
                 <el-input
                   v-else
                   v-model="newList.roleName"
-                  placeholder="输入停用户名"
+                  placeholder="输入角色名"
                   style="width: 72%"
                   class="filter-item"
                   size="small"
@@ -138,13 +138,13 @@ export default {
         roleName: [
           { required: true, message: "请输入角色名", trigger: "blur" },
           {
-            pattern: /[\u4E00-\u9FA5a-zA-Z0-9_\-]{1,10}$/,
+            pattern: /^[\u4E00-\u9FA5a-zA-Z0-9_\-]{1,10}$/,
             message: "请输入10以内字符，且不含特殊字符",
             trigger: "blur"
           },
           {
             required: true,
-            message: "用户名已存在",
+            message: "角色名已存在",
             trigger: "blur",
             validator: validateRoleName
           }
@@ -182,7 +182,7 @@ export default {
       if (!value) return true;
       return data.resCanme.indexOf(value) !== -1;
     },
-    //打开注册、编辑用户弹窗
+    //打开注册、编辑角色弹窗
     showDialog(e, pageType) {
       this.isShow = true;
       this.pageType = pageType;
@@ -213,6 +213,8 @@ export default {
           resourceIdList: "", //资源id列表
           roleId: "" //角色ID
         };
+        this.editroleName = null;
+
         if (this.$refs["roleForm"]) {
           this.$nextTick(() => {
             this.$refs["roleForm"].clearValidate();
@@ -226,7 +228,7 @@ export default {
       roleDetail(para).then(response => {
         this.newList = response.data;
         this.editroleName = response.data.roleName;
-        this.validateRoleName = response.data.roleId;
+        // this.validateRoleName = response.data.roleId;
         let list = this.getResourceList(response.data.resourceList);
         this.$set(this.newList, "resourceIdList", list.toString());
         this.$refs.tree.setCheckedKeys(list);
@@ -240,7 +242,7 @@ export default {
       });
       return list;
     },
-    //关闭新增/编辑用户弹窗
+    //关闭新增/编辑角色弹窗
     closeDialog() {
       this.isShow = false;
       this.$emit("openLoading", {});
@@ -256,7 +258,7 @@ export default {
         this.toEidt();
       }
     },
-    //添加用户
+    //添加角色
     toAdd() {
       this.$refs["roleForm"].validate(valid => {
         if (valid) {

@@ -36,7 +36,24 @@
             </span>
             <span class="base_dialog_condit">
               <el-form-item label="头像：" prop="avatar">
-                <img :src="newList.avatar" width="36" height="48" />
+                <el-popover placement="top-start" width="500" trigger="click">
+                  <img
+                    :src="newList.avatar ? newList.avatar : newList.avatar"
+                    width="100%"
+                  />
+                  <img
+                    v-if="newList.avatar !== '' && newList.avatar !== null"
+                    slot="reference"
+                    :src="
+                      newList.avatar + '?x-oss-process=image/resize,h_36,w_48'
+                    "
+                    width="48"
+                    height="36"
+                  />
+                  <span v-else>
+                    <div min-width="48" height="36"></div>
+                  </span>
+                </el-popover>
               </el-form-item>
             </span>
             <span class="base_dialog_condit">

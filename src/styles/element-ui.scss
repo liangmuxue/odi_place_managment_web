@@ -26,7 +26,7 @@
 
 .noSidebar.is-fullscreen {
   top: 100px !important;
-  left: 200px !important;
+  left: 0px !important;
 }
 
 .sidebarHide.is-fullscreen {
@@ -412,6 +412,81 @@
 
       tr {
         height: 50px;
+
+        td {
+          font-size: 14px;
+        }
+
+
+      }
+    }
+  }
+}
+
+
+
+
+.homePage .el-table {
+  border: transparent 1px solid;
+
+  .greenText .cell {
+    color: #037659 !important;
+    font-weight: bold !important;
+  }
+
+  .el-table__header-wrapper {
+
+    .el-table__header {
+
+      .has-gutter {
+
+        background: $menuHover;
+
+        tr {
+          height: 40px;
+          border-bottom: $menuBg 1px solid;
+          background: $menuHover;
+
+          th {
+            font-size: 14px;
+            color: $menuActiveText;
+            background: $menuHover;
+
+          }
+        }
+
+      }
+    }
+  }
+
+  .el-table__body-wrapper {
+    background: #f3f9f7;
+
+    .el-table__body {
+      background: #f3f9f7;
+
+      .el-table__row {
+        background: #f3f9f7;
+      }
+
+      .current-row {
+        background: #f3f9f7 !important;
+      }
+
+      .current-row.el-table__row--striped td {
+        background: #f3f9f7 !important;
+      }
+
+      .current-row td {
+        background: transparent !important;
+      }
+
+      .el-table__row:hover td {
+        background: $menuHover !important;
+      }
+
+      tr {
+        height: 40px;
 
         td {
           font-size: 14px;

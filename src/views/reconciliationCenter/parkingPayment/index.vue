@@ -1,6 +1,6 @@
 <template>
-  <div class="parkingManagement_page">
-    <div class="totalMoney_box">收款统计：{{ totalMoney }}元</div>
+  <div class="commit_page">
+    <div class="totalMoney_box">临停实收统计：{{ totalMoney }}元</div>
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">订单号</div>
@@ -8,7 +8,7 @@
       </span>
       <span class="search_content">
         <div class="search_content_title">停车场</div>
-        <el-input v-model="listQuery.park" placeholder="请输入"> </el-input>
+        <el-input v-model="listQuery.parkName" placeholder="请输入"> </el-input>
       </span>
       <span class="search_content">
         <div class="search_content_title">车牌号</div>
@@ -113,11 +113,11 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.park }}</span>
+            <span class="content">{{ scope.row.parkName }}</span>
           </template>
         </el-table-column>
         <el-table-column
-          label="入场时间"
+          label="计费开始时间"
           align="center"
           min-width="120px"
           show-overflow-tooltip
@@ -127,7 +127,7 @@
           >
         </el-table-column>
         <el-table-column
-          label="出场时间"
+          label="计费截止时间"
           align="center"
           min-width="120px"
           show-overflow-tooltip
@@ -158,7 +158,7 @@
         </el-table-column>
         <el-table-column label="优惠" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.discount * 10 }}折</span>
+            <span class="content">{{ scope.row.discountName || "无" }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -173,7 +173,7 @@
         <el-table-column label="支付方式" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="content">{{
-              scope.row.payType == 1 ? "微信" : "银联"
+              scope.row.payType == 1 ? "微信" : "钱包余额"
             }}</span>
           </template>
         </el-table-column>
@@ -193,9 +193,16 @@
           <template slot-scope="scope">
             <span
               class="operation_button update_btn"
+              v-if="scope.row.status == 2"
               @click="openRefund(scope.row.id)"
             >
               退款
+            </span>
+            <span
+              class="operation_button update_btn2"
+              v-if="scope.row.status == -1"
+            >
+              已退款
             </span>
             <!-- v-has="{ red: 'editBox', type: 1 }" -->
           </template>
@@ -215,7 +222,7 @@
     <el-dialog
       :visible.sync="dialogFormVisible"
       width="700px"
-      title="不通过原因"
+      title="退款原因"
       center
       class="dialog_vehicle"
     >
@@ -224,9 +231,9 @@
           <div class="base_dialog_main_content">
             <div class="base_dialog_main_left" style="padding:20px 80px">
               <span class="base_dialog_condit">
-                <el-form-item label="退款原因" prop="reason">
+                <el-form-item label="退款原因" prop="refundReason">
                   <el-input
-                    v-model="newList.reason"
+                    v-model="newList.refundReason"
                     placeholder="请输入"
                     type="textarea"
                     :rows="3"
@@ -256,7 +263,8 @@
 <script>
 import {
   orderPageList, //停车缴费分页
-  orderExport // 停车缴费导出
+  orderExport, // 停车缴费导出
+  orderRefund // 停车缴费退款
 } from "@/api/reconciliationCenter";
 import { fieldTable } from "@/api/common";
 
@@ -270,22 +278,25 @@ export default {
         pageSize: 10,
         total: 0,
         orderNum: "", //订单号
-        park: "", //停车场
+        parkName: "", //停车场
         vehicle: "", //车牌号
         startTime: "", //开始时间
         endTime: "", //结束时间
         invoice: null, //是否开票
-        payType: null //支付方式
+        payType: null, //支付方式
+        orderType: 1 //临停传1  长租传2
       },
-      newList: { id: null, reason: "" },
+      newList: { id: null, refundReason: "" },
       rules: {
-        reason: [{ required: true, message: "请输入退款原因", trigger: "blur" }]
+        refundReason: [
+          { required: true, message: "请输入退款原因", trigger: "blur" }
+        ]
       },
       dialogFormVisible: false,
       totalMoney: null, //收款统计
       typeList: [
         { enumName: "微信", enumValue: 1 },
-        { enumName: "银联", enumValue: 2 }
+        { enumName: "钱包余额", enumValue: 2 }
       ],
       invoiceList: [
         { enumName: "是", enumValue: 1 },
@@ -339,12 +350,13 @@ export default {
         pageSize: 10,
         total: 0,
         orderNum: "", //订单号
-        park: "", //停车场
+        parkName: "", //停车场
         vehicle: "", //车牌号
         startTime: "", //开始时间
         endTime: "", //结束时间
         invoice: null, //是否开票
-        payType: null //支付方式
+        payType: null, //支付方式
+        orderType: 1 //临停传1  长租传2
       };
       this.time = [];
       this.openLoading();
@@ -377,10 +389,10 @@ export default {
         .then(response => {
           this.list = response.data.list;
           this.totalMoney = response.data.totalMoney;
-          if (response.total > 0) {
+          if (response.data.total > 0) {
             this.listQuery.total = response.data.total; // 数据总条数
           } else {
-            this.listQuery.pageSize = 40; //每页数量
+            this.listQuery.pageSize = 10; //每页数量
             this.listQuery.total = 0; // 数据总条数
             this.listQuery.pageNum = 1; // 当前页
           }
@@ -409,7 +421,8 @@ export default {
         parkName: this.listQuery.parkName,
         startTime: this.listQuery.startTime,
         endTime: this.listQuery.endTime,
-        type: this.listQuery.type
+        type: this.listQuery.type,
+        orderType: 1
       };
       orderExport(para).then(res => {
         var content = res.data;
@@ -439,21 +452,22 @@ export default {
       })
         .then(() => {
           let para = this.newList;
-          // vehiclesUpdate(para).then(response => {
-          //   if (response.code == "200") {
-          //     this.$message({
-          //       type: "success",
-          //       message: "操作成功"
-          //     });
-          //     this.openLoading();
-          //     this.getList();
-          //   } else {
-          //     this.$message({
-          //       type: "warning",
-          //       message: "操作失败"
-          //     });
-          //   }
-          // });
+          orderRefund(para).then(response => {
+            if (response.code == "200") {
+              this.$message({
+                type: "success",
+                message: "退款成功"
+              });
+              this.dialogFormVisible = false;
+              this.openLoading();
+              this.getList();
+            } else {
+              this.$message({
+                type: "warning",
+                message: "退款失败"
+              });
+            }
+          });
         })
         .catch(() => {});
     },
@@ -478,7 +492,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.parkingManagement_page {
+.update_btn2 {
+  color: #999;
+}
+.commit_page {
   position: relative;
 }
 .content_box {

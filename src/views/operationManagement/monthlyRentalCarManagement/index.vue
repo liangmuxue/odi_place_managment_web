@@ -1,9 +1,9 @@
 <template>
-  <div class="parkingManagement_page">
+  <div class="commit_page">
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">停车场</div>
-        <el-input v-model="listQuery.park" placeholder="请输入"> </el-input>
+        <el-input v-model="listQuery.parkName" placeholder="请输入"> </el-input>
       </span>
       <span class="search_content">
         <div class="search_content_title">车牌号</div>
@@ -13,7 +13,24 @@
         <div class="search_content_title">车主姓名</div>
         <el-input v-model="listQuery.name" placeholder="请输入"> </el-input>
       </span>
-      <span class="search_content">
+      <span class="search_content" v-if="listQuery.verify < 1">
+        <div class="search_content_title">用户类型</div>
+        <el-select
+          v-model="listQuery.userType"
+          placeholder="请选择"
+          clearable
+          class="filter-item"
+          style="width: 72%"
+        >
+          <el-option
+            v-for="item in userTypes"
+            :key="item.enumValue"
+            :label="item.enumName"
+            :value="item.enumValue"
+          />
+        </el-select>
+      </span>
+      <span class="search_content" v-if="listQuery.verify > 0">
         <div class="search_content_title">状态</div>
         <el-select
           v-model="listQuery.status"
@@ -32,7 +49,10 @@
       </span>
 
       <span class="search_content2">
-        <div class="search_content_title">长租时间</div>
+        <div class="search_content_title" v-if="listQuery.verify > 0">
+          长租时间
+        </div>
+        <div class="search_content_title" v-else>申请时间</div>
         <el-date-picker
           style="width: 72%"
           v-model="time"
@@ -52,7 +72,17 @@
       >
     </div>
     <div class="btn_box">
-      <el-dropdown @command="toStartStop">
+      <el-radio-group
+        v-model="listQuery.verify"
+        @input="chengeVSerify"
+        style="margin-right:10px"
+      >
+        <el-radio-button :label="0">待审核</el-radio-button>
+        <el-radio-button :label="1">审核通过</el-radio-button>
+        <el-radio-button :label="-1">不通过</el-radio-button>
+      </el-radio-group>
+
+      <el-dropdown @command="toStartStop" v-if="listQuery.verify == 1">
         <el-button type="primary">
           批量启停<i class="el-icon-arrow-down el-icon--right"></i>
         </el-button>
@@ -61,6 +91,14 @@
           <el-dropdown-item :command="0">批量禁用</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
+
+      <el-button
+        type="primary"
+        icon="el-icon-s-check"
+        @click="toAudits"
+        v-if="listQuery.verify == 0"
+        >批量审核</el-button
+      >
 
       <!-- v-has="{ red: 'deleteBox', type: 1 }" -->
     </div>
@@ -78,6 +116,7 @@
         <el-table-column
           type="selection"
           width="34"
+          :key="0"
           :selectable="selectable"
         ></el-table-column>
 
@@ -86,30 +125,64 @@
           type="index"
           min-width="60px"
           align="center"
+          :key="1"
         ></el-table-column>
-        <el-table-column label="车牌号" align="center" show-overflow-tooltip>
+        <el-table-column
+          label="车牌号"
+          align="center"
+          :key="2"
+          show-overflow-tooltip
+        >
           <template slot-scope="scope">
             <span class="content">{{ scope.row.vehicle }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="车辆类型" align="center" show-overflow-tooltip>
+        <el-table-column
+          label="车辆类型"
+          align="center"
+          :key="3"
+          show-overflow-tooltip
+        >
           <template slot-scope="scope">
             <span class="content">{{ scope.row.vehicleType }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="车主手机" align="center" show-overflow-tooltip>
+        <el-table-column
+          label="车主手机"
+          align="center"
+          :key="4"
+          show-overflow-tooltip
+        >
           <template slot-scope="scope">
             <span class="content">{{ scope.row.phone }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="车主姓名" align="center" show-overflow-tooltip>
+        <el-table-column
+          label="车主姓名"
+          align="center"
+          :key="5"
+          show-overflow-tooltip
+        >
           <template slot-scope="scope">
             <span class="content">{{ scope.row.name }}</span>
           </template>
         </el-table-column>
         <el-table-column
+          label="用户类型"
+          align="center"
+          :key="6"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">{{
+              scope.row.userType == 1 ? "普通用户" : "企业员工"
+            }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
           label="车主身份证"
           align="center"
+          :key="7"
           min-width="110px"
           show-overflow-tooltip
         >
@@ -118,18 +191,98 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="停车场名称"
+          label="车辆行驶证"
           align="center"
+          :key="8"
+          min-width="110px"
+          v-if="listQuery.verify < 1"
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.park }}</span>
+            <div class="content">
+              <el-popover placement="top-start" width="500" trigger="click">
+                <img
+                  :src="
+                    scope.row.drivingLicense
+                      ? scope.row.drivingLicense
+                      : scope.row.drivingLicense
+                  "
+                  width="100%"
+                />
+                <img
+                  v-if="
+                    scope.row.drivingLicense !== '' &&
+                      scope.row.drivingLicense !== null
+                  "
+                  slot="reference"
+                  :src="
+                    scope.row.drivingLicense +
+                      '?x-oss-process=image/resize,h_36,w_48'
+                  "
+                  width="48"
+                  height="36"
+                />
+                <span v-else>
+                  <div min-width="48" height="36"></div>
+                </span>
+              </el-popover>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="企业盖章申请"
+          align="center"
+          :key="9"
+          v-if="listQuery.verify < 1"
+          min-width="110px"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <div class="content">
+              <el-popover placement="top-start" width="500" trigger="click">
+                <img
+                  :src="
+                    scope.row.enterpriseSeal
+                      ? scope.row.enterpriseSeal
+                      : scope.row.enterpriseSeal
+                  "
+                  width="100%"
+                />
+                <img
+                  v-if="
+                    scope.row.enterpriseSeal !== '' &&
+                      scope.row.enterpriseSeal !== null
+                  "
+                  slot="reference"
+                  :src="
+                    scope.row.enterpriseSeal +
+                      '?x-oss-process=image/resize,h_36,w_48'
+                  "
+                  width="48"
+                  height="36"
+                />
+                <span v-else>
+                  <div min-width="48" height="36"></div>
+                </span>
+              </el-popover>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="停车场名称"
+          align="center"
+          :key="10"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">{{ scope.row.parkName }}</span>
           </template>
         </el-table-column>
         <el-table-column
           label="长租时间"
           align="center"
-          min-width="220px"
+          :key="11"
+          min-width="120px"
           show-overflow-tooltip
         >
           <template slot-scope="scope">
@@ -140,41 +293,105 @@
         </el-table-column>
 
         <el-table-column
+          label="审核时间"
+          align="center"
+          :key="12"
+          min-width="120px"
+          v-if="listQuery.verify == 1"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">{{ scope.row.passTime }} </span>
+          </template>
+        </el-table-column>
+
+        <el-table-column
           label="状态"
           align="center"
+          :key="13"
           min-width="100px"
           show-overflow-tooltip
         >
           <template slot-scope="scope">
             <span class="content">
-              <span class="errLine_ball" v-show="scope.row.status == 0"></span>
-              <span v-show="scope.row.status == 0" class="errLine">
-                已禁用</span
+              <span v-show="listQuery.verify == 0" class="offLine">
+                待审核</span
               >
-              <span class="offLine_ball" v-show="scope.row.status == -1"></span>
-              <span v-show="scope.row.status == -1" class="offLine">
-                已过期</span
+              <span v-show="listQuery.verify == -1" class="offLine">
+                不通过</span
               >
-              <span class="onLine_ball" v-show="scope.row.status == 1"></span>
-              <span v-show="scope.row.status == 1" class="onLine"> 使用中</span>
-              <span class="offLine_ball" v-show="scope.row.status == 2"></span>
-              <span v-show="scope.row.status == 2" class="offLine">
-                未开始</span
-              >
-              <span class="offLine_ball" v-show="scope.row.status == 3"></span>
-              <span v-show="scope.row.status == 3" class="offLine">
-                未开始</span
-              >
-              <span v-show="scope.row.status == 3" class="errLine">
-                (已禁用)</span
-              >
+              <span v-show="listQuery.verify == 1">
+                <span
+                  class="errLine_ball"
+                  v-show="scope.row.status == 0"
+                ></span>
+                <span v-show="scope.row.status == 0" class="errLine">
+                  已禁用</span
+                >
+                <span
+                  class="offLine_ball"
+                  v-show="scope.row.status == -1"
+                ></span>
+                <span v-show="scope.row.status == -1" class="offLine">
+                  已过期</span
+                >
+                <span class="onLine_ball" v-show="scope.row.status == 1"></span>
+                <span v-show="scope.row.status == 1" class="onLine">
+                  使用中</span
+                >
+                <span
+                  class="offLine_ball"
+                  v-show="scope.row.status == 2"
+                ></span>
+                <span v-show="scope.row.status == 2" class="offLine">
+                  未开始</span
+                >
+                <span
+                  class="offLine_ball"
+                  v-show="scope.row.status == -2"
+                ></span>
+                <span v-show="scope.row.status == -2" class="offLine">
+                  未支付</span
+                >
+                <span
+                  class="blueLine_ball"
+                  v-show="scope.row.status == 4"
+                ></span>
+                <span v-show="scope.row.status == 4" class="blueLine">
+                  待支付</span
+                >
+                <span
+                  class="offLine_ball"
+                  v-show="scope.row.status == 3"
+                ></span>
+                <span v-show="scope.row.status == 3" class="offLine">
+                  未开始</span
+                >
+                <span v-show="scope.row.status == 3" class="errLine">
+                  (已禁用)</span
+                >
+              </span>
             </span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="申请时间"
+          align="center"
+          :key="14"
+          min-width="110px"
+          v-if="listQuery.verify < 1"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">{{ scope.row.createTime }}</span>
           </template>
         </el-table-column>
         <el-table-column
           label="支付时间"
           align="center"
+          :key="15"
           min-width="110px"
+          v-if="listQuery.verify == 1"
           show-overflow-tooltip
         >
           <template slot-scope="scope">
@@ -182,10 +399,23 @@
           </template>
         </el-table-column>
         <el-table-column
+          label="不通过原因"
+          align="center"
+          :key="15"
+          min-width="110px"
+          v-if="listQuery.verify == -1"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">{{ scope.row.reason }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
           label="操作"
           align="center"
+          :key="16"
           header-align="center"
-          min-width="90px"
+          min-width="110px"
           class-name="small-padding fixed-width"
         >
           <template slot-scope="scope">
@@ -198,17 +428,27 @@
             <span
               class="operation_button update_btn"
               @click="toStartStop2(scope.row.id, 1)"
-              v-if="scope.row.status == 0"
+              v-show="listQuery.verify == 1"
+              v-if="scope.row.status == 0 || scope.row.status == 3"
             >
               启用
             </span>
             <span
               class="operation_button update_btn"
               @click="toStartStop2(scope.row.id, 0)"
-              v-if="scope.row.status > 0"
+              v-show="listQuery.verify == 1"
+              v-if="scope.row.status == 1 || scope.row.status == 2"
             >
               禁用
             </span>
+            <span
+              class="operation_button update_btn"
+              @click="toAudit(scope.row)"
+              v-if="listQuery.verify == 0"
+            >
+              审核
+            </span>
+
             <!-- v-has="{ red: 'editBox', type: 1 }" -->
           </template>
         </el-table-column>
@@ -225,12 +465,51 @@
       />
     </div>
     <Dialog ref="dialog" @getList="getList" @openLoading="openLoading"></Dialog>
+    <el-dialog
+      :visible.sync="dialogFormVisible"
+      width="700px"
+      title="不通过原因"
+      center
+      class="dialog_vehicle"
+    >
+      <div class="base_dialog_main_content">
+        <el-form :model="newList" :rules="rules" ref="userForm">
+          <div class="base_dialog_main_content">
+            <div class="base_dialog_main_left" style="padding:20px 80px">
+              <span class="base_dialog_condit">
+                <el-form-item label="不通过原因描述" prop="reason">
+                  <el-input
+                    v-model="newList.reason"
+                    placeholder="请输入"
+                    type="textarea"
+                    :rows="3"
+                    style="width: 72%"
+                    class="filter-item"
+                    maxlength="200"
+                    show-word-limit
+                    size="small"
+                  />
+                </el-form-item>
+              </span>
+            </div>
+          </div>
+        </el-form>
+        <div class="base_dialog_main_btnBox" style="padding:0px 240px 30px">
+          <el-button type="info" icon="el-icon-circle-plus" @click="noPass"
+            >保存</el-button
+          ><el-button type="danger" icon="el-icon-error" @click="closeDialog"
+            >取消</el-button
+          >
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import {
   vehiclesList, //月租车辆列表
+  vehiclesToExamine, //月租车辆审核/批量审核
   vehiclesUpdate //月租车辆启停/批量启停
 } from "@/api/operationManagement";
 import Dialog from "./components/dialog";
@@ -244,20 +523,35 @@ export default {
         pageNum: 1,
         pageSize: 10,
         total: 0,
-        park: "", //停车场
+        parkName: "", //停车场
         vehicle: "", //车牌号
         name: "", //车主姓名
-        status: null, //状态 1使用中 0禁用 -1过期  2未开始 3未开始封禁
+        verify: 0, //0待审核,1审核通过，-1不通过
+        status: null, //状态 0禁用 1使用中 -1过期  2未开始/已支付 3未开始封禁  4待支付 -2过期未支付
+        userType: null, //用户类型 1普通  2企业
         startTime: "", //开始时间
         endTime: "" //结束时间
       },
+      dialogFormVisible: false, //不同意弹窗
+      rules: {
+        reason: [
+          { required: true, message: "请输入不通过原因描述", trigger: "blur" }
+        ]
+      },
+      newList: { ids: [], status: null, reason: "" },
       ids: null,
       statusList: [
         { enumName: "使用中", enumValue: 1 },
         { enumName: "已禁用", enumValue: 0 },
         { enumName: "已过期", enumValue: -1 },
         { enumName: "未开始", enumValue: 2 },
-        { enumName: "未开始(已禁用)", enumValue: 3 }
+        { enumName: "未开始(已禁用)", enumValue: 3 },
+        { enumName: "待支付", enumValue: 4 },
+        { enumName: "未支付", enumValue: -2 }
+      ],
+      userTypes: [
+        { enumName: "普通用户", enumValue: 1 },
+        { enumName: "企业员工", enumValue: 2 }
       ],
       time: [],
       listLoading: false, //加载
@@ -291,6 +585,115 @@ export default {
     handleSelectionChange(val) {
       this.selGateway = val;
     },
+    //切换页面
+    chengeVSerify(e) {
+      if (e == 1) {
+        this.listQuery.userType = null;
+      } else {
+        this.listQuery.status = null;
+      }
+      this.listQuery.startTime = "";
+      this.listQuery.endTime = "";
+      this.time = [];
+      this.toSearchList();
+    },
+
+    //批量审核
+    toAudits() {
+      let arr = [];
+      this.selGateway.forEach(el => {
+        arr.push(el.id);
+      });
+      if (this.selGateway.length > 0) {
+        this.$confirm("请选择以上批量审核操作", "提示", {
+          confirmButtonText: "批量通过",
+          cancelButtonText: "批量不通过",
+          type: "warning",
+          center: true
+        })
+          .then(() => {
+            this.toPass(arr);
+          })
+          .catch(() => {
+            this.dialogFormVisible = true;
+            this.ids = arr;
+          });
+      } else {
+        this.$message({
+          type: "warning",
+          message: "请选择审核数据"
+        });
+      }
+    },
+    //关闭新增/编辑设备弹窗
+    closeDialog() {
+      this.dialogFormVisible = false;
+      this.openLoading();
+      this.getList();
+    },
+
+    //通过
+    toPass(arr) {
+      let para = {
+        ids: arr,
+        verify: 1,
+        reason: ""
+      };
+      vehiclesToExamine(para).then(response => {
+        if (response.code == "200") {
+          this.$message({
+            type: "success",
+            message: "审核成功"
+          });
+          this.openLoading();
+          this.getList();
+        } else {
+          this.$message({
+            type: "warning",
+            message: "审核失败"
+          });
+        }
+      });
+    },
+    //不通过
+    noPass() {
+      this.$refs["userForm"].validate(valid => {
+        if (valid) {
+          let para = {
+            ids: this.ids,
+            verify: -1,
+            reason: this.newList.reason
+          };
+
+          vehiclesToExamine(para)
+            .then(response => {
+              if (response.code == "200") {
+                this.dialogFormVisible = false;
+                this.openLoading();
+                this.getList();
+                this.$message({
+                  type: "success",
+                  message: "审核成功"
+                });
+              } else {
+                this.$message({
+                  type: "warning",
+                  message: "审核失败"
+                });
+              }
+            })
+            .catch(() => {
+              this.$message({
+                type: "warning",
+                message: "审核失败"
+              });
+            });
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
+    },
 
     //获取状态名称
     getStatusName(e) {
@@ -300,11 +703,15 @@ export default {
       } else if (e == 1) {
         name = "使用中";
       } else if (e == -1) {
-        name = "已过期";
+        name = "已到期";
       } else if (e == 2) {
         name = "未开始";
       } else if (e == 3) {
         name = "未开始(已禁用)";
+      } else if (e == 4) {
+        name = "待支付";
+      } else if (e == -2) {
+        name = "未支付";
       }
       return name;
     },
@@ -321,14 +728,16 @@ export default {
     },
     //重置查询条件
     resetList() {
+      let val = this.listQuery.verify;
       this.listQuery = {
         pageNum: 1,
         pageSize: 10,
         total: 0,
-        park: "", //停车场
+        parkName: "", //停车场
         vehicle: "", //车牌号
         name: "", //车主姓名
-        status: null, //状态 1使用中 0禁用 -1过期  2未开始 3未开始封禁
+        verify: val,
+        status: null, //状态 0禁用 1使用中 -1过期  2未开始/已支付 3未开始封禁  4待支付 -2过期未支付
         startTime: "", //开始时间
         endTime: "" //结束时间
       };
@@ -448,6 +857,12 @@ export default {
       let id = e.id;
       this.$refs.dialog.showDialog(id, 1);
     },
+    //审核
+    toAudit(e) {
+      let id = e.id;
+      this.$refs.dialog.showDialog(id, 2);
+    },
+
     //
     toStartStop2(id, e) {
       let arr = [];
@@ -490,7 +905,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.parkingManagement_page {
+.commit_page {
   position: relative;
 }
 .content_box {

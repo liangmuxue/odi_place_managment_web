@@ -1,5 +1,5 @@
 <template>
-  <div class="parkingManagement_page">
+  <div class="commit_page">
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">停车场</div>
@@ -42,10 +42,10 @@
     </div>
     <div class="btn_box">
       <el-button type="info" icon="el-icon-circle-plus-outline" @click="toAdd"
-        >添加</el-button
+        >新增</el-button
       >
       <!-- v-has="{ red: 'addBox', type: 1 }" -->
-      <el-button type="danger" icon="el-icon-circle-plus-outline" @click="toDel"
+      <el-button type="danger" icon="el-icon-circle-close" @click="toDel"
         >删除</el-button
       >
       <!-- v-has="{ red: 'deleteBox', type: 1 }" -->
@@ -75,7 +75,9 @@
         </el-table-column>
         <el-table-column label="停车场" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.parkingLot.name }}</span>
+            <span class="content">{{
+              scope.row.parkingLot ? scope.row.parkingLot.name : ""
+            }}</span>
           </template>
         </el-table-column>
         <el-table-column label="地磁编号" align="center" show-overflow-tooltip>
@@ -280,12 +282,17 @@ export default {
 
     //批量删除
     toDel() {
-      let arr = [];
-      this.selGateway.forEach(el => {
-        arr.push(el.id);
-      });
       if (this.selGateway.length > 0) {
-        this.$confirm("确认批量删除泊位吗?", "提示", {
+        let arr = [];
+        this.selGateway.forEach(el => {
+          arr.push(el.id);
+        });
+        let text = "确认批量删除泊位吗?";
+        if (this.selGateway.length == 1) {
+          text = "确认删除该泊位吗?";
+        }
+
+        this.$confirm(text, "提示", {
           type: "warning"
         }).then(() => {
           let para = {
@@ -345,7 +352,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.parkingManagement_page {
+.commit_page {
   position: relative;
 }
 .content_box {

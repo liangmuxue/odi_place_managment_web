@@ -42,6 +42,14 @@ export function gateUpdate(data) {
     data
   })
 }
+//字段重复校验
+export function gateCheckFive(data) {
+  return request({
+    url: '/system/gate/checkFive',
+    method: 'post',
+    data
+  })
+}
 //道闸日志分页
 export function logList(data) {
   return request({
@@ -59,5 +67,13 @@ export function logExport(data) {
     params: data,
     responseType: 'blob' // 表明返回服务器返回的数据类型
 
+  })
+}
+//远程开闸
+export function openGate(data) {
+  return request({
+    url: '/system/gate/openGate',
+    method: 'post',
+    data
   })
 }

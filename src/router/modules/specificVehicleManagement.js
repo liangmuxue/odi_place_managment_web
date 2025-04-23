@@ -16,7 +16,7 @@ const specificVehicleManagement = {
       component: () => import('@/views/specificVehicleManagement/freeCodeManagement/index'),
       name: 'FreeCodeManagement',
       meta: {
-        title: '免费码管理',
+        title: '限免车',
         icon: 'freeCodeManagement',
         keepAlive: false
       },

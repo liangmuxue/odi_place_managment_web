@@ -1,5 +1,5 @@
 <template>
-  <div class="parkingManagement_page">
+  <div class="commit_page">
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">停车场</div>
@@ -29,10 +29,10 @@
     </div>
     <div class="btn_box">
       <el-button type="info" icon="el-icon-circle-plus-outline" @click="toAdd"
-        >添加</el-button
+        >新增</el-button
       >
       <!-- v-has="{ red: 'addBox', type: 1 }" -->
-      <el-button type="danger" icon="el-icon-circle-plus-outline" @click="toDel"
+      <el-button type="danger" icon="el-icon-circle-close" @click="toDel"
         >删除</el-button
       >
       <!-- v-has="{ red: 'deleteBox', type: 1 }" -->
@@ -74,15 +74,6 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="运营商网络"
-          align="center"
-          show-overflow-tooltip
-        >
-          <template slot-scope="scope">
-            <span class="content">{{ scope.row.operator }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
           label="区域地址"
           min-width="160px"
           align="center"
@@ -104,7 +95,12 @@
             <span class="content">{{ scope.row.number }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="营业时间" align="center" show-overflow-tooltip>
+        <el-table-column
+          label="营业时间"
+          align="center"
+          min-width="120px"
+          show-overflow-tooltip
+        >
           <template slot-scope="scope">
             <span class="content"
               >{{ scope.row.startTime }}-{{ scope.row.endTime }}</span
@@ -112,20 +108,33 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="是否充电" align="center" show-overflow-tooltip>
+        <el-table-column
+          label="是否支持充电"
+          align="center"
+          show-overflow-tooltip
+        >
           <template slot-scope="scope">
             <span v-show="scope.row.charge == 0"> 不支持</span>
             <span v-show="scope.row.charge == 1"> 支持</span>
           </template>
         </el-table-column>
         <el-table-column
-          label="是否支持优惠券"
+          label="运营商网络"
           align="center"
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span v-show="scope.row.coupon == 0"> 不支持</span>
-            <span v-show="scope.row.coupon == 1"> 支持</span>
+            <span class="content">{{ scope.row.operator }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          label="长租车位保障临界值"
+          align="center"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">{{ scope.row.criticalValue }}%</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -277,12 +286,17 @@ export default {
 
     //批量删除
     toDel() {
-      let arr = [];
-      this.selGateway.forEach(el => {
-        arr.push(el.id);
-      });
       if (this.selGateway.length > 0) {
-        this.$confirm("确认批量删除停车场吗?", "提示", {
+        let arr = [];
+        this.selGateway.forEach(el => {
+          arr.push(el.id);
+        });
+        let text = "确认批量删除停车场吗?";
+        if (this.selGateway.length == 1) {
+          text = "确认删除该停车场吗?";
+        }
+
+        this.$confirm(text, "提示", {
           type: "warning"
         }).then(() => {
           parkingDelete(arr.toString()).then(response => {
@@ -304,7 +318,7 @@ export default {
       } else {
         this.$message({
           type: "warning",
-          message: "请选择批量删除的停车场"
+          message: "请选择删除的停车场"
         });
       }
     },
@@ -339,7 +353,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.parkingManagement_page {
+.commit_page {
   position: relative;
 }
 .content_box {

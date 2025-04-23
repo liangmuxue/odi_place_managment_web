@@ -21,7 +21,7 @@
                 <el-input
                   v-else
                   v-model="newList.userName"
-                  placeholder="输入停用户名"
+                  placeholder="输入用户名"
                   style="width: 72%"
                   class="filter-item"
                   size="small"
@@ -75,7 +75,7 @@
               </el-form-item>
             </span>
             <span class="base_dialog_condit">
-              <el-form-item label="车位状态" prop="status">
+              <el-form-item label="状态" prop="status">
                 <el-radio-group v-model="newList.status">
                   <el-radio label="0">启用</el-radio>
                   <el-radio label="1">停用</el-radio>
@@ -142,7 +142,7 @@ export default {
         userName: [
           { required: true, message: "请输入用户名", trigger: "blur" },
           {
-            pattern: /[a-zA-Z0-9_\-]{4,16}$/,
+            pattern: /^[a-zA-Z0-9_\-]{4,16}$/,
             message:
               "用户名只能为英文字母、数字、下划线或者短横线组成并且长度为4-16",
             trigger: "blur"
@@ -154,7 +154,10 @@ export default {
             validator: validateEditUserName
           }
         ],
-        roleId: [{ required: true, message: "请选择角色", trigger: "blur" }],
+        nickName: [
+          { required: true, message: "请选择真实姓名", trigger: "blur" }
+        ],
+        roleId: [{ required: true, message: "请选择角色", trigger: "change" }],
         status: [{ required: true, message: "请选择状态", trigger: "blur" }]
       }
     };
@@ -192,6 +195,7 @@ export default {
           remark: "", //备注
           nickName: "" //真实姓名
         };
+        this.editUserName = null;
         if (this.$refs["userForm"]) {
           this.$nextTick(() => {
             this.$refs["userForm"].clearValidate();
