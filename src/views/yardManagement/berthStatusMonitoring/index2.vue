@@ -1,13 +1,13 @@
 <template>
   <div class="commit_page">
     <div class="search_box">
-      <span class="search_content">
+      <!-- <span class="search_content">
         <div class="search_content_title">停车场</div>
         <el-input v-model="listQuery.name" placeholder="请输入"> </el-input>
       </span>
       <el-button icon="el-icon-refresh-right" @click="resetList"
         >重置</el-button
-      >
+      > -->
       <el-button type="primary" icon="el-icon-search" @click="toSearchList"
         >查询</el-button
       >
@@ -186,7 +186,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         total: 0,
-        name: "" //停车场名称
+        name: "爱立信停车场" //停车场名称
       },
       Dictionaries: {
         enumTypes: "STATUS"
@@ -220,7 +220,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         total: 0,
-        name: "" //停车场名称
+        name: "爱立信停车场" //停车场名称
       };
       this.openLoading();
       this.getList();

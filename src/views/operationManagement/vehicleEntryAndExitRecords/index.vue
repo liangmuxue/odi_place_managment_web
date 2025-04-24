@@ -495,13 +495,7 @@ export default {
 
     //导出
     toExport() {
-      let para = {
-        name: this.listQuery.name,
-        parkName: this.listQuery.parkName,
-        startTime: this.listQuery.startTime,
-        endTime: this.listQuery.endTime,
-        type: this.listQuery.type
-      };
+      let para = this.listQuery;
       vehicleEntryExport(para).then(res => {
         var content = res.data;
         var elink = document.createElement("a");
