@@ -132,6 +132,33 @@ export function monitorSpace(data) {
 
   })
 }
+//车位状态监控列表
+export function spaceReamingMonitorSpace(data) {
+  return request({
+    url: '/system/spaceReaming/monitorSpace',
+    method: 'post',
+    data
+
+  })
+}
+//修改车位
+export function spaceReamingUpdate(data) {
+  return request({
+    url: '/system/spaceReaming/update',
+    method: 'post',
+    data
+
+  })
+}
+//车位单条数据详情
+export function spaceReamingDetail(data) {
+  return request({
+    url: '/system/spaceReaming/detail',
+    method: 'post',
+    data
+
+  })
+}
 //获取车场下拉框
 export function lotSelect() {
   return request({

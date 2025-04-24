@@ -326,7 +326,8 @@
 <script>
 import {
   vehicleEntryList, //出入记录分页
-  vehicleEntryExport //出入记录导出
+  vehicleEntryExport, //出入记录导出
+  vehicleEntryDelete //删除出入记录
 } from "@/api/operationManagement";
 import Dialog from "./components/dialog";
 import { fieldTable } from "@/api/common";
@@ -538,7 +539,7 @@ export default {
         let para = {
           id: id
         };
-        vehicleBlacklistBatchDelete(para).then(response => {
+        vehicleEntryDelete(para).then(response => {
           if (response.code == "200") {
             this.$message({
               type: "success",

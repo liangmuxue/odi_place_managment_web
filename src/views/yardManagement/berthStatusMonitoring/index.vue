@@ -16,6 +16,7 @@
     <div class="content_box">
       <el-table
         :data="list"
+        row-key="id"
         highlight-current-row
         size="mini"
         stripe
@@ -36,7 +37,7 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.id }}</span>
+            <span class="content">{{ scope.row.parkingLot.id }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -45,7 +46,7 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.name }}</span>
+            <span class="content">{{ scope.row.parkingLot.name }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -55,20 +56,20 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.address }}</span>
+            <span class="content">{{ scope.row.parkingLot.address }}</span>
           </template>
         </el-table-column>
         <el-table-column label="泊位总数" min-width="90px" align="center">
           <template slot-scope="scope">
             <div class="content">
-              {{ scope.row.number }}
+              {{ scope.row.parkingLot.number }}
             </div>
           </template>
         </el-table-column>
         <el-table-column label="已停车" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="content" v-if="!scope.row.usedEdit"
-              >{{ scope.row.usedNum }}
+              >{{ scope.row.in_use }}
               <i
                 class="el-icon-edit"
                 style="color: #037659;margin-left: 5px;cursor: pointer;"
@@ -77,11 +78,11 @@
             </span>
             <span class="content" v-else
               ><el-input
-                v-model="scope.row.usedNum"
+                v-model="scope.row.in_use"
                 placeholder="请输入"
                 type="number"
                 min="0"
-                :max="scope.row.number"
+                :max="scope.row.parkingLot.number - scope.row.in_error"
                 step="1"
                 style="width:100px"
               >
@@ -101,13 +102,13 @@
         </el-table-column>
         <el-table-column label="空闲数" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.freeNum }}</span>
+            <span class="content">{{ scope.row.parkingLot.freeNum }}</span>
           </template>
         </el-table-column>
         <el-table-column label="故障数" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="content" v-if="!scope.row.faulEdit"
-              >{{ scope.row.faultNum }}
+              >{{ scope.row.in_error }}
               <i
                 class="el-icon-edit"
                 style="color: #037659;margin-left: 5px;cursor: pointer;"
@@ -116,11 +117,11 @@
             </span>
             <span class="content" v-else
               ><el-input
-                v-model="scope.row.faultNum"
+                v-model="scope.row.in_error"
                 placeholder="请输入"
                 type="number"
                 min="0"
-                :max="scope.row.number"
+                :max="scope.row.parkingLot.number - scope.row.in_use"
                 step="1"
                 style="width:100px"
               >
@@ -144,7 +145,9 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.occupancy * 100 }}</span>
+            <span class="content">{{
+              scope.row.parkingLot.occupancy * 100
+            }}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -164,7 +167,9 @@
 
 <script>
 import {
-  monitorSpace //车场分页查询
+  spaceReamingMonitorSpace, //车位分页查询
+  spaceReamingDetail, //车位单条数据详情
+  spaceReamingUpdate //修改车位
 } from "@/api/yardManagement";
 import { fieldTable } from "@/api/common";
 
@@ -211,7 +216,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         total: 0,
-        name: "" //停车场名称
+        name: null //停车场名称
       };
       this.openLoading();
       this.getList();
@@ -235,7 +240,7 @@ export default {
     //获取列表
     getList() {
       let para = this.listQuery;
-      monitorSpace(para)
+      spaceReamingMonitorSpace(para)
         .then(response => {
           let list = response.rows;
           list.forEach(el => {
@@ -272,11 +277,12 @@ export default {
     editUsed(item) {
       item.usedEdit = false;
       this.curDate = item;
+      this.toEditDetail();
     },
     //关闭修改已停车
     closeEditUsed(item) {
       item.usedEdit = false;
-      this.curDate = item;
+      this.getEditDetail();
     },
     //开启修改故障数
     toEditFaul(item) {
@@ -287,12 +293,65 @@ export default {
     editFaul(item) {
       item.faulEdit = false;
       this.curDate = item;
+      this.toEditDetail();
     },
     //关闭修改故障数
     closeEditFaul(item) {
       item.faulEdit = false;
-      this.curDate = item;
+      this.getEditDetail();
     },
+    //修改信息
+    toEditDetail() {
+      let para = {
+        id: this.curDate.id,
+        inUse: this.curDate.in_use * 1,
+        inError: this.curDate.in_error * 1
+      };
+      spaceReamingUpdate(para)
+        .then(response => {
+          this.getEditDetail();
+        })
+        .catch(() => {});
+    },
+    //获取修改后信息
+    getEditDetail() {
+      let claeeName;
+      if (this.$store.getters.sidebar.opened) {
+        claeeName = "hasSidebar";
+      } else {
+        claeeName = "noSidebar";
+      }
+      this.listLoading = this.$loading({
+        lock: true,
+        text: "数据加载中...",
+        customClass: claeeName, // *这里设置他的class名称,这里最重要
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)"
+      });
+
+      let para = { id: this.curDate.id };
+      spaceReamingDetail(para)
+        .then(response => {
+          this.list.forEach((el, i) => {
+            if (el.id == this.curDate.id) {
+              console.log(i);
+              this.$set(this.list[i], "in_use", response.data.in_use);
+              this.$set(this.list[i], "in_error", response.data.in_error);
+              this.$set(this.list[i], "parkingLot", response.data.parkingLot);
+            }
+          });
+          // Just to simulate the time of the request
+          setTimeout(() => {
+            this.listLoading.close();
+          }, 300);
+        })
+        .catch(() => {
+          setTimeout(() => {
+            this.listLoading.close();
+          }, 300);
+        });
+    },
+
     //获取修改的数据
     getEdit() {},
     // 切换页码方法

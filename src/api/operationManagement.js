@@ -152,6 +152,15 @@ export function vehicleEntryDetail(data) {
 
   })
 }
+//删除出入删除
+export function vehicleEntryDelete(data) {
+  return request({
+    url: '/system/vehicleEntry/delete',
+    method: 'post',
+    data
+
+  })
+}
 //修改车牌
 export function vehicleEntryUpdatePlate(data) {
   return request({
