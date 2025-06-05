@@ -116,6 +116,9 @@
       <el-button type="info" icon="el-icon-upload2" @click="toExport"
         >导出</el-button
       >
+      <el-button type="danger" icon="el-icon-circle-close" @click="toDelBatch"
+        >删除</el-button
+      >
     </div>
 
     <div class="content_box">
@@ -128,7 +131,11 @@
         @selection-change="handleSelectionChange"
         align="left"
       >
-        <el-table-column type="selection" width="34"></el-table-column>
+        <el-table-column
+          type="selection"
+          width="34"
+          :selectable="selectable"
+        ></el-table-column>
         <el-table-column
           label="序号"
           type="index"
@@ -299,7 +306,7 @@
             <span
               class="operation_button"
               style="width:50px"
-              v-if="!scope.row.leaveTime"
+              v-if="!scope.row.leaveTime && scope.row.payStatus == 2"
               @click="toDel(scope.row)"
             >
               删除
@@ -327,7 +334,8 @@
 import {
   vehicleEntryList, //出入记录分页
   vehicleEntryExport, //出入记录导出
-  vehicleEntryDelete //删除出入记录
+  vehicleEntryDelete, //删除出入记录
+  vehicleEntryDeleteBatch ////出入记录批量删除
 } from "@/api/operationManagement";
 import Dialog from "./components/dialog";
 import { fieldTable } from "@/api/common";
@@ -388,6 +396,15 @@ export default {
     this.getFieldTable();
   },
   methods: {
+    //判断是否可选
+    selectable(e) {
+      if (!e.leaveTime) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
     getFieldTable() {
       fieldTable(this.Dictionaries).then(response => {
         this.enumsData = response.data;
@@ -549,6 +566,45 @@ export default {
           }
         });
       });
+    },
+    //批量删除
+    toDelBatch() {
+      if (this.selGateway.length > 0) {
+        let arr = [];
+        this.selGateway.forEach(el => {
+          arr.push(el.id);
+        });
+        let text = "确认批量删除车辆出入记录吗?";
+        if (this.selGateway.length == 1) {
+          text = "确认删除该车辆出入记录吗?";
+        }
+
+        this.$confirm(text, "提示", {
+          type: "warning"
+        }).then(() => {
+          let para = { ids: arr.toString() };
+          vehicleEntryDeleteBatch(para).then(response => {
+            if (response.code == "200") {
+              this.$message({
+                type: "success",
+                message: "删除成功"
+              });
+              this.openLoading();
+              this.getList();
+            } else {
+              this.$message({
+                type: "warning",
+                message: "删除失败"
+              });
+            }
+          });
+        });
+      } else {
+        this.$message({
+          type: "warning",
+          message: "请选择删除的车辆出入记录"
+        });
+      }
     },
     // 切换页码方法
     handleSizeChange(val) {

@@ -152,10 +152,19 @@ export function vehicleEntryDetail(data) {
 
   })
 }
-//删除出入删除
+//删除出入记录
 export function vehicleEntryDelete(data) {
   return request({
     url: '/system/vehicleEntry/delete',
+    method: 'post',
+    data
+
+  })
+}
+//出入记录批量删除
+export function vehicleEntryDeleteBatch(data) {
+  return request({
+    url: '/system/vehicleEntry/deleteBatch',
     method: 'post',
     data
 

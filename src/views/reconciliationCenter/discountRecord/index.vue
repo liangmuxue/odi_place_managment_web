@@ -310,11 +310,13 @@ export default {
     //导出
     toExport() {
       let para = {
-        name: this.listQuery.name,
-        parkName: this.listQuery.parkName,
-        startTime: this.listQuery.startTime,
+        orderNum: this.listQuery.orderNum,
+        refundNum: this.listQuery.refundNum,
+        vehicle: this.listQuery.vehicle,
+        phone: this.listQuery.refundNum,
+        startTime: this.listQuery.phone,
         endTime: this.listQuery.endTime,
-        type: this.listQuery.type
+        parkName: this.listQuery.parkName
       };
       discountRecordExport(para).then(res => {
         var content = res.data;

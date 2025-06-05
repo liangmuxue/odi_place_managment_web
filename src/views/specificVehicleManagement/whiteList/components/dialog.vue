@@ -111,7 +111,7 @@
                 <el-select
                   v-else
                   v-model="newList.parkingLotId"
-                  placeholder="选择黑名单范围"
+                  placeholder="选择白名单范围"
                   clearable
                   multiple
                   collapse-tags

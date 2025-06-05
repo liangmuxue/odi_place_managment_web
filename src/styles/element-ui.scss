@@ -359,6 +359,32 @@
   width: 100%;
 }
 
+.device-area-top-title .el-select .el-input__inner {
+  border: 0 !important;
+  background: #f3f9f7 !important;
+}
+
+.device-area-top-title .el-select .el-input__inner::-webkit-input-placeholder {
+  color: #037659 !important;
+}
+
+
+.device-area-top-title .el-select .el-select__caret .el-input__icon {
+  display: none;
+  color: #037659 !important;
+}
+
+.device-area-top-title .el-select .el-icon-arrow-up::before {
+  // display: none;
+  content: "\e78f";
+  color: #037659 !important;
+}
+
+.device-area-top-title .el-select .el-icon-circle-close::before {
+  color: #037659 !important;
+}
+
+
 .el-table {
   border: $titleTextH 1px solid;
 

@@ -326,11 +326,13 @@ export default {
     //导出
     toExport() {
       let para = {
-        name: this.listQuery.name,
+        orderNum: this.listQuery.orderNum,
         parkName: this.listQuery.parkName,
+        vehicle: this.listQuery.vehicle,
         startTime: this.listQuery.startTime,
         endTime: this.listQuery.endTime,
-        type: this.listQuery.type,
+        invoice: this.listQuery.invoice,
+        payType: this.listQuery.payType,
         orderType: 2
       };
       orderExport(para).then(res => {
