@@ -37,8 +37,8 @@
           range-separator="-"
           start-placeholder="请选择时间"
           end-placeholder
+          :default-time="['00:00:00', '23:59:59']"
         ></el-date-picker>
-        <!-- :default-time="['00:00:00', '23:59:59']" -->
       </span>
       <el-button icon="el-icon-refresh-right" @click="resetList"
         >重置</el-button
@@ -48,7 +48,11 @@
       >
     </div>
     <div class="btn_box">
-      <el-button type="info" icon="el-icon-upload2" @click="toExport"
+      <el-button
+        type="info"
+        icon="el-icon-upload2"
+        @click="toExport"
+        v-has="{ red: 'userRechargeExport', type: 1 }"
         >导出</el-button
       >
     </div>
@@ -223,14 +227,14 @@ export default {
         .then(response => {
           this.list = response.data.list;
           this.totalMoney = response.data.totalMoney;
-          if (response.total > 0) {
-            this.listQuery.total = response.total; // 数据总条数
+          if (response.data.total > 0) {
+            this.listQuery.total = response.data.total; // 数据总条数
           } else {
             this.listQuery.pageSize = 40; //每页数量
             this.listQuery.total = 0; // 数据总条数
             this.listQuery.pageNum = 1; // 当前页
           }
-          this.total = response.total;
+          this.listQuery.total = response.data.total; // 数据总条数
 
           // Just to simulate the time of the request
           setTimeout(() => {

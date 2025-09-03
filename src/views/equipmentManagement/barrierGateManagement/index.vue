@@ -34,17 +34,26 @@
       >
     </div>
     <div class="btn_box">
-      <el-button type="info" icon="el-icon-circle-plus-outline" @click="toAdd"
+      <el-button
+        type="info"
+        icon="el-icon-circle-plus-outline"
+        @click="toAdd"
+        v-has="{ red: 'barrierGateAdd', type: 1 }"
         >新增</el-button
       >
-      <!-- v-has="{ red: 'addBox', type: 1 }" -->
-      <el-button type="danger" icon="el-icon-circle-close" @click="toDel"
+      <el-button
+        type="danger"
+        icon="el-icon-circle-close"
+        @click="toDel"
+        v-has="{ red: 'barrierGateDelete', type: 1 }"
         >删除</el-button
       >
-      <!-- v-has="{ red: 'deleteBox', type: 1 }" -->
-      <el-button type="info" icon="el-icon-unlock" @click="openDoor"
+      <!-- <el-button type="info" icon="el-icon-unlock" @click="openDoors"
         >远程开闸</el-button
       >
+      <el-button type="warning" icon="el-icon-lock" @click="openDoors"
+        >远程关闸</el-button
+      > -->
     </div>
 
     <div class="content_box">
@@ -157,18 +166,21 @@
           label="操作"
           align="center"
           header-align="center"
-          min-width="160px"
+          min-width="200px"
           class-name="small-padding fixed-width"
         >
           <template slot-scope="scope">
-            <span>
-              <el-button
+            <span
+              v-loading="scope.row.loading"
+              style="display: inline-block;height:30px"
+            >
+              <!-- <el-button
                 type="info"
                 icon="el-icon-unlock"
                 @click="openDoorAlways"
                 size="mini"
                 >一键常开</el-button
-              >
+              > -->
               <!-- v-if="scope.row.online == 1" -->
               <!-- <el-button
                 type="danger"
@@ -178,22 +190,45 @@
                 size="mini"
                 >取消常开</el-button
               > -->
+              <div
+                class="openBtn"
+                @click="openDoor(scope.row)"
+                v-has="{ red: 'remoteOpen', type: 1 }"
+              >
+                <!-- <i class="el-icon-unlock"></i>  -->
+                开闸
+              </div>
+              <div
+                class="closeBtn"
+                @click="closeDoor(scope.row)"
+                v-has="{ red: 'remoteOpen', type: 1 }"
+              >
+                <!-- <i class="el-icon-lock"></i>  -->
+                关闸
+              </div>
             </span>
 
             <span
               class="operation_button update_btn"
               @click="toEdit(scope.row)"
+              v-has="{ red: 'barrierGateEdit', type: 1 }"
             >
               编辑
             </span>
-            <!-- v-has="{ red: 'editBox', type: 1 }" -->
             <span
               class="operation_button update_btn"
               @click="toDetails(scope.row)"
+              v-has="{ red: 'barrierGateDetails', type: 1 }"
             >
               详情
             </span>
-            <!-- v-has="{ red: 'editBox', type: 1 }" -->
+            <span
+              class="operation_button update_btn"
+              @click="toQrCode(scope.row)"
+              v-has="{ red: 'barrierGateQR', type: 1 }"
+            >
+              {{ scope.row.type > 2 ? "出场码" : "入场码" }}
+            </span>
           </template>
         </el-table-column>
       </el-table>
@@ -209,6 +244,7 @@
       />
     </div>
     <Dialog ref="dialog" @getList="getList" @openLoading="openLoading"></Dialog>
+    <QrCode ref="qrCode" @getList="getList" @openLoading="openLoading"></QrCode>
   </div>
 </template>
 
@@ -219,11 +255,12 @@ import {
   gateDelete //删除道闸
 } from "@/api/equipmentManagement";
 import Dialog from "./components/dialog";
+import QrCode from "./components/qrCode";
 import { fieldTable } from "@/api/common";
 
 export default {
   name: "BarrierGateManagement",
-  components: { Dialog },
+  components: { Dialog, QrCode },
   data() {
     return {
       listQuery: {
@@ -389,22 +426,67 @@ export default {
               this.openLoading();
               this.getList();
             } else {
-              this.$message({
-                type: "warning",
-                message: "删除失败"
-              });
+              // this.$message({
+              //   type: "error",
+              //   message: "删除失败"
+              // });
             }
           });
         });
       } else {
         this.$message({
-          type: "warning",
+          type: "error",
           message: "请选择删除的道闸"
         });
       }
     },
     //远程开闸
-    openDoor() {
+    openDoor(e) {
+      function createObjectFromArrays(keys, values) {
+        return keys
+          .map((key, index) => [key, values[index]])
+          .reduce((obj, [key, value]) => {
+            obj[key] = value;
+            return obj;
+          }, {});
+      }
+      let arr = [e.barrierNumber];
+      let arr2 = [e.parkId];
+      const result = createObjectFromArrays(arr, arr2);
+      let para = { gateMap: result };
+      this.$set(e, "loading", true);
+      openGate(para)
+        .then(response => {
+          if (response.code == "200") {
+            this.$message({
+              type: "success",
+              message: "开闸成功"
+            });
+          } else {
+            // this.$message({
+            //   type: "error",
+            //   message: "开闸失败"
+            // });
+          }
+          setTimeout(() => {
+            e.loading = false;
+          }, 300);
+        })
+        .catch(() => {
+          setTimeout(() => {
+            e.loading = false;
+          }, 300);
+        });
+    },
+    //远程关闸
+    closeDoor(e) {
+      this.$message({
+        type: "warning",
+        message: "该设备暂不支持此功能"
+      });
+    },
+    //远程开闸(原多选)
+    openDoors() {
       function createObjectFromArrays(keys, values) {
         return keys
           .map((key, index) => [key, values[index]])
@@ -430,10 +512,10 @@ export default {
               message: "开闸成功"
             });
           } else {
-            this.$message({
-              type: "warning",
-              message: "开闸失败"
-            });
+            // this.$message({
+            //   type: "error",
+            //   message: "开闸失败"
+            // });
           }
         });
         this.$refs.selTable.clearSelection();
@@ -460,6 +542,12 @@ export default {
       let pageType = 3;
       this.$refs.dialog.showDialog(id, pageType);
     },
+    //打开二维码页面
+    toQrCode(e) {
+      let id = e.id;
+      this.$refs.qrCode.showDialog(id);
+    },
+
     // 切换页码方法
     handleSizeChange(val) {
       this.listQuery.pageNum = 1;
@@ -478,6 +566,30 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.openBtn {
+  display: inline-block;
+  cursor: pointer;
+  background: #30c4c6;
+  height: 28px;
+  line-height: 28px;
+  border-radius: 5px;
+  width: 56px;
+  font-size: 14px;
+  color: #fff;
+  margin: 0 2px;
+}
+.closeBtn {
+  display: inline-block;
+  cursor: pointer;
+  background: #ffc833;
+  height: 28px;
+  line-height: 28px;
+  border-radius: 5px;
+  width: 56px;
+  font-size: 14px;
+  color: #fff;
+  margin: 0 2px;
+}
 .commit_page {
   position: relative;
 }

@@ -54,14 +54,20 @@
       >
     </div>
     <div class="btn_box">
-      <el-button type="info" icon="el-icon-circle-plus-outline" @click="toAdd"
+      <el-button
+        type="info"
+        icon="el-icon-circle-plus-outline"
+        @click="toAdd"
+        v-has="{ red: 'freeCodeManagementAdd', type: 1 }"
         >新增</el-button
       >
-      <!-- v-has="{ red: 'addBox', type: 1 }" -->
-      <el-button type="danger" icon="el-icon-circle-close" @click="toDel"
+      <el-button
+        type="danger"
+        icon="el-icon-circle-close"
+        @click="toDel"
+        v-has="{ red: 'freeCodeManagementDelete', type: 1 }"
         >删除</el-button
       >
-      <!-- v-has="{ red: 'deleteBox', type: 1 }" -->
     </div>
 
     <div class="content_box">
@@ -134,26 +140,31 @@
             }}</span>
           </template>
         </el-table-column>
-        <el-table-column
+        <!-- <el-table-column
           label="剩余通行次数"
           align="center"
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{
+            <span class="content" v-if="scope.row.remainderFree === 0">{{
+              0
+            }}</span>
+            <span class="content" v-else>{{
               scope.row.remainderFree > 0 ? scope.row.remainderFree : "不限"
             }}</span>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column label="适用车场" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ getNames(scope.row.parkingLots) }}</span>
+            <span class="content">{{
+              getNames(scope.row.vehicleWaiverParkingLots)
+            }}</span>
           </template>
         </el-table-column>
         <el-table-column label="使用状态" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="content">{{
-              scope.row.status == 1 ? "失效" : "正常"
+              scope.row.status == 1 ? "到期" : "正常"
             }}</span>
           </template>
         </el-table-column>
@@ -186,16 +197,17 @@
             <span
               class="operation_button update_btn"
               @click="toEdit(scope.row)"
+              v-has="{ red: 'freeCodeManagementEdit', type: 1 }"
             >
               编辑
             </span>
             <span
               class="operation_button update_btn"
               @click="toDetails(scope.row)"
+              v-has="{ red: 'freeCodeManagementDetails', type: 1 }"
             >
               详情
             </span>
-            <!-- v-has="{ red: 'editBox', type: 1 }" -->
           </template>
         </el-table-column>
       </el-table>
@@ -239,7 +251,7 @@ export default {
       },
       selGateway: null,
       statusList: [
-        { enumName: "失效", enumValue: 1 },
+        { enumName: "到期", enumValue: 1 },
         { enumName: "正常", enumValue: 0 }
       ],
       Dictionaries: {
@@ -275,7 +287,9 @@ export default {
     getNames(arr) {
       let names = [];
       arr.forEach(el => {
-        names.push(el.name);
+        if (el.parkingLot) {
+          names.push(el.parkingLot.name);
+        }
       });
       return names.toString();
     },
@@ -407,10 +421,10 @@ export default {
               this.openLoading();
               this.getList();
             } else {
-              this.$message({
-                type: "warning",
-                message: "删除失败"
-              });
+              // this.$message({
+              //   type: "error",
+              //   message: "删除失败"
+              // });
             }
           });
         });

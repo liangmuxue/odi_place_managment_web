@@ -82,7 +82,8 @@
 <script>
 // import { validUsername } from "@/utils/validate";
 // import SocialSign from "./components/SocialSignin";
-import { setToken } from "@/utils/auth"; // get token from cookie
+import { setToken, removeToken } from "@/utils/auth";
+import { resetRouter } from "@/router";
 
 export default {
   name: "Login",
@@ -229,10 +230,14 @@ export default {
       });
     },
     handleLogin() {
-      // setToken("test");
+      setToken("");
+      removeToken();
+      resetRouter();
+
       // this.$router.push({
       //   path: "/homePage",
       // }); //登录成功，向首页跳转
+
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true;
@@ -252,7 +257,7 @@ export default {
               this.loading = false;
               // setTimeout(() => {
               //   location.reload();
-              // }, 100);
+              // }, 3000);
             })
             .catch(() => {
               console.log("login fail");

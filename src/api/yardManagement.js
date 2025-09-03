@@ -167,6 +167,14 @@ export function lotSelect() {
 
   })
 }
+//获取所有车场下拉框
+export function lotSelectAll() {
+  return request({
+    url: '/system/lot/selectAll',
+    method: 'get',
+
+  })
+}
 //获取长租规则
 export function ruleParkingLeasesListNoPage() {
   return request({

@@ -36,7 +36,11 @@
       >
     </div>
     <div class="btn_box">
-      <el-button type="info" icon="el-icon-upload2" @click="toExport"
+      <el-button
+        type="info"
+        icon="el-icon-upload2"
+        v-has="{ red: 'manualSwitchRecordExport', type: 1 }"
+        @click="toExport"
         >导出</el-button
       >
     </div>
@@ -90,7 +94,7 @@
         </el-table-column>
         <el-table-column label="抓拍图片" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <div class="content">
+            <div class="content" :key="scope.row.id">
               <el-popover placement="top-start" width="500" trigger="click">
                 <img
                   :src="
@@ -106,13 +110,14 @@
                       scope.row.capturePhotos !== null
                   "
                   slot="reference"
-                  :src="
-                    scope.row.capturePhotos +
-                      '?x-oss-process=image/resize,h_36,w_48'
-                  "
+                  :src="scope.row.capturePhotos"
                   width="48"
                   height="36"
                 />
+                <!-- :src="
+                    scope.row.capturePhotos +
+                      '?x-oss-process=image/resize,h_36,w_48'
+                  " -->
                 <span v-else>
                   <div min-width="48" height="36"></div>
                 </span>

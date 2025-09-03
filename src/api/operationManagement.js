@@ -152,6 +152,42 @@ export function vehicleEntryDetail(data) {
 
   })
 }
+//获取出入闸机
+export function getGateByParkId(data) {
+  return request({
+    url: '/system/gate/getGateByParkId',
+    method: 'post',
+    data
+
+  })
+}
+//手动出场
+export function updateLeave(data) {
+  return request({
+    url: '/system/vehicleEntry/updateLeave',
+    method: 'post',
+    data
+
+  })
+}
+//出场
+export function leave(data) {
+  return request({
+    url: '/system/vehicleEntry/leave',
+    method: 'post',
+    data
+
+  })
+}
+//手动入场
+export function insertInto(data) {
+  return request({
+    url: '/system/vehicleEntry/insertInto',
+    method: 'post',
+    data
+
+  })
+}
 //删除出入记录
 export function vehicleEntryDelete(data) {
   return request({

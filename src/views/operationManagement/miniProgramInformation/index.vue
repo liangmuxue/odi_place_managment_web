@@ -26,11 +26,19 @@
       >
     </div>
     <div class="btn_box">
-      <el-button type="info" icon="el-icon-circle-plus-outline" @click="toAdd"
+      <el-button
+        type="info"
+        icon="el-icon-circle-plus-outline"
+        @click="toAdd"
+        v-has="{ red: 'miniProgramInformationAdd', type: 1 }"
         >新增</el-button
       >
       <!-- v-has="{ red: 'addBox', type: 1 }" -->
-      <el-button type="danger" icon="el-icon-circle-close" @click="toDel"
+      <el-button
+        type="danger"
+        icon="el-icon-circle-close"
+        @click="toDel"
+        v-has="{ red: 'miniProgramInformationDelete', type: 1 }"
         >删除</el-button
       >
     </div>
@@ -60,7 +68,7 @@
         </el-table-column>
         <el-table-column label="图片" min-width="90px" align="center">
           <template slot-scope="scope">
-            <div class="content">
+            <div class="content" :key="scope.row.id">
               <el-popover placement="top-start" width="500" trigger="click">
                 <img
                   :src="scope.row.banner ? scope.row.banner : scope.row.banner"
@@ -70,13 +78,14 @@
                 <img
                   v-if="scope.row.banner !== '' && scope.row.banner !== null"
                   slot="reference"
-                  :src="
-                    scope.row.banner + '?x-oss-process=image/resize,h_36,w_48'
-                  "
+                  :src="scope.row.banner"
                   width="48"
                   height="36"
                   style="margin-right:5px"
                 />
+                <!-- :src="
+                    scope.row.banner + '?x-oss-process=image/resize,h_36,w_48'
+                  " -->
                 <span v-else>
                   <div min-width="48" height="36"></div>
                 </span>
@@ -100,6 +109,7 @@
             <span
               class="operation_button update_btn"
               @click="toUpdate(scope.row)"
+              v-has="{ red: 'miniProgramInformationEdit', type: 1 }"
             >
               编辑
             </span>
@@ -107,6 +117,7 @@
               class="operation_button update_btn"
               style="width:100px"
               @click="toDetial(scope.row)"
+              v-has="{ red: 'miniProgramInformationDetails', type: 1 }"
             >
               详情
             </span>
@@ -299,10 +310,10 @@ export default {
               this.openLoading();
               this.getList();
             } else {
-              this.$message({
-                type: "warning",
-                message: "删除失败"
-              });
+              // this.$message({
+              //   type: "error",
+              //   message: "删除失败"
+              // });
             }
           });
         });

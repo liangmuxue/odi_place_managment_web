@@ -89,7 +89,11 @@
         <el-radio-button :label="2">按时间统计</el-radio-button>
       </el-radio-group>
 
-      <el-button type="info" icon="el-icon-upload2" @click="toExport"
+      <el-button
+        type="info"
+        icon="el-icon-upload2"
+        @click="toExport"
+        v-has="{ red: 'outstandingFeesRecordExport', type: 1 }"
         >导出</el-button
       >
     </div>
@@ -223,8 +227,29 @@
             <span
               class="operation_button update_btn"
               @click="toDetial(scope.row)"
+              v-has="{ red: 'outstandingFeesRecordDetails', type: 1 }"
             >
               查看明细
+            </span>
+            <!-- v-has="{ red: 'editBox', type: 1 }" -->
+          </template>
+          >
+        </el-table-column>
+        <el-table-column
+          label="操作"
+          align="center"
+          :key="12"
+          show-overflow-tooltip
+          v-if="pageType == 2"
+          v-has="{ red: 'outstandingFeesRecordDelete', type: 1 }"
+        >
+          <template slot-scope="scope">
+            <span
+              v-if="scope.row.payment != 1"
+              class="operation_button update_btn"
+              @click="toDelete(scope.row)"
+            >
+              删除
             </span>
             <!-- v-has="{ red: 'editBox', type: 1 }" -->
           </template>
@@ -251,6 +276,7 @@ import {
   arrearsRecordPageList, //欠费记录分页
   arrearsRecordExport, // 欠费记录导出
   arrearsRecordPageListByTime, //欠费记录分页按时间
+  arrearsRecordRemoveById, //删除欠费记录
   arrearsRecordExportByTime // 欠费记录导出按时间
 } from "@/api/reconciliationCenter";
 import { fieldTable } from "@/api/common";
@@ -320,6 +346,34 @@ export default {
     toDetial(e) {
       let vehicle = e.vehicle;
       this.$refs.dialog.showDialog(vehicle);
+    },
+    //删除
+    toDelete(e) {
+      let id = e.id;
+      let text = "确认删除该欠费记录吗?";
+
+      this.$confirm(text, "提示", {
+        type: "warning"
+      }).then(() => {
+        let para = {
+          id: id
+        };
+        arrearsRecordRemoveById(para).then(response => {
+          if (response.code == "200") {
+            this.$message({
+              type: "success",
+              message: "删除成功"
+            });
+            this.openLoading();
+            this.getListByTime();
+          } else {
+            // this.$message({
+            //   type: "error",
+            //   message: "删除失败"
+            // });
+          }
+        });
+      });
     },
     //切换页面
     chengePageType() {
@@ -492,13 +546,21 @@ export default {
       this.listQuery.pageNum = 1;
       this.listQuery.pageSize = val;
       this.openLoading();
-      this.getList();
+      if (this.pageType == 1) {
+        this.getList();
+      } else {
+        this.getListByTime();
+      }
     },
     // 切换每页显示的方法
     handleCurrentChange(val) {
       this.listQuery.pageNum = val;
       this.openLoading();
-      this.getList();
+      if (this.pageType == 1) {
+        this.getList();
+      } else {
+        this.getListByTime();
+      }
     }
   }
 };

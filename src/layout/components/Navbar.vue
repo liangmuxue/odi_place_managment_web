@@ -38,7 +38,7 @@
           </el-dropdown-item>
           <el-dropdown-item>
             <span style="display: block" @click="logout"
-              ><i class="el-icon-right"></i>退出登陆</span
+              ><i class="el-icon-right"></i>退出登录</span
             >
           </el-dropdown-item>
         </el-dropdown-menu>
@@ -385,10 +385,10 @@ export default {
                     message: "提交成功"
                   });
                 } else {
-                  this.$message({
-                    type: "warning",
-                    message: "提交失败"
-                  });
+                  // this.$message({
+                  //   type: "warning",
+                  //   message: "提交失败"
+                  // });
                 }
               })
               .catch(() => {
@@ -407,7 +407,7 @@ export default {
     logout() {
       let para = {};
       para.username = getUserName();
-      this.$confirm("是否退出登陆?", "提示", {
+      this.$confirm("是否退出登录?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"

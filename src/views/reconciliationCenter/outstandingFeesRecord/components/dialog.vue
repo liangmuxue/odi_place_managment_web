@@ -73,6 +73,25 @@
             }}</span>
           </template>
         </el-table-column>
+        <el-table-column
+          label="操作"
+          align="center"
+          :key="12"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span
+              v-if="scope.row.payment != 1"
+              class="operation_button update_btn"
+              @click="toDelete(scope.row)"
+              v-has="{ red: 'outstandingFeesRecordDelete', type: 1 }"
+            >
+              删除
+            </span>
+            <!-- v-has="{ red: 'editBox', type: 1 }" -->
+          </template>
+          >
+        </el-table-column>
       </el-table>
     </div>
   </div>
@@ -80,6 +99,7 @@
 
 <script>
 import {
+  arrearsRecordRemoveById, //删除欠费记录
   arrearsRecordGetInfo //小程序用户列表
 } from "@/api/reconciliationCenter";
 
@@ -88,6 +108,7 @@ export default {
   data() {
     return {
       pageType: 1,
+      curDetials: null,
       title: "欠款明细",
       isShow: false,
       totalMoney: null,
@@ -100,11 +121,48 @@ export default {
     showDialog(vehicle) {
       this.isShow = true;
       this.title = vehicle + "欠费明细";
+      this.curDetials = vehicle;
       this.getDetials(vehicle);
     },
     //关闭弹窗
     closeDialog() {
       this.isShow = false;
+    },
+    //删除
+    toDelete(e) {
+      let id = e.id;
+      let text = "确认删除该欠费记录吗?";
+
+      this.$confirm(text, "提示", {
+        type: "warning"
+      }).then(() => {
+        let para = {
+          id: id
+        };
+        arrearsRecordRemoveById(para).then(response => {
+          if (response.code == "200") {
+            this.$message({
+              type: "success",
+              message: "删除成功"
+            });
+            if (this.newList.length > 1) {
+              let vehicle = this.curDetials;
+              this.getDetials(vehicle);
+            } else {
+              this.isShow = false;
+              this.$emit("openLoading", {});
+              setTimeout(() => {
+                this.$emit("getList", {});
+              }, 300);
+            }
+          } else {
+            // this.$message({
+            //   type: "error",
+            //   message: "删除失败"
+            // });
+          }
+        });
+      });
     },
 
     //获取详情

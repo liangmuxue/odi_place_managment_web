@@ -40,12 +40,12 @@
         </el-table-column>
         <el-table-column label="附件" min-width="90px" align="center">
           <template slot-scope="scope">
-            <div class="content">
+            <div class="content" :key="scope.row.id + i">
               <el-popover
                 placement="top-start"
                 width="500"
                 trigger="click"
-                v-for="item in scope.row.imgUrls"
+                v-for="(item, i) in scope.row.imgUrls"
                 :key="item"
               >
                 <img
@@ -56,11 +56,12 @@
                 <img
                   v-if="item !== '' && item !== null"
                   slot="reference"
-                  :src="item + '?x-oss-process=image/resize,h_36,w_48'"
+                  :src="item"
                   width="48"
                   height="36"
                   style="margin-right:5px"
                 />
+                <!-- :src="item + '?x-oss-process=image/resize,h_36,w_48'" -->
                 <span v-else>
                   <div min-width="48" height="36"></div>
                 </span>
@@ -113,6 +114,7 @@
             <span
               class="operation_button update_btn"
               @click="toReply(scope.row)"
+              v-has="{ red: 'feedbackReply', type: 1 }"
             >
               回复
             </span>
@@ -120,6 +122,7 @@
               class="operation_button update_btn"
               style="width:100px"
               @click="toDetial(scope.row)"
+              v-has="{ red: 'feedbackDetails', type: 1 }"
             >
               查看回复
             </span>

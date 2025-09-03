@@ -70,12 +70,12 @@
           <template slot-scope="scope">
             <span class="content" v-if="!scope.row.usedEdit"
               >{{ scope.row.in_use }}
-              <i
+              <!-- <i
                 class="el-icon-edit"
                 v-if="!scope.row.faulEdit"
                 style="color: #037659;margin-left: 5px;cursor: pointer;"
                 @click="toEditUsed(scope.row)"
-              ></i>
+              ></i> -->
             </span>
             <span class="content" v-else
               ><el-input
@@ -111,12 +111,12 @@
           <template slot-scope="scope">
             <span class="content" v-if="!scope.row.faulEdit"
               >{{ scope.row.in_error }}
-              <i
+              <!-- <i
                 class="el-icon-edit"
                 v-if="!scope.row.usedEdit"
                 style="color: #037659;margin-left: 5px;cursor: pointer;"
                 @click="toEditFaul(scope.row)"
-              ></i>
+              ></i> -->
             </span>
             <span class="content" v-else
               ><el-input
@@ -150,7 +150,7 @@
         >
           <template slot-scope="scope">
             <span class="content">{{
-              scope.row.parkingLot.occupancy * 100
+              getNumber(scope.row.parkingLot.occupancy)
             }}</span>
           </template>
         </el-table-column>
@@ -202,6 +202,10 @@ export default {
     // this.getFieldTable();
   },
   methods: {
+    getNumber(n) {
+      let n2 = Math.round(n * 100);
+      return n2;
+    },
     getFieldTable() {
       fieldTable(this.Dictionaries).then(response => {
         this.enumsData = response.data;

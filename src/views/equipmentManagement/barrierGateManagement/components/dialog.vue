@@ -179,11 +179,8 @@
         </div>
       </el-form>
       <div class="base_dialog_main_btnBox" v-if="pageType < 3">
-        <el-button type="info" icon="el-icon-circle-plus" @click="toSave"
-          >保存</el-button
-        ><el-button type="danger" icon="el-icon-error" @click="closeDialog"
-          >取消</el-button
-        >
+        <el-button type="info" @click="toSave">保存</el-button
+        ><el-button type="danger" @click="closeDialog">取消</el-button>
       </div>
     </div>
   </div>
@@ -485,10 +482,10 @@ export default {
                   });
                   // this.getDetials(response.id);
                 } else {
-                  this.$message({
-                    type: "warning",
-                    message: "提交失败"
-                  });
+                  // this.$message({
+                  //   type: "error",
+                  //   message: "提交失败"
+                  // });
                 }
                 setTimeout(() => {
                   this.$emit("getList", {});
@@ -496,7 +493,7 @@ export default {
               })
               .catch(() => {
                 // this.$message({
-                //   type: "warning",
+                //   type: "error",
                 //   message: "提交失败"
                 // });
                 setTimeout(() => {
@@ -525,10 +522,10 @@ export default {
                     message: "提交成功"
                   });
                 } else {
-                  this.$message({
-                    type: "warning",
-                    message: "提交失败"
-                  });
+                  // this.$message({
+                  //   type: "error",
+                  //   message: "提交失败"
+                  // });
                 }
                 setTimeout(() => {
                   this.$emit("getList", {});
@@ -536,7 +533,7 @@ export default {
               })
               .catch(() => {
                 // this.$message({
-                //   type: "warning",
+                //   type: "error",
                 //   message: "提交失败"
                 // });
                 setTimeout(() => {

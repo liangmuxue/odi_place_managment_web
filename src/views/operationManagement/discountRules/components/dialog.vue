@@ -329,11 +329,8 @@
         </div>
       </el-form>
       <div class="base_dialog_main_btnBox" v-if="pageType !== 3">
-        <el-button type="info" icon="el-icon-circle-plus" @click="toSave"
-          >保存</el-button
-        ><el-button type="danger" icon="el-icon-error" @click="closeDialog"
-          >取消</el-button
-        >
+        <el-button type="info" @click="toSave">保存</el-button
+        ><el-button type="danger" @click="closeDialog">取消</el-button>
       </div>
     </div>
   </div>
@@ -636,15 +633,15 @@ export default {
       this.newList.expirationDay = value.toString().replace(/[^0-9]/g, "");
       if (this.newList.expirationDay > 365) {
         this.newList.expirationDay = 365; // 如果超过365，设置为365
-      } else if (this.newList.expirationDay == 0) {
-        this.newList.expirationDay = 1; // 如果小于0，设置为0
+      } else if (this.newList.expirationDay <= 0) {
+        this.newList.expirationDay = ""; // 如果等于0，设置为空
       }
     },
     handleInput6(value) {
       // 限制输入为大于0间的整数
       this.rulePreferentialCount = value.toString().replace(/[^0-9]/g, "");
-      if (this.rulePreferentialCount == 0) {
-        this.rulePreferentialCount = 1; // 如果小于0，设置为0
+      if (this.rulePreferentialCount <= 0) {
+        this.rulePreferentialCount = ""; // 如果小于0，设置为0
       }
     },
 
@@ -660,6 +657,7 @@ export default {
       if (this.$refs["parkingForm"]) {
         this.$refs["parkingForm"].resetFields();
       }
+      this.rulePreferentialCount = null;
 
       if (pageType == 2) {
         this.title = "编辑";
@@ -783,20 +781,20 @@ export default {
                   });
                   // this.getDetials(response.id);
                 } else {
-                  this.$message({
-                    type: "warning",
-                    message: "提交失败"
-                  });
+                  // this.$message({
+                  //   type: "error",
+                  //   message: "提交失败"
+                  // });
                 }
                 setTimeout(() => {
                   this.$emit("getList", {});
                 }, 300);
               })
               .catch(() => {
-                this.$message({
-                  type: "warning",
-                  message: "提交失败"
-                });
+                // this.$message({
+                //   type: "error",
+                //   message: "提交失败"
+                // });
                 setTimeout(() => {
                   this.$emit("getList", {});
                 }, 300);
@@ -826,20 +824,20 @@ export default {
                     message: "提交成功"
                   });
                 } else {
-                  this.$message({
-                    type: "warning",
-                    message: "提交失败"
-                  });
+                  // this.$message({
+                  //   type: "error",
+                  //   message: "提交失败"
+                  // });
                 }
                 setTimeout(() => {
                   this.$emit("getList", {});
                 }, 300);
               })
               .catch(() => {
-                this.$message({
-                  type: "warning",
-                  message: "提交失败"
-                });
+                // this.$message({
+                //   type: "error",
+                //   message: "提交失败"
+                // });
                 setTimeout(() => {
                   this.$emit("getList", {});
                 }, 300);

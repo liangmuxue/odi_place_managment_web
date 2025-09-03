@@ -86,9 +86,9 @@
         </div>
       </el-form>
       <div class="base_dialog_main_btnBox">
-        <el-button type="info" icon="el-icon-circle-plus" @click="toSave"
+        <el-button type="info"  @click="toSave"
           >保存</el-button
-        ><el-button type="danger" icon="el-icon-error" @click="closeDialog"
+        ><el-button type="danger"  @click="closeDialog"
           >取消</el-button
         >
       </div>
@@ -243,20 +243,20 @@ export default {
                   });
                   // this.getDetials(response.id);
                 } else {
-                  this.$message({
-                    type: "warning",
-                    message: "提交失败"
-                  });
+                  // this.$message({
+                  //   type: "error",
+                  //   message: "提交失败"
+                  // });
                 }
                 setTimeout(() => {
                   this.$emit("getList", {});
                 }, 300);
               })
               .catch(() => {
-                this.$message({
-                  type: "warning",
-                  message: "提交失败"
-                });
+                // this.$message({
+                //   type: "error",
+                //   message: "提交失败"
+                // });
                 setTimeout(() => {
                   this.$emit("getList", {});
                 }, 300);
@@ -284,20 +284,20 @@ export default {
                     message: "提交成功"
                   });
                 } else {
-                  this.$message({
-                    type: "warning",
-                    message: "提交失败"
-                  });
+                  // this.$message({
+                  //   type: "error",
+                  //   message: "提交失败"
+                  // });
                 }
                 setTimeout(() => {
                   this.$emit("getList", {});
                 }, 300);
               })
               .catch(() => {
-                this.$message({
-                  type: "warning",
-                  message: "提交失败"
-                });
+                // this.$message({
+                //   type: "error",
+                //   message: "提交失败"
+                // });
                 setTimeout(() => {
                   this.$emit("getList", {});
                 }, 300);

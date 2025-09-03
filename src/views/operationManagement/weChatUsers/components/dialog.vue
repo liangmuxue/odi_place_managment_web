@@ -44,12 +44,13 @@
                   <img
                     v-if="newList.avatar !== '' && newList.avatar !== null"
                     slot="reference"
-                    :src="
-                      newList.avatar + '?x-oss-process=image/resize,h_36,w_48'
-                    "
+                    :src="newList.avatar"
                     width="48"
                     height="36"
                   />
+                  <!-- :src="
+                      newList.avatar + '?x-oss-process=image/resize,h_36,w_48'
+                    " -->
                   <span v-else>
                     <div min-width="48" height="36"></div>
                   </span>

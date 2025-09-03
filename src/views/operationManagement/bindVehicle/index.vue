@@ -81,7 +81,11 @@
       <el-button icon="el-icon-refresh-right" @click="resetList"
         >重置</el-button
       >
-      <el-button type="primary" icon="el-icon-search" @click="toSearchList"
+      <el-button
+        type="primary"
+        icon="el-icon-search"
+        v-has="{ red: 'unbind', type: 1 }"
+        @click="toSearchList"
         >查询</el-button
       >
     </div>
@@ -168,10 +172,10 @@
             <span
               class="operation_button update_btn"
               @click="toDetial(scope.row)"
+              v-has="{ red: 'bindVehicleDetails', type: 1 }"
             >
               详情
             </span>
-            <!-- v-has="{ red: 'editBox', type: 1 }" -->
           </template>
         </el-table-column>
       </el-table>
@@ -337,10 +341,10 @@ export default {
               this.openLoading();
               this.getList();
             } else {
-              this.$message({
-                type: "warning",
-                message: "解除绑定失败"
-              });
+              // this.$message({
+              //   type: "error",
+              //   message: "解除绑定失败"
+              // });
             }
           });
         });

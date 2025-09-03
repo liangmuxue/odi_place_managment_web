@@ -28,6 +28,7 @@
           range-separator="-"
           start-placeholder="请选择时间"
           end-placeholder
+          :default-time="['00:00:00', '23:59:59']"
         ></el-date-picker>
         <!-- :default-time="['00:00:00', '23:59:59']" -->
       </span>
@@ -57,7 +58,11 @@
       >
     </div>
     <div class="btn_box">
-      <el-button type="info" icon="el-icon-upload2" @click="toExport"
+      <el-button
+        type="info"
+        icon="el-icon-upload2"
+        @click="toExport"
+        v-has="{ red: 'monthlyRentalRecordExport', type: 1 }"
         >导出</el-button
       >
     </div>
@@ -370,7 +375,7 @@ export default {
           //     this.getList();
           //   } else {
           //     this.$message({
-          //       type: "warning",
+          //       type: "error",
           //       message: "操作失败"
           //     });
           //   }

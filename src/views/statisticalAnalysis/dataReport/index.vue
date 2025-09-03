@@ -76,12 +76,12 @@
         </el-table-column>
         <el-table-column label="周转率%" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.velocity * 100 }}</span>
+            <span class="content">{{ getNo(scope.row.velocity) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="缴费率%" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.contributionRate * 100 }}</span>
+            <span class="content">{{ getNo(scope.row.contributionRate) }}</span>
           </template>
         </el-table-column>
 
@@ -199,7 +199,9 @@ export default {
         background: "rgba(0, 0, 0, 0.7)"
       });
     },
-
+    getNo(num) {
+      return Math.round(num * 100);
+    },
     //获取数据列表
     getList() {
       let para = this.listQuery;

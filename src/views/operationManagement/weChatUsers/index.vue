@@ -100,7 +100,7 @@
         </el-table-column>
         <el-table-column label="头像" min-width="90px" align="center">
           <template slot-scope="scope">
-            <div class="content">
+            <div class="content" :key="scope.row.id">
               <el-popover placement="top-start" width="500" trigger="click">
                 <img
                   :src="scope.row.avatar ? scope.row.avatar : scope.row.avatar"
@@ -109,12 +109,13 @@
                 <img
                   v-if="scope.row.avatar !== '' && scope.row.avatar !== null"
                   slot="reference"
-                  :src="
-                    scope.row.avatar + '?x-oss-process=image/resize,h_36,w_48'
-                  "
+                  :src="scope.row.avatar"
                   width="48"
                   height="36"
                 />
+                <!-- :src="
+                    scope.row.avatar + '?x-oss-process=image/resize,h_36,w_48'
+                  " -->
                 <span v-else>
                   <div min-width="48" height="36"></div>
                 </span>
@@ -209,10 +210,10 @@
             <span
               class="operation_button update_btn"
               @click="toDetial(scope.row)"
+              v-has="{ red: 'weChatUsersDetails', type: 1 }"
             >
               详情
             </span>
-            <!-- v-has="{ red: 'editBox', type: 1 }" -->
           </template>
         </el-table-column>
       </el-table>

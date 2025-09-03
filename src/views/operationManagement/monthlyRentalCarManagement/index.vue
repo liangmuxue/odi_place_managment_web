@@ -82,7 +82,11 @@
         <el-radio-button :label="-1">不通过</el-radio-button>
       </el-radio-group>
 
-      <el-dropdown @command="toStartStop" v-if="listQuery.verify == 1">
+      <el-dropdown
+        @command="toStartStop"
+        v-if="listQuery.verify == 1"
+        v-has="{ red: 'monthlyRentalCarManagementEnable', type: 1 }"
+      >
         <el-button type="primary">
           批量启停<i class="el-icon-arrow-down el-icon--right"></i>
         </el-button>
@@ -97,6 +101,7 @@
         icon="el-icon-s-check"
         @click="toAudits"
         v-if="listQuery.verify == 0"
+        v-has="{ red: 'monthlyRentalAudit', type: 1 }"
         >批量审核</el-button
       >
 
@@ -199,7 +204,7 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <div class="content">
+            <div class="content" :key="scope.row.id">
               <el-popover placement="top-start" width="500" trigger="click">
                 <img
                   :src="
@@ -215,13 +220,14 @@
                       scope.row.drivingLicense !== null
                   "
                   slot="reference"
-                  :src="
-                    scope.row.drivingLicense +
-                      '?x-oss-process=image/resize,h_36,w_48'
-                  "
+                  :src="scope.row.drivingLicense"
                   width="48"
                   height="36"
                 />
+                <!-- :src="
+                    scope.row.drivingLicense +
+                      '?x-oss-process=image/resize,h_36,w_48'
+                  " -->
                 <span v-else>
                   <div min-width="48" height="36"></div>
                 </span>
@@ -238,7 +244,7 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <div class="content">
+            <div class="content" :key="scope.row.id">
               <el-popover placement="top-start" width="500" trigger="click">
                 <img
                   :src="
@@ -254,13 +260,14 @@
                       scope.row.enterpriseSeal !== null
                   "
                   slot="reference"
-                  :src="
-                    scope.row.enterpriseSeal +
-                      '?x-oss-process=image/resize,h_36,w_48'
-                  "
+                  :src="scope.row.enterpriseSeal"
                   width="48"
                   height="36"
                 />
+                <!-- :src="
+                    scope.row.enterpriseSeal +
+                      '?x-oss-process=image/resize,h_36,w_48'
+                  " -->
                 <span v-else>
                   <div min-width="48" height="36"></div>
                 </span>
@@ -422,6 +429,7 @@
             <span
               class="operation_button update_btn"
               @click="toDetial(scope.row)"
+              v-has="{ red: 'monthlyRentalCarManagementDetails', type: 1 }"
             >
               详情
             </span>
@@ -430,6 +438,7 @@
               @click="toStartStop2(scope.row.id, 1)"
               v-show="listQuery.verify == 1"
               v-if="scope.row.status == 0 || scope.row.status == 3"
+              v-has="{ red: 'monthlyRentalCarManagementEnable', type: 1 }"
             >
               启用
             </span>
@@ -438,6 +447,7 @@
               @click="toStartStop2(scope.row.id, 0)"
               v-show="listQuery.verify == 1"
               v-if="scope.row.status == 1 || scope.row.status == 2"
+              v-has="{ red: 'monthlyRentalCarManagementEnable', type: 1 }"
             >
               禁用
             </span>
@@ -445,11 +455,10 @@
               class="operation_button update_btn"
               @click="toAudit(scope.row)"
               v-if="listQuery.verify == 0"
+              v-has="{ red: 'monthlyRentalAudit', type: 1 }"
             >
               审核
             </span>
-
-            <!-- v-has="{ red: 'editBox', type: 1 }" -->
           </template>
         </el-table-column>
       </el-table>
@@ -495,11 +504,8 @@
           </div>
         </el-form>
         <div class="base_dialog_main_btnBox" style="padding:0px 240px 30px">
-          <el-button type="info" icon="el-icon-circle-plus" @click="noPass"
-            >保存</el-button
-          ><el-button type="danger" icon="el-icon-error" @click="closeDialog"
-            >取消</el-button
-          >
+          <el-button type="info" @click="noPass">保存</el-button
+          ><el-button type="danger" @click="closeDialog">取消</el-button>
         </div>
       </div>
     </el-dialog>
@@ -648,10 +654,10 @@ export default {
           this.openLoading();
           this.getList();
         } else {
-          this.$message({
-            type: "warning",
-            message: "审核失败"
-          });
+          // this.$message({
+          //   type: "error",
+          //   message: "审核失败"
+          // });
         }
       });
     },
@@ -676,17 +682,17 @@ export default {
                   message: "审核成功"
                 });
               } else {
-                this.$message({
-                  type: "warning",
-                  message: "审核失败"
-                });
+                // this.$message({
+                //   type: "error",
+                //   message: "审核失败"
+                // });
               }
             })
             .catch(() => {
-              this.$message({
-                type: "warning",
-                message: "审核失败"
-              });
+              // this.$message({
+              //   type: "error",
+              //   message: "审核失败"
+              // });
             });
         } else {
           console.log("error submit!!");
@@ -837,10 +843,10 @@ export default {
                 this.openLoading();
                 this.getList();
               } else {
-                this.$message({
-                  type: "warning",
-                  message: "操作失败"
-                });
+                // this.$message({
+                //   type: "error",
+                //   message: "操作失败"
+                // });
               }
             });
           })
@@ -880,10 +886,10 @@ export default {
           this.openLoading();
           this.getList();
         } else {
-          this.$message({
-            type: "warning",
-            message: "操作失败"
-          });
+          // this.$message({
+          //   type: "error",
+          //   message: "操作失败"
+          // });
         }
       });
     },

@@ -240,8 +240,8 @@
                     :picker-options="{
                       selectableRange: '00:00:00 - 23:59:59'
                     }"
-                    format="HH:mm"
-                    value-format="HH:mm"
+                    format="HH:mm:ss"
+                    value-format="HH:mm:ss"
                     placeholder="选择时间"
                     style="width: 60%"
                     size="small"
@@ -301,8 +301,8 @@
                     :picker-options="{
                       selectableRange: '00:00:00 - 23:59:59'
                     }"
-                    format="HH:mm"
-                    value-format="HH:mm"
+                    format="HH:mm:ss"
+                    value-format="HH:mm:ss"
                     placeholder="选择时间"
                     style="width: 60%"
                     size="small"
@@ -826,9 +826,9 @@
         </div>
       </el-form>
       <div class="base_dialog_main_btnBox" v-if="pageType !== 3">
-        <el-button type="info" icon="el-icon-circle-plus" @click="toSave"
+        <el-button type="info"  @click="toSave"
           >保存</el-button
-        ><el-button type="danger" icon="el-icon-error" @click="closeDialog"
+        ><el-button type="danger"  @click="closeDialog"
           >取消</el-button
         >
       </div>
@@ -909,7 +909,7 @@ export default {
     const validateNo1440 = (rule, value, callback) => {
       const regex = /^(0|[1-9]\d{0,2}|1[0-3]\d{2}|14[0-3][0-9]|1440)$/;
       const isValid = regex.test(value);
-      if (!value) {
+      if (!value && value !== 0) {
         callback();
       } else {
         if (isValid) {
@@ -923,7 +923,7 @@ export default {
       console.log(2, value);
       const regex1440 = /^(0|[1-9]\d{0,2}|1[0-3]\d{2}|14[0-3][0-9]|1440)$/;
       const regexNo = /^\d+(\.\d{1})?$/;
-      if (!value.afterFreeTime) {
+      if (!value.afterFreeTime && value.afterFreeTime !== 0) {
         callback(new Error("请输入免费时长后停放时间"));
       } else {
         const isValid = regex1440.test(value.afterFreeTime);
@@ -1369,20 +1369,20 @@ export default {
                   });
                   // this.getDetials(response.id);
                 } else {
-                  this.$message({
-                    type: "warning",
-                    message: "提交失败"
-                  });
+                  // this.$message({
+                  //   type: "error",
+                  //   message: "提交失败"
+                  // });
                 }
                 setTimeout(() => {
                   this.$emit("getList", {});
                 }, 300);
               })
               .catch(() => {
-                this.$message({
-                  type: "warning",
-                  message: "提交失败"
-                });
+                // this.$message({
+                //   type: "error",
+                //   message: "提交失败"
+                // });
                 setTimeout(() => {
                   this.$emit("getList", {});
                 }, 300);
@@ -1409,20 +1409,20 @@ export default {
                     message: "提交成功"
                   });
                 } else {
-                  this.$message({
-                    type: "warning",
-                    message: "提交失败"
-                  });
+                  // this.$message({
+                  //   type: "error",
+                  //   message: "提交失败"
+                  // });
                 }
                 setTimeout(() => {
                   this.$emit("getList", {});
                 }, 300);
               })
               .catch(() => {
-                this.$message({
-                  type: "warning",
-                  message: "提交失败"
-                });
+                // this.$message({
+                //   type: "error",
+                //   message: "提交失败"
+                // });
                 setTimeout(() => {
                   this.$emit("getList", {});
                 }, 300);

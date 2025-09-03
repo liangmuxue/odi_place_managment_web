@@ -8,8 +8,14 @@
     </div>
     <div class="base_dialog_main">
       <el-form :model="newList" :rules="rules" ref="roleForm">
-        <div class="base_dialog_main_content">
-          <div class="base_dialog_main_left" style="padding:100px">
+        <div
+          class="base_dialog_main_content"
+          style="height:calc(100vh - 200px)"
+        >
+          <div
+            class="base_dialog_main_left"
+            style="max-width: 80%;padding:28px "
+          >
             <span class="base_dialog_condit">
               <el-form-item label="角色名称" prop="roleName">
                 <span
@@ -29,7 +35,7 @@
               </el-form-item>
             </span>
             <span class="base_dialog_condit">
-              <el-form-item label="权限设置" prop="resourceIdList">
+              <el-form-item label="功能权限" prop="resourceIdList">
                 <span style="display: inline-block;width: 72%">
                   <el-input
                     v-show="false"
@@ -46,7 +52,7 @@
                   />
                   <div class="reloBox">
                     <el-tree
-                      class="filter-tree"
+                      class="filter-tree rloe-tree"
                       :data="roleList"
                       :props="defaultProps"
                       node-key="resourceId"
@@ -63,6 +69,50 @@
               </el-form-item>
             </span>
             <span class="base_dialog_condit">
+              <el-form-item label="数据权限" prop="parkingLots">
+                <span style="display: inline-block;width: 72%">
+                  <el-input
+                    v-model="filterText2"
+                    placeholder="请输入"
+                    class="filter-item"
+                    size="small"
+                  />
+                  <div class="reloBox">
+                    <el-table
+                      :data="
+                        parkingList.filter(
+                          data =>
+                            !filterText2 ||
+                            data.name
+                              .toLowerCase()
+                              .includes(filterText2.toLowerCase())
+                        )
+                      "
+                      size="mini"
+                      height="278px"
+                      class="parkingTable"
+                      ref="reloTable"
+                      row-key="id"
+                      @selection-change="handleSelectionChange"
+                      style="width: 100%"
+                      :header-cell-class-name="setClassName"
+                      ><el-table-column
+                        type="selection"
+                        :selectable="checkSelectable"
+                        :reserve-selection="true"
+                        width="55"
+                      >
+                      </el-table-column>
+                      <el-table-column label="停车场名称" prop="name">
+                      </el-table-column>
+                      <el-table-column label="停车场编号" prop="id">
+                      </el-table-column>
+                    </el-table>
+                  </div>
+                </span>
+              </el-form-item>
+            </span>
+            <span class="base_dialog_condit">
               <el-form-item label="状态" prop="status">
                 <el-radio-group
                   v-model="newList.status"
@@ -73,16 +123,28 @@
                 </el-radio-group>
               </el-form-item>
             </span>
+            <span class="base_dialog_condit">
+              <el-form-item label="描述" prop="remark">
+                <el-input
+                  v-model="newList.remark"
+                  type="textarea"
+                  :rows="2"
+                  placeholder="请输入备注"
+                  style="width: 72%"
+                  class="filter-item"
+                  maxlength="200"
+                  show-word-limit
+                  size="small"
+                />
+              </el-form-item>
+            </span>
+            <div class="base_dialog_main_btnBox" v-if="pageType < 3">
+              <el-button type="info" @click="toSave">保存</el-button
+              ><el-button type="danger" @click="closeDialog">取消</el-button>
+            </div>
           </div>
         </div>
       </el-form>
-      <div class="base_dialog_main_btnBox" v-if="pageType < 3">
-        <el-button type="info" icon="el-icon-circle-plus" @click="toSave"
-          >保存</el-button
-        ><el-button type="danger" icon="el-icon-error" @click="closeDialog"
-          >取消</el-button
-        >
-      </div>
     </div>
   </div>
 </template>
@@ -95,6 +157,9 @@ import {
   roleUpdate, //修改角色
   resourceTree //全部菜单树
 } from "@/api/systemset";
+import {
+  lotSelectAll //获取车场下拉框
+} from "@/api/yardManagement";
 
 export default {
   components: {},
@@ -115,9 +180,18 @@ export default {
         callback();
       }
     };
+    const validatecurParkings = (rule, value, callback) => {
+      if (value.length) {
+        callback();
+      } else {
+        callback(new Error("请选择数据权限"));
+      }
+    };
+
     return {
       pageType: 1,
       filterText: "",
+      filterText2: "",
       title: "新增",
       isShow: false,
       editroleName: null, //编辑角色名
@@ -125,15 +199,19 @@ export default {
         roleName: null, //角色名
         status: "0", //状态 0-正常 1-禁用
         resourceList: [], //资源列表
+        parkingLots: [], //数据权限
         resourceIdList: "", //资源id列表
+        remark: "", //描述
         roleId: "" //角色ID
       }, //车位详情
+      selected: [], //选中数据权限存储
       defaultProps: {
         value: "resourceId", // id
         label: "resCanme", // 名
         children: "children" // 子节点字段名
       },
       roleList: [],
+      parkingList: [],
       rules: {
         roleName: [
           { required: true, message: "请输入角色名", trigger: "blur" },
@@ -150,7 +228,22 @@ export default {
           }
         ],
         resourceIdList: [
-          { required: true, message: "请选择权限", trigger: "change" }
+          { required: true, message: "请选择功能权限", trigger: "change" }
+        ],
+        parkingLots: [
+          {
+            required: true,
+            message: "请选择数据权限",
+            trigger: "change",
+            validator: validatecurParkings
+          }
+        ],
+        remark: [
+          {
+            required: true,
+            message: "请输入描述，内容不超过200字符",
+            trigger: "blur"
+          }
         ],
         status: [{ required: true, message: "请选择状态", trigger: "blur" }]
       }
@@ -163,8 +256,15 @@ export default {
   },
   created() {
     this.getFieldTable();
+    this.getparking();
   },
   methods: {
+    getparking() {
+      lotSelectAll().then(response => {
+        this.parkingList = response.data;
+      });
+    },
+
     getFieldTable() {
       let para = {};
       resourceTree(para)
@@ -172,6 +272,40 @@ export default {
           this.roleList = response.data;
         })
         .catch(() => {});
+    },
+    //选择数据权限
+    handleSelectionChange(list) {
+      this.newList.parkingLots = list;
+    },
+    //默认选择数据权限
+    selectChange() {
+      let parkingLots = this.newList.parkingLots;
+      let list = [];
+      parkingLots.forEach(el => {
+        list.push(el.id);
+      });
+      let arr = this.parkingList.filter(e => list.includes(e.id));
+      if (arr) {
+        arr.forEach(el => {
+          this.$refs.reloTable.toggleRowSelection(el);
+        });
+      } else {
+        this.$refs.reloTable.clearSelection();
+      }
+    },
+    checkSelectable() {
+      let res = true;
+      if (this.pageType == 3) {
+        res = false;
+      }
+      return res;
+    },
+    setClassName() {
+      let res = "";
+      if (this.pageType == 3) {
+        res = "all-disabled";
+      }
+      return res;
     },
     //选权限
     checkTree(a, b) {
@@ -193,6 +327,14 @@ export default {
       if (pageType == 2) {
         this.title = "编辑";
         this.getDetials(e);
+        this.defaultProps = {
+          value: "resourceId", // id
+          label: "resCanme", // 名
+          children: "children", // 子节点字段名
+          disabled: () => {
+            return false;
+          }
+        };
       } else if (pageType == 3) {
         this.title = "详情";
         this.getDetials(e);
@@ -210,10 +352,20 @@ export default {
           roleName: null, //角色名
           status: "0", //状态 0-正常 1-禁用
           resourceList: [], //资源列表
+          parkingLots: [], //数据权限
           resourceIdList: "", //资源id列表
+          remark: "", //描述
           roleId: "" //角色ID
         };
         this.editroleName = null;
+        this.defaultProps = {
+          value: "resourceId", // id
+          label: "resCanme", // 名
+          children: "children", // 子节点字段名
+          disabled: () => {
+            return false;
+          }
+        };
 
         if (this.$refs["roleForm"]) {
           this.$nextTick(() => {
@@ -232,6 +384,9 @@ export default {
         let list = this.getResourceList(response.data.resourceList);
         this.$set(this.newList, "resourceIdList", list.toString());
         this.$refs.tree.setCheckedKeys(list);
+        setTimeout(() => {
+          this.selectChange();
+        }, 300);
       });
     },
     getResourceList(arr) {
@@ -278,20 +433,20 @@ export default {
                   });
                   // this.getDetials(response.id);
                 } else {
-                  this.$message({
-                    type: "warning",
-                    message: "提交失败"
-                  });
+                  // this.$message({
+                  //   type: "error",
+                  //   message: "提交失败"
+                  // });
                 }
                 setTimeout(() => {
                   this.$emit("getList", {});
                 }, 300);
               })
               .catch(() => {
-                this.$message({
-                  type: "warning",
-                  message: "提交失败"
-                });
+                // this.$message({
+                //   type: "error",
+                //   message: "提交失败"
+                // });
                 setTimeout(() => {
                   this.$emit("getList", {});
                 }, 300);
@@ -319,20 +474,20 @@ export default {
                     message: "提交成功"
                   });
                 } else {
-                  this.$message({
-                    type: "warning",
-                    message: "提交失败"
-                  });
+                  // this.$message({
+                  //   type: "error",
+                  //   message: "提交失败"
+                  // });
                 }
                 setTimeout(() => {
                   this.$emit("getList", {});
                 }, 300);
               })
               .catch(() => {
-                this.$message({
-                  type: "warning",
-                  message: "提交失败"
-                });
+                // this.$message({
+                //   type: "error",
+                //   message: "提交失败"
+                // });
                 setTimeout(() => {
                   this.$emit("getList", {});
                 }, 300);
@@ -352,7 +507,9 @@ export default {
 .reloBox {
   margin-top: 5px;
   height: 300px;
+  // width: 800px;
   border: 1px solid #dcdfe6;
+  padding: 10px;
   overflow: auto;
 }
 .user_condit_text {
@@ -360,5 +517,12 @@ export default {
   line-height: 40px;
   color: #ccc;
   padding-left: 120px;
+}
+</style>
+<style lang="scss">
+.all-disabled .el-checkbox__input .el-checkbox__inner {
+  background-color: #edf2fc !important;
+  border-color: #dcdfe6 !important;
+  cursor: not-allowed !important;
 }
 </style>

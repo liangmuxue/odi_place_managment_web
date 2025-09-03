@@ -41,6 +41,7 @@
           range-separator="-"
           start-placeholder="请选择时间"
           end-placeholder
+          :default-time="['00:00:00', '23:59:59']"
         ></el-date-picker>
         <!-- :default-time="['00:00:00', '23:59:59']" -->
       </span>
@@ -70,7 +71,11 @@
       >
     </div>
     <div class="btn_box">
-      <el-button type="info" icon="el-icon-upload2" @click="toExport"
+      <el-button
+        type="info"
+        icon="el-icon-upload2"
+        @click="toExport"
+        v-has="{ red: 'parkingPaymentExport', type: 1 }"
         >导出</el-button
       >
     </div>
@@ -158,7 +163,12 @@
         </el-table-column>
         <el-table-column label="优惠" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.discountName || "无" }}</span>
+            <span class="content" v-if="scope.row.discountType == 0">{{
+              scope.row.discountMoney + "折" || "无"
+            }}</span>
+            <span class="content" v-if="scope.row.discountType == 1">{{
+              scope.row.discountMoney + "元" || "无"
+            }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -195,6 +205,7 @@
               class="operation_button update_btn"
               v-if="scope.row.status == 2"
               @click="openRefund(scope.row.id)"
+              v-has="{ red: 'parkingPaymentRefund', type: 1 }"
             >
               退款
             </span>
@@ -249,11 +260,8 @@
           </div>
         </el-form>
         <div class="base_dialog_main_btnBox" style="padding:0px 240px 30px">
-          <el-button type="info" icon="el-icon-circle-plus" @click="toRefund"
-            >保存</el-button
-          ><el-button type="danger" icon="el-icon-error" @click="closeDialog"
-            >取消</el-button
-          >
+          <el-button type="info" @click="toRefund">保存</el-button
+          ><el-button type="danger" @click="closeDialog">取消</el-button>
         </div>
       </div>
     </el-dialog>
@@ -464,10 +472,10 @@ export default {
               this.openLoading();
               this.getList();
             } else {
-              this.$message({
-                type: "warning",
-                message: "退款失败"
-              });
+              // this.$message({
+              //   type: "error",
+              //   message: "退款失败"
+              // });
             }
           });
         })

@@ -13,14 +13,20 @@
       >
     </div>
     <div class="btn_box">
-      <el-button type="info" icon="el-icon-circle-plus-outline" @click="toAdd"
+      <el-button
+        type="info"
+        icon="el-icon-circle-plus-outline"
+        @click="toAdd"
+        v-has="{ red: 'rolesAdd', type: 1 }"
         >新增</el-button
       >
-      <!-- v-has="{ red: 'addBox', type: 1 }" -->
-      <el-button type="danger" icon="el-icon-circle-close" @click="toDel"
+      <el-button
+        type="danger"
+        icon="el-icon-circle-close"
+        @click="toDel"
+        v-has="{ red: 'rolesDelete', type: 1 }"
         >删除</el-button
       >
-      <!-- v-has="{ red: 'deleteBox', type: 1 }" -->
     </div>
 
     <div class="content_box">
@@ -47,7 +53,7 @@
         <el-table-column
           label="角色名称"
           align="center"
-          width="160"
+          min-width="160"
           show-overflow-tooltip
         >
           <template slot-scope="scope">
@@ -57,7 +63,7 @@
         <el-table-column
           label="状态"
           align="center"
-          width="100"
+          min-width="100"
           show-overflow-tooltip
         >
           <template slot-scope="scope">
@@ -67,15 +73,25 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="权限菜单" align="center" show-overflow-tooltip>
+        <el-table-column
+          label="描述"
+          align="center"
+          min-width="100"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">{{ scope.row.remark }}</span>
+          </template>
+        </el-table-column>
+        <!-- <el-table-column label="权限菜单" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="content">{{ getNames(scope.row.resourceList) }}</span>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column
           label="创建时间"
           align="center"
-          width="160"
+          min-width="160"
           show-overflow-tooltip
         >
           <template slot-scope="scope">
@@ -86,7 +102,7 @@
           label="操作"
           align="center"
           header-align="center"
-          width="160"
+          min-width="160"
           class-name="small-padding fixed-width"
         >
           <template slot-scope="scope">
@@ -94,12 +110,14 @@
               v-if="!scope.row.admin"
               class="operation_button update_btn"
               @click="toEdit(scope.row)"
+              v-has="{ red: 'rolesEdit', type: 1 }"
             >
               编辑
             </span>
             <span
               class="operation_button update_btn"
               @click="toDetails(scope.row)"
+              v-has="{ red: 'rolesDetails', type: 1 }"
             >
               详情
             </span>
@@ -265,10 +283,10 @@ export default {
               this.openLoading();
               this.getList();
             } else {
-              this.$message({
-                type: "warning",
-                message: "删除失败"
-              });
+              // this.$message({
+              //   type: "error",
+              //   message: "删除失败"
+              // });
             }
           });
         });

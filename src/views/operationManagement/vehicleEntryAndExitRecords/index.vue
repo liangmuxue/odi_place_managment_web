@@ -113,11 +113,25 @@
       >
     </div>
     <div class="btn_box">
-      <el-button type="info" icon="el-icon-upload2" @click="toExport"
+      <el-button
+        type="info"
+        icon="el-icon-upload2"
+        v-has="{ red: 'vehicleEntryAndExitRecordsExport', type: 1 }"
+        @click="toExport"
         >导出</el-button
       >
-      <el-button type="danger" icon="el-icon-circle-close" @click="toDelBatch"
+      <el-button
+        type="danger"
+        icon="el-icon-circle-close"
+        v-has="{ red: 'vehicleEntryAndExitRecordsDelete', type: 1 }"
+        @click="toDelBatch"
         >删除</el-button
+      >
+      <el-button
+        type="info"
+        @click="toManualEntry"
+        v-has="{ red: 'manualEntry', type: 1 }"
+        >手动入场</el-button
       >
     </div>
 
@@ -191,7 +205,7 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <div class="content">
+            <div class="content" :key="scope.row.id">
               <el-popover placement="top-start" width="500" trigger="click">
                 <img
                   :src="
@@ -204,13 +218,12 @@
                     scope.row.entryImg !== '' && scope.row.entryImg !== null
                   "
                   slot="reference"
-                  :src="
-                    scope.row.entryImg + '?x-oss-process=image/resize,h_36,w_48'
-                  "
+                  :src="scope.row.entryImg"
                   width="48"
                   height="36"
                 />
-                <span v-else>
+                <!-- scope.row.entryImg + '?x-oss-process=image/resize,h_36,w_48' -->
+                <span v-else slot="reference">
                   <div min-width="48" height="36"></div>
                 </span>
               </el-popover>
@@ -224,10 +237,53 @@
             </div>
           </template>
         </el-table-column>
+
+        <el-table-column
+          label="出场时间"
+          align="center"
+          min-width="140px"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content"
+              >{{ scope.row.leaveTime | parseTime("{y}-{m}-{d} {h}:{i}:{s}") }}
+            </span>
+          </template>
+        </el-table-column>
         <el-table-column label="出场设备" min-width="100px" align="center">
           <template slot-scope="scope">
             <div class="content">
               {{ scope.row.leaveBarrierName }}
+            </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="出场图片" min-width="100px" align="center">
+          <template slot-scope="scope">
+            <div class="content" :key="scope.row.id">
+              <el-popover placement="top-start" width="500" trigger="click">
+                <img
+                  :src="
+                    scope.row.leaveImg ? scope.row.leaveImg : scope.row.leaveImg
+                  "
+                  width="100%"
+                />
+                <img
+                  v-if="
+                    scope.row.leaveImg !== '' && scope.row.leaveImg !== null
+                  "
+                  slot="reference"
+                  :src="scope.row.leaveImg"
+                  width="48"
+                  height="36"
+                />
+                <!-- :src="
+                    scope.row.leaveImg + '?x-oss-process=image/resize,h_36,w_48'
+                  " -->
+                <span v-else>
+                  <div min-width="48" height="36"></div>
+                </span>
+              </el-popover>
             </div>
           </template>
         </el-table-column>
@@ -248,68 +304,48 @@
         </el-table-column>
 
         <el-table-column
-          label="出场时间"
-          align="center"
-          min-width="140px"
-          show-overflow-tooltip
-        >
-          <template slot-scope="scope">
-            <span class="content"
-              >{{ scope.row.leaveTime | parseTime("{y}-{m}-{d} {h}:{i}:{s}") }}
-            </span>
-          </template>
-        </el-table-column>
-        <el-table-column label="出场图片" min-width="100px" align="center">
-          <template slot-scope="scope">
-            <div class="content">
-              <el-popover placement="top-start" width="500" trigger="click">
-                <img
-                  :src="
-                    scope.row.leaveImg ? scope.row.leaveImg : scope.row.leaveImg
-                  "
-                  width="100%"
-                />
-                <img
-                  v-if="
-                    scope.row.leaveImg !== '' && scope.row.leaveImg !== null
-                  "
-                  slot="reference"
-                  :src="
-                    scope.row.leaveImg + '?x-oss-process=image/resize,h_36,w_48'
-                  "
-                  width="48"
-                  height="36"
-                />
-                <span v-else>
-                  <div min-width="48" height="36"></div>
-                </span>
-              </el-popover>
-            </div>
-          </template>
-        </el-table-column>
-
-        <el-table-column
           label="操作"
           align="center"
-          width="170px"
+          width="320px"
           header-align="center"
           class-name="small-padding fixed-width"
         >
           <template slot-scope="scope">
             <span
               class="operation_button"
-              style="width:90px"
+              style="width:70px"
               @click="toEdit(scope.row)"
+              v-has="{ red: 'modifyLicensePlateexit', type: 1 }"
             >
               修改车牌
             </span>
             <span
               class="operation_button"
               style="width:50px"
-              v-if="!scope.row.leaveTime && scope.row.payStatus == 2"
+              v-if="!scope.row.leaveTime || !scope.row.entryTime"
               @click="toDel(scope.row)"
+              v-has="{ red: 'vehicleEntryAndExitRecordsDelete', type: 1 }"
             >
+              <!-- v-if="!scope.row.leaveTime && scope.row.payStatus == 2" -->
               删除
+            </span>
+            <span
+              class="operation_button"
+              style="width:70px"
+              v-if="!scope.row.leaveTime"
+              @click="toManualExit(scope.row)"
+              v-has="{ red: 'manualExit', type: 1 }"
+            >
+              手动出场
+            </span>
+            <span
+              class="operation_button"
+              style="width:70px"
+              v-if="!scope.row.leaveTime"
+              @click="toExit(scope.row)"
+              v-has="{ red: 'exit', type: 1 }"
+            >
+              抬杆放行
             </span>
             <!-- v-has="{ red: 'editBox', type: 1 }" -->
           </template>
@@ -327,6 +363,17 @@
       />
     </div>
     <Dialog ref="dialog" @getList="getList" @openLoading="openLoading"></Dialog>
+    <ManualEntry
+      ref="manualEntry"
+      @getList="getList"
+      @openLoading="openLoading"
+    ></ManualEntry>
+    <ManualExit
+      ref="manualExit"
+      @getList="getList"
+      @openLoading="openLoading"
+    ></ManualExit>
+    <Exit ref="exit" @getList="getList" @openLoading="openLoading"></Exit>
   </div>
 </template>
 
@@ -338,11 +385,15 @@ import {
   vehicleEntryDeleteBatch ////出入记录批量删除
 } from "@/api/operationManagement";
 import Dialog from "./components/dialog";
+import ManualEntry from "./components/manualEntry";
+import ManualExit from "./components/manualExit";
+import Exit from "./components/exit";
+
 import { fieldTable } from "@/api/common";
 
 export default {
   name: "vehicleEntryAndExitRecords",
-  components: { Dialog },
+  components: { Dialog, ManualEntry, ManualExit, Exit },
   data() {
     return {
       listQuery: {
@@ -398,7 +449,7 @@ export default {
   methods: {
     //判断是否可选
     selectable(e) {
-      if (!e.leaveTime) {
+      if (!e.leaveTime || !e.entryTime) {
         return true;
       } else {
         return false;
@@ -533,6 +584,24 @@ export default {
       this.selGateway = val;
     },
 
+    //打开手动入场
+    toManualEntry(e) {
+      let id = e.id;
+      let pageType = 2;
+      this.$refs.manualEntry.showDialog(id, pageType);
+    },
+    //打开手动出场
+    toManualExit(e) {
+      let id = e.id;
+      let pageType = 2;
+      this.$refs.manualExit.showDialog(id, pageType);
+    },
+    //打开出场
+    toExit(e) {
+      let id = e.id;
+      let pageType = 2;
+      this.$refs.exit.showDialog(id, pageType);
+    },
     //打开修改车牌
     toEdit(e) {
       let id = e.id;
@@ -559,10 +628,10 @@ export default {
             this.openLoading();
             this.getList();
           } else {
-            this.$message({
-              type: "warning",
-              message: "删除失败"
-            });
+            // this.$message({
+            //   type: "error",
+            //   message: "删除失败"
+            // });
           }
         });
       });
@@ -592,16 +661,16 @@ export default {
               this.openLoading();
               this.getList();
             } else {
-              this.$message({
-                type: "warning",
-                message: "删除失败"
-              });
+              // this.$message({
+              //   type: "error",
+              //   message: "删除失败"
+              // });
             }
           });
         });
       } else {
         this.$message({
-          type: "warning",
+          type: "error",
           message: "请选择删除的车辆出入记录"
         });
       }

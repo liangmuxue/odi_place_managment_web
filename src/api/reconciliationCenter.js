@@ -174,6 +174,15 @@ export function arrearsRecordExportByTime(data) {
 
   })
 }
+//删除欠费记录
+export function arrearsRecordRemoveById(data) {
+  return request({
+    url: '/system/arrearsRecord/removeById',
+    method: 'post',
+    data
+
+  })
+}
 //欠费记录明细
 export function arrearsRecordGetInfo(data) {
   return request({

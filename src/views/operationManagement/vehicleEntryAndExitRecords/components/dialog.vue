@@ -14,7 +14,7 @@
               <el-form-item label="车牌号" prop="licensePlate">
                 <el-input
                   v-model="newList.licensePlate"
-                  placeholder="输入活动名称"
+                  placeholder="输入车牌号"
                   style="width: 72%"
                   class="filter-item"
                   size="small"
@@ -95,13 +95,14 @@
                         newList.entryImg !== '' && newList.entryImg !== null
                       "
                       slot="reference"
-                      :src="
-                        newList.entryImg +
-                          '?x-oss-process=image/resize,h_36,w_48'
-                      "
+                      :src="newList.entryImg"
                       width="48"
                       height="36"
                     />
+                    <!-- :src="
+                        newList.entryImg +
+                          '?x-oss-process=image/resize,h_36,w_48'
+                      " -->
                     <span v-else>
                       <div min-width="48" height="36"></div>
                     </span>
@@ -122,13 +123,12 @@
                         newList.leaveImg !== '' && newList.leaveImg !== null
                       "
                       slot="reference"
-                      :src="
-                        newList.leaveImg +
-                          '?x-oss-process=image/resize,h_36,w_48'
-                      "
+                      :src="newList.leaveImg"
                       width="48"
                       height="36"
                     />
+                    <!-- :src=" newList.leaveImg +
+                    '?x-oss-process=image/resize,h_36,w_48' " -->
                     <span v-else>
                       <div min-width="48" height="36"></div>
                     </span>
@@ -164,11 +164,8 @@
         </div>
       </el-form>
       <div class="base_dialog_main_btnBox" v-if="pageType !== 3">
-        <el-button type="info" icon="el-icon-circle-plus" @click="toSave"
-          >保存</el-button
-        ><el-button type="danger" icon="el-icon-error" @click="closeDialog"
-          >取消</el-button
-        >
+        <el-button type="info" @click="toSave">保存</el-button
+        ><el-button type="danger" @click="closeDialog">取消</el-button>
       </div>
     </div>
   </div>
@@ -193,7 +190,7 @@ export default {
       title: "修改车牌",
       isShow: false,
       newList: {
-        licensePlate: "", //活动名称
+        licensePlate: "", //车牌
         parkingType: null, //适用类型
         parkingTypeName: "", //适用类型
         buyUnit: null, //适用购买单位
@@ -208,12 +205,12 @@ export default {
       }, //出入记录
       rules: {
         licensePlate: [
-          { required: true, message: "请输入车牌号", trigger: "blur" },
-          {
-            pattern: /^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领][A-HJ-NP-Z][A-HJ-NP-Z0-9]{4,5}[A-HJ-NP-Z0-9挂学警港澳]$/,
-            message: "请输入正确车牌号",
-            trigger: "blur"
-          }
+          { required: true, message: "请输入车牌号", trigger: "blur" }
+          // {
+          //   pattern: /^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领][A-HJ-NP-Z][A-HJ-NP-Z0-9]{4,5}[A-HJ-NP-Z0-9挂学警港澳]$/,
+          //   message: "请输入正确车牌号",
+          //   trigger: "blur"
+          // }
         ]
       },
       time: [],
@@ -376,20 +373,20 @@ export default {
                   });
                   // this.getDetials(response.id);
                 } else {
-                  this.$message({
-                    type: "warning",
-                    message: "提交失败"
-                  });
+                  // this.$message({
+                  //   type: "error",
+                  //   message: "提交失败"
+                  // });
                 }
                 setTimeout(() => {
                   this.$emit("getList", {});
                 }, 300);
               })
               .catch(() => {
-                this.$message({
-                  type: "warning",
-                  message: "提交失败"
-                });
+                // this.$message({
+                //   type: "error",
+                //   message: "提交失败"
+                // });
                 setTimeout(() => {
                   this.$emit("getList", {});
                 }, 300);

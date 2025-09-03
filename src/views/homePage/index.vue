@@ -17,264 +17,295 @@
       </transition>
     </div>
     <div class="homePage_tab">
-      <el-tabs v-model="pageType" @tab-click="handleClick">
-        <el-tab-pane label="运营数据" name="1">
-          <div class="operationalData">
-            <div class="homePage_top homePge_box">
-              <div class="homePge_box_title">
-                <div class="homePge_box_title_ico"></div>
-                <div>实时统计</div>
+      <div class="homePage_tab_top">
+        <div
+          :class="
+            pageType == 1 ? 'homePage_tab_top_btn' : 'homePage_tab_top_btn2'
+          "
+          v-has="{ red: 'operationalData', type: 1 }"
+          @click="changeTab(1)"
+        >
+          运营数据
+        </div>
+        <div
+          :class="
+            pageType == 2 ? 'homePage_tab_top_btn' : 'homePage_tab_top_btn2'
+          "
+          v-has="{ red: 'monitoringCommand', type: 1 }"
+          @click="changeTab(2)"
+        >
+          监控指挥
+        </div>
+        <div
+          :class="
+            pageType == 3 ? 'homePage_tab_top_btn' : 'homePage_tab_top_btn2'
+          "
+          v-has="{ red: 'securityWarning', type: 1 }"
+          @click="changeTab(3)"
+        >
+          安防预警
+        </div>
+      </div>
+      <!-- <el-tabs v-model="pageType" @tab-click="handleClick">
+        <el-tab-pane label="运营数据" name="1"> -->
+      <div
+        class="operationalData"
+        v-if="pageType == 1"
+        v-has="{ red: 'operationalData', type: 1 }"
+      >
+        <div class="homePage_top homePge_box">
+          <div class="homePge_box_title">
+            <div class="homePge_box_title_ico"></div>
+            <div>实时统计</div>
+          </div>
+          <div class="homePage_top_box">
+            <div class="homePage_top_card">
+              <div class="homePage_top_card_ico parkCount"></div>
+              <div class="homePage_top_card_textBox">
+                <div class="homePage_top_card_textBox_title">
+                  {{ dataStatisticsVo.parkCount }}
+                </div>
+                <div class="homePage_top_card_textBox_text">停车场数量</div>
               </div>
-              <div class="homePage_top_box">
-                <div class="homePage_top_card">
-                  <div class="homePage_top_card_ico parkCount"></div>
-                  <div class="homePage_top_card_textBox">
-                    <div class="homePage_top_card_textBox_title">
-                      {{ dataStatisticsVo.parkCount }}
-                    </div>
-                    <div class="homePage_top_card_textBox_text">停车场数量</div>
-                  </div>
+            </div>
+            <div class="homePage_top_card">
+              <div class="homePage_top_card_ico todayTraffic"></div>
+              <div class="homePage_top_card_textBox">
+                <div class="homePage_top_card_textBox_title">
+                  {{ dataStatisticsVo.todayTraffic }}
                 </div>
-                <div class="homePage_top_card">
-                  <div class="homePage_top_card_ico todayTraffic"></div>
-                  <div class="homePage_top_card_textBox">
-                    <div class="homePage_top_card_textBox_title">
-                      {{ dataStatisticsVo.todayTraffic }}
-                    </div>
-                    <div class="homePage_top_card_textBox_text">今日车流</div>
-                  </div>
+                <div class="homePage_top_card_textBox_text">今日车流</div>
+              </div>
+            </div>
+            <div class="homePage_top_card">
+              <div class="homePage_top_card_ico termCarCount"></div>
+              <div class="homePage_top_card_textBox">
+                <div class="homePage_top_card_textBox_title">
+                  {{ dataStatisticsVo.termCarCount }}
                 </div>
-                <div class="homePage_top_card">
-                  <div class="homePage_top_card_ico termCarCount"></div>
-                  <div class="homePage_top_card_textBox">
-                    <div class="homePage_top_card_textBox_title">
-                      {{ dataStatisticsVo.termCarCount }}
-                    </div>
-                    <div class="homePage_top_card_textBox_text">长租车数量</div>
-                  </div>
+                <div class="homePage_top_card_textBox_text">长租车数量</div>
+              </div>
+            </div>
+            <div class="homePage_top_card">
+              <div class="homePage_top_card_ico todayPayments"></div>
+              <div class="homePage_top_card_textBox">
+                <div class="homePage_top_card_textBox_title">
+                  {{ dataStatisticsVo.todayPayments }}
                 </div>
-                <div class="homePage_top_card">
-                  <div class="homePage_top_card_ico todayPayments"></div>
-                  <div class="homePage_top_card_textBox">
-                    <div class="homePage_top_card_textBox_title">
-                      {{ dataStatisticsVo.todayPayments }}
-                    </div>
-                    <div class="homePage_top_card_textBox_text">
-                      今日收款(元)
-                    </div>
-                  </div>
-                </div>
-                <div class="homePage_top_card">
-                  <div class="homePage_top_card_ico yesterdayPayments"></div>
-                  <div class="homePage_top_card_textBox">
-                    <div class="homePage_top_card_textBox_title">
-                      {{ dataStatisticsVo.yesterdayPayments }}
-                    </div>
-                    <div class="homePage_top_card_textBox_text">
-                      昨日收款(元)
-                    </div>
-                  </div>
-                </div>
-                <div class="homePage_top_card">
-                  <div class="homePage_top_card_ico monthPayments"></div>
-                  <div class="homePage_top_card_textBox">
-                    <div class="homePage_top_card_textBox_title">
-                      {{ dataStatisticsVo.monthPayments }}
-                    </div>
-                    <div class="homePage_top_card_textBox_text">
-                      本月收款(元)
-                    </div>
-                  </div>
-                </div>
-                <div class="homePage_top_card">
-                  <div class="homePage_top_card_ico yearPayments"></div>
-                  <div class="homePage_top_card_textBox">
-                    <div class="homePage_top_card_textBox_title">
-                      {{ dataStatisticsVo.yearPayments }}
-                    </div>
-                    <div class="homePage_top_card_textBox_text">
-                      今年收款(元)
-                    </div>
-                  </div>
+                <div class="homePage_top_card_textBox_text">
+                  今日收款(元)
                 </div>
               </div>
             </div>
-            <div class="homePage_main">
-              <div class="homePage_main_left">
-                <div
-                  class="homePage_main_charts homePge_box"
-                  style="margin-bottom:20px"
-                >
-                  <div class="homePge_box_title">
-                    <div class="homePge_box_title_ico"></div>
-                    <div>当日车流实时趋势</div>
-                    <el-select
-                      v-model="listQuery.dailyTrafficFlowPark"
-                      placeholder="请选择停车场"
-                      clearable
-                      class="filter-item"
-                      @change="getStatistics"
-                      style="width: 200px;margin-left:10px"
-                      size="small"
-                    >
-                      <el-option
-                        v-for="item in parkingList"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item.id"
-                      />
-                    </el-select>
-                  </div>
-                  <VehicleFlowChart
-                    height="100%"
-                    width="100%"
-                    v-if="pageType == '1'"
-                    ref="vehicleFlowChart"
-                  />
+            <div class="homePage_top_card">
+              <div class="homePage_top_card_ico yesterdayPayments"></div>
+              <div class="homePage_top_card_textBox">
+                <div class="homePage_top_card_textBox_title">
+                  {{ dataStatisticsVo.yesterdayPayments }}
                 </div>
-                <div class="homePage_main_charts homePge_box">
-                  <div class="homePge_box_title">
-                    <div class="homePge_box_title_ico"></div>
-                    <div>当月收款统计</div>
-                    <el-select
-                      v-model="listQuery.monthlyCollectionStatisticsPark"
-                      placeholder="请选择停车场"
-                      clearable
-                      class="filter-item"
-                      @change="getStatistics"
-                      style="width: 200px;margin-left:10px"
-                      size="small"
-                    >
-                      <el-option
-                        v-for="item in parkingList"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item.id"
-                      />
-                    </el-select>
-                  </div>
-                  <MonthlyCollection
-                    height="100%"
-                    width="100%"
-                    v-if="pageType == '1'"
-                    ref="monthlyCollection"
-                  />
+                <div class="homePage_top_card_textBox_text">
+                  昨日收款(元)
                 </div>
               </div>
-              <div class="homePage_main_right">
-                <div class="homePage_main_table homePge_box">
-                  <div class="homePge_box_title">
-                    <div class="homePge_box_title_ico"></div>
-                    <div>当日实时停车费统计</div>
-                  </div>
-                  <el-table
-                    :data="parkingFeeStatistics"
-                    highlight-current-row
-                    size="mini"
-                    height="calc(100vh - 380px)"
-                    align="cneter"
-                    style="margin:10px 20px;width:340px"
-                  >
-                    <el-table-column
-                      label="排行"
-                      type="index"
-                      width="100"
-                      class-name="greenText"
-                      align="center"
-                    ></el-table-column>
-                    <el-table-column
-                      label="停车场"
-                      align="center"
-                      show-overflow-tooltip
-                    >
-                      <template slot-scope="scope">
-                        <span class="content">{{ scope.row.park }}</span>
-                      </template>
-                    </el-table-column>
-                    <el-table-column
-                      label="金额(元)"
-                      align="center"
-                      class-name="greenText"
-                      show-overflow-tooltip
-                    >
-                      <template slot-scope="scope">
-                        <span class="content">{{
-                          scope.row.totalPayMoney
-                        }}</span>
-                      </template>
-                    </el-table-column>
-                  </el-table>
+            </div>
+            <div class="homePage_top_card">
+              <div class="homePage_top_card_ico monthPayments"></div>
+              <div class="homePage_top_card_textBox">
+                <div class="homePage_top_card_textBox_title">
+                  {{ dataStatisticsVo.monthPayments }}
                 </div>
-                <div class="homePage_main_table homePge_box">
-                  <div class="homePge_box_title">
-                    <div class="homePge_box_title_ico"></div>
-                    <div>当日实时收费率</div>
-                  </div>
-                  <el-table
-                    :data="feeRate"
-                    highlight-current-row
-                    size="mini"
-                    height="calc(100vh - 380px)"
-                    align="cneter"
-                    style="margin:10px 20px;width:340px"
-                  >
-                    <el-table-column
-                      label="排行"
-                      type="index"
-                      width="100"
-                      class-name="greenText"
-                      align="center"
-                    ></el-table-column>
-                    <el-table-column
-                      label="停车场"
-                      align="center"
-                      show-overflow-tooltip
-                    >
-                      <template slot-scope="scope">
-                        <span class="content">{{ scope.row.park }}</span>
-                      </template>
-                    </el-table-column>
-                    <el-table-column
-                      label="收费率"
-                      class-name="greenText"
-                      align="center"
-                      show-overflow-tooltip
-                    >
-                      <template slot-scope="scope">
-                        <span class="content">{{
-                          getFeeRate(scope.row.totalPayMoney)
-                        }}</span>
-                      </template>
-                    </el-table-column>
-                  </el-table>
+                <div class="homePage_top_card_textBox_text">
+                  本月收款(元)
+                </div>
+              </div>
+            </div>
+            <div class="homePage_top_card">
+              <div class="homePage_top_card_ico yearPayments"></div>
+              <div class="homePage_top_card_textBox">
+                <div class="homePage_top_card_textBox_title">
+                  {{ dataStatisticsVo.yearPayments }}
+                </div>
+                <div class="homePage_top_card_textBox_text">
+                  今年收款(元)
                 </div>
               </div>
             </div>
           </div>
-        </el-tab-pane>
-        <el-tab-pane label="监控指挥" name="2">
-          <div class="monitoringCommand">
-            <div class="monitoringCommand-top">
-              <div class="search_box" style="margin:0">
-                <span class="search_content">
-                  <div class="search_content_title">停车场</div>
-                  <el-select
-                    v-model="curPark"
-                    placeholder="请选择"
-                    clearable
-                    @change="parkChange"
-                    class="filter-item"
-                    style="width: 72%"
-                  >
-                    <el-option
-                      v-for="item in parkingList"
-                      :key="item.id"
-                      :label="item.name"
-                      :value="item.id"
-                    />
-                  </el-select>
-                </span>
-                <!-- <span class="search_content">
+        </div>
+        <div class="homePage_main">
+          <div class="homePage_main_left">
+            <div
+              class="homePage_main_charts homePge_box"
+              style="margin-bottom:20px"
+            >
+              <div class="homePge_box_title">
+                <div class="homePge_box_title_ico"></div>
+                <div>当日车流实时趋势</div>
+                <el-select
+                  v-model="listQuery.dailyTrafficFlowPark"
+                  placeholder="请选择停车场"
+                  clearable
+                  class="filter-item"
+                  @change="getStatistics"
+                  style="width: 200px;margin-left:10px"
+                  size="small"
+                >
+                  <el-option
+                    v-for="item in parkingList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"
+                  />
+                </el-select>
+              </div>
+              <VehicleFlowChart
+                height="100%"
+                width="100%"
+                v-if="pageType == '1'"
+                ref="vehicleFlowChart"
+              />
+            </div>
+            <div class="homePage_main_charts homePge_box">
+              <div class="homePge_box_title">
+                <div class="homePge_box_title_ico"></div>
+                <div>当月收款统计</div>
+                <el-select
+                  v-model="listQuery.monthlyCollectionStatisticsPark"
+                  placeholder="请选择停车场"
+                  clearable
+                  class="filter-item"
+                  @change="getStatistics"
+                  style="width: 200px;margin-left:10px"
+                  size="small"
+                >
+                  <el-option
+                    v-for="item in parkingList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"
+                  />
+                </el-select>
+              </div>
+              <MonthlyCollection
+                height="100%"
+                width="100%"
+                v-if="pageType == '1'"
+                ref="monthlyCollection"
+              />
+            </div>
+          </div>
+          <div class="homePage_main_right">
+            <div class="homePage_main_table homePge_box">
+              <div class="homePge_box_title">
+                <div class="homePge_box_title_ico"></div>
+                <div>当日实时停车费统计</div>
+              </div>
+              <el-table
+                :data="parkingFeeStatistics"
+                highlight-current-row
+                size="mini"
+                height="calc(100vh - 380px)"
+                align="cneter"
+                style="margin:10px 20px;width:340px"
+              >
+                <el-table-column
+                  label="排行"
+                  type="index"
+                  width="100"
+                  class-name="greenText"
+                  align="center"
+                ></el-table-column>
+                <el-table-column
+                  label="停车场"
+                  align="center"
+                  show-overflow-tooltip
+                >
+                  <template slot-scope="scope">
+                    <span class="content">{{ scope.row.park }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="金额(元)"
+                  align="center"
+                  class-name="greenText"
+                  show-overflow-tooltip
+                >
+                  <template slot-scope="scope">
+                    <span class="content">{{ scope.row.totalPayMoney }}</span>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+            <div class="homePage_main_table homePge_box">
+              <div class="homePge_box_title">
+                <div class="homePge_box_title_ico"></div>
+                <div>当日实时收费率</div>
+              </div>
+              <el-table
+                :data="feeRate"
+                highlight-current-row
+                size="mini"
+                height="calc(100vh - 380px)"
+                align="cneter"
+                style="margin:10px 20px;width:340px"
+              >
+                <el-table-column
+                  label="排行"
+                  type="index"
+                  width="100"
+                  class-name="greenText"
+                  align="center"
+                ></el-table-column>
+                <el-table-column
+                  label="停车场"
+                  align="center"
+                  show-overflow-tooltip
+                >
+                  <template slot-scope="scope">
+                    <span class="content">{{ scope.row.park }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="收费率"
+                  class-name="greenText"
+                  align="center"
+                  show-overflow-tooltip
+                >
+                  <template slot-scope="scope">
+                    <span class="content">{{
+                      getFeeRate(scope.row.totalPayMoney)
+                    }}</span>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- </el-tab-pane>
+        <el-tab-pane label="监控指挥" name="2"> -->
+      <div class="monitoringCommand" v-if="pageType == 2">
+        <div class="monitoringCommand-top">
+          <div class="search_box" style="margin:0">
+            <span class="search_content">
+              <div class="search_content_title">停车场</div>
+              <el-select
+                v-model="curPark"
+                placeholder="请选择"
+                clearable
+                @change="parkChange"
+                class="filter-item"
+                style="width: 72%"
+              >
+                <el-option
+                  v-for="item in parkingList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                />
+              </el-select>
+            </span>
+            <!-- <span class="search_content">
                   <DistrictTree
                     ref="treedate"
                     placeholder="请选择"
@@ -284,7 +315,7 @@
                   ></DistrictTree>
                 </span> -->
 
-                <!-- <span class="search_content">
+            <!-- <span class="search_content">
                   <div class="search_content_title">设备列表</div>
                   <el-select
                     v-model="listQuery.cameraId"
@@ -301,86 +332,86 @@
                     />
                   </el-select>
                 </span> -->
-              </div>
-            </div>
-            <div class="monitoringCommand-main">
-              <div class="monitoringCommand-main-left">
-                <div
-                  id="big-size-area"
-                  class="big-size-area"
-                  v-show="bigShow"
-                  @mouseover="onMouseOver()"
-                  @mouseleave="onMouseLeave()"
-                >
-                  <div class="device_name">{{ bigName }}</div>
-                  <!-- <div class="device-text">
+          </div>
+        </div>
+        <div class="monitoringCommand-main">
+          <div class="monitoringCommand-main-left">
+            <div
+              id="big-size-area"
+              class="big-size-area"
+              v-show="bigShow"
+              @mouseover="onMouseOver()"
+              @mouseleave="onMouseLeave()"
+            >
+              <div class="device_name">{{ bigName }}</div>
+              <!-- <div class="device-text">
                 本时段到访
                 <span class="device-text-num">{{afterTotal}}</span>
                 人
               </div>-->
-                  <div class="video_loading">视频加载中···</div>
-                  <transition name="plus-icon">
-                    <div class="big_window_button" v-if="buttonShow">
-                      <div @click="bigSizeSwitch(bigSizeId, false)">
-                        取消单屏
-                      </div>
-                      <div @click="fullSizeSwitch(bigSizeId)">全屏</div>
-                    </div>
-                  </transition>
+              <div class="video_loading">视频加载中···</div>
+              <transition name="plus-icon">
+                <div class="big_window_button" v-if="buttonShow">
+                  <div @click="bigSizeSwitch(bigSizeId, false)">
+                    取消单屏
+                  </div>
+                  <div @click="fullSizeSwitch(bigSizeId)">全屏</div>
                 </div>
+              </transition>
+            </div>
 
-                <el-col
-                  :span="12"
-                  v-for="(videoItem, index) in videoItems"
-                  :key="index"
-                  class="device-area"
-                >
-                  <div class="device-area-top">
-                    <div class="device-area-top-title">
-                      <img
-                        src="../../assets/images/homePage/title_c.png"
-                        alt=""
-                        class="device-area-top-title-img"
-                      />
-                      <DistrictTree
-                        :ref="videoItem.treeId"
-                        placeholder="请选择"
-                        :treeData="treeData"
-                        :treeNo="index"
-                        class="device-area-top-title-text"
-                        style="width: 200px"
-                        @treeItemSelect="treeItemSelect"
-                      ></DistrictTree>
-                    </div>
-                    <!-- <img
+            <el-col
+              :span="12"
+              v-for="(videoItem, index) in videoItems"
+              :key="index"
+              class="device-area"
+            >
+              <div class="device-area-top">
+                <div class="device-area-top-title">
+                  <img
+                    src="../../assets/images/homePage/title_c.png"
+                    alt=""
+                    class="device-area-top-title-img"
+                  />
+                  <DistrictTree
+                    :ref="videoItem.treeId"
+                    placeholder="请选择"
+                    :treeData="treeData"
+                    :treeNo="index"
+                    class="device-area-top-title-text"
+                    style="width: 200px"
+                    @treeItemSelect="treeItemSelect"
+                  ></DistrictTree>
+                </div>
+                <!-- <img
                       src="../../assets/images/homePage/title_b.png"
                       alt=""
                       class="device-area-top-img"
                     /> -->
-                  </div>
-                  <div class="device-area-video">
-                    <!-- <div v-if="!videoItem.status" class="no-device-icon"></div> -->
+              </div>
+              <div class="device-area-video">
+                <!-- <div v-if="!videoItem.status" class="no-device-icon"></div> -->
 
-                    <div v-if="!videoItem.status" class="no-device-text-box">
-                      <img
-                        src="../../assets/images/homePage/noCamera.png"
-                        alt=""
-                        class="no-device-img"
-                      />
-                      <div class="no-device-text">
-                        未选择设备
-                      </div>
-                    </div>
-                    <videoWindow
-                      :ref="videoItem.refId"
-                      :id="videoItem.pwId"
-                      v-if="videoItem.status"
-                      :bindId="videoItem.refId"
-                      :src="videoItem.src"
-                      @bigSizeSwitch="bigSizeSwitch"
-                      @fullSizeSwitch="fullSizeSwitch"
-                    ></videoWindow>
-                    <!-- <videoWebRTCNew
+                <div v-if="!videoItem.status" class="no-device-text-box">
+                  <img
+                    src="../../assets/images/homePage/noCamera.png"
+                    alt=""
+                    class="no-device-img"
+                  />
+                  <div class="no-device-text">
+                    未选择设备
+                  </div>
+                </div>
+                <videoWindow
+                  :ref="videoItem.refId"
+                  :id="videoItem.pwId"
+                  v-if="videoItem.status"
+                  :bindId="videoItem.refId"
+                  :src="videoItem.src"
+                  @bigSizeSwitch="bigSizeSwitch"
+                  @fullSizeSwitch="fullSizeSwitch"
+                ></videoWindow>
+                <!-- <videoWebRTCNew
                       :ref="videoItem.refId"
                       :id="videoItem.pwId"
                       :bindId="videoItem.refId"
@@ -394,254 +425,251 @@
                       @fullSizeSwitch="fullSizeSwitch"
                       @bigSizeSwitch="bigSizeSwitch"
                     ></videoWebRTCNew> -->
-                  </div>
+              </div>
 
-                  <!-- @speed="speed" -->
-                </el-col>
-              </div>
-              <div class="monitoringCommand-main-right" v-if="pageType == 2">
-                <div class="monitoringCommand-main-top">
-                  <div class="monitoringCommand-main-top-title">
-                    <img
-                      src="../../assets/images/homePage/title_p.png"
-                      alt=""
-                      class="monitoringCommand-main-top-title-img"
-                    />
-                    <span class="monitoringCommand-main-top-title-text"
-                      >海创停车场平面图</span
-                    >
-                    <div
-                      class="monitoringCommand-main-top-parking"
-                      v-if="curMap"
-                    >
-                      <span
-                        class="monitoringCommand-main-top-parking-name parkinColor1"
-                        >总车位数：</span
-                      >
-                      <span
-                        class="monitoringCommand-main-top-parking-number parkinColor1"
-                        >{{ parkingNumbers.all }}</span
-                      >
-                      <span
-                        class="monitoringCommand-main-top-parking-name parkinColor2"
-                        >空闲：</span
-                      >
-                      <span
-                        class="monitoringCommand-main-top-parking-number parkinColor2"
-                        >{{ parkingNumbers.idle }}</span
-                      >
-                      <span
-                        class="monitoringCommand-main-top-parking-name parkinColor3"
-                        >占用：</span
-                      >
-                      <span
-                        class="monitoringCommand-main-top-parking-number parkinColor3"
-                        >{{ parkingNumbers.occupy }}</span
-                      >
-                      <span
-                        class="monitoringCommand-main-top-parking-name parkinColor4"
-                        >预约：</span
-                      >
-                      <span
-                        class="monitoringCommand-main-top-parking-number parkinColor4"
-                        >{{ parkingNumbers.reservation }}</span
-                      >
-                      <span
-                        class="monitoringCommand-main-top-parking-name parkinColor5"
-                        >故障：</span
-                      >
-                      <span
-                        class="monitoringCommand-main-top-parking-number parkinColor5"
-                        >{{ parkingNumbers.fault }}</span
-                      >
-                    </div>
-                  </div>
-                  <img
-                    src="../../assets/images/homePage/title_b.png"
-                    alt=""
-                    class="monitoringCommand-main-top-img"
-                  />
-                </div>
-                <div v-if="!curMap" class="monitoringCommand-main-top-noMap">
-                  <img
-                    src="../../assets/images/homePage/noMap.png"
-                    alt=""
-                    class="monitoringCommand-main-top-noMap-img"
-                  />
-                  <div class="monitoringCommand-main-top-noMap-text">
-                    暂无地图
-                  </div>
-                </div>
-                <OpenlayersMap
-                  v-else
-                  ref="openlayersMap"
-                  :curMap="curMap"
-                  :baseWidth="baseWidth"
-                  :baseHeight="baseHeight"
-                  :key="curPark + curMap"
-                />
-              </div>
-            </div>
+              <!-- @speed="speed" -->
+            </el-col>
           </div>
-        </el-tab-pane>
-        <el-tab-pane label="安防预警" name="3">
-          <div class="securityWarning">
-            <div class="securityWarning-top">
-              <div class="search_box" style="margin:0">
-                <span class="search_content">
-                  <div class="search_content_title">停车场</div>
-                  <el-select
-                    v-model="curPark"
-                    placeholder="请选择"
-                    clearable
-                    @change="parkChange"
-                    class="filter-item"
-                    style="width: 72%"
+          <div class="monitoringCommand-main-right" v-if="pageType == 2">
+            <div class="monitoringCommand-main-top">
+              <div class="monitoringCommand-main-top-title">
+                <img
+                  src="../../assets/images/homePage/title_p.png"
+                  alt=""
+                  class="monitoringCommand-main-top-title-img"
+                />
+                <span class="monitoringCommand-main-top-title-text"
+                  >海创停车场平面图</span
+                >
+                <div class="monitoringCommand-main-top-parking" v-if="curMap">
+                  <span
+                    class="monitoringCommand-main-top-parking-name parkinColor1"
+                    >总车位数：</span
                   >
-                    <el-option
-                      v-for="item in parkingList"
-                      :key="item.id"
-                      :label="item.name"
-                      :value="item.id"
-                    />
-                  </el-select>
-                </span>
+                  <span
+                    class="monitoringCommand-main-top-parking-number parkinColor1"
+                    >{{ parkingNumbers.all }}</span
+                  >
+                  <span
+                    class="monitoringCommand-main-top-parking-name parkinColor2"
+                    >空闲：</span
+                  >
+                  <span
+                    class="monitoringCommand-main-top-parking-number parkinColor2"
+                    >{{ parkingNumbers.idle }}</span
+                  >
+                  <span
+                    class="monitoringCommand-main-top-parking-name parkinColor3"
+                    >占用：</span
+                  >
+                  <span
+                    class="monitoringCommand-main-top-parking-number parkinColor3"
+                    >{{ parkingNumbers.occupy }}</span
+                  >
+                  <span
+                    class="monitoringCommand-main-top-parking-name parkinColor4"
+                    >预约：</span
+                  >
+                  <span
+                    class="monitoringCommand-main-top-parking-number parkinColor4"
+                    >{{ parkingNumbers.reservation }}</span
+                  >
+                  <span
+                    class="monitoringCommand-main-top-parking-name parkinColor5"
+                    >故障：</span
+                  >
+                  <span
+                    class="monitoringCommand-main-top-parking-number parkinColor5"
+                    >{{ parkingNumbers.fault }}</span
+                  >
+                </div>
+              </div>
+              <img
+                src="../../assets/images/homePage/title_b.png"
+                alt=""
+                class="monitoringCommand-main-top-img"
+              />
+            </div>
+            <div v-if="!curMap" class="monitoringCommand-main-top-noMap">
+              <img
+                src="../../assets/images/homePage/noMap.png"
+                alt=""
+                class="monitoringCommand-main-top-noMap-img"
+              />
+              <div class="monitoringCommand-main-top-noMap-text">
+                暂无地图
               </div>
             </div>
-            <div class="securityWarning-main">
-              <div class="securityWarning-left" v-if="pageType == 3">
-                <div class="securityWarning-left-top">
-                  <div class="securityWarning-left-top-title">
-                    <img
-                      src="../../assets/images/homePage/title_p.png"
-                      alt=""
-                      class="securityWarning-left-top-title-img"
-                    />
-                    <span class="securityWarning-left-top-title-text"
-                      >海创停车场平面图</span
-                    >
-                  </div>
-                  <img
-                    src="../../assets/images/homePage/title_b.png"
-                    alt=""
-                    class="securityWarning-left-top-img"
-                  />
-                </div>
-                <div v-if="!curMap" class="securityWarning-left-top-noMap">
-                  <img
-                    src="../../assets/images/homePage/noMap.png"
-                    alt=""
-                    class="securityWarning-left-top-noMap-img"
-                  />
-                  <div class="securityWarning-left-top-noMap-text">
-                    暂无地图
-                  </div>
-                </div>
-
-                <OpenlayersMapCamera
-                  v-else
-                  ref="OpenlayersMapCamera"
-                  :curMap="curMap"
-                  :baseWidth="baseWidth"
-                  :baseHeight="baseHeight"
-                  :key="curPark + curMap"
+            <OpenlayersMap
+              v-else
+              ref="openlayersMap"
+              :curMap="curMap"
+              :baseWidth="baseWidth"
+              :baseHeight="baseHeight"
+              :key="curPark + curMap"
+            />
+          </div>
+        </div>
+      </div>
+      <!-- </el-tab-pane>
+        <el-tab-pane label="安防预警" name="3"> -->
+      <div class="securityWarning" v-if="pageType == 3">
+        <div class="securityWarning-top">
+          <div class="search_box" style="margin:0">
+            <span class="search_content">
+              <div class="search_content_title">停车场</div>
+              <el-select
+                v-model="curPark"
+                placeholder="请选择"
+                clearable
+                @change="parkChange"
+                class="filter-item"
+                style="width: 72%"
+              >
+                <el-option
+                  v-for="item in parkingList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
                 />
+              </el-select>
+            </span>
+          </div>
+        </div>
+        <div class="securityWarning-main">
+          <div class="securityWarning-left" v-if="pageType == 3">
+            <div class="securityWarning-left-top">
+              <div class="securityWarning-left-top-title">
+                <img
+                  src="../../assets/images/homePage/title_p.png"
+                  alt=""
+                  class="securityWarning-left-top-title-img"
+                />
+                <span class="securityWarning-left-top-title-text"
+                  >海创停车场平面图</span
+                >
               </div>
-              <div class="securityWarning-right">
-                <div class="securityWarning-right-top">
-                  <div class="securityWarning-right-top-title">
-                    <img
-                      src="../../assets/images/homePage/title_p.png"
-                      alt=""
-                      class="securityWarning-right-top-title-img"
-                    />
-                    <span class="securityWarning-right-top-title-text"
-                      >告警列表</span
-                    >
-                  </div>
-                  <img
-                    src="../../assets/images/homePage/title_b.png"
-                    alt=""
-                    class="securityWarning-right-top-img"
+              <img
+                src="../../assets/images/homePage/title_b.png"
+                alt=""
+                class="securityWarning-left-top-img"
+              />
+            </div>
+            <div v-if="!curMap" class="securityWarning-left-top-noMap">
+              <img
+                src="../../assets/images/homePage/noMap.png"
+                alt=""
+                class="securityWarning-left-top-noMap-img"
+              />
+              <div class="securityWarning-left-top-noMap-text">
+                暂无地图
+              </div>
+            </div>
+
+            <OpenlayersMapCamera
+              v-else
+              ref="OpenlayersMapCamera"
+              :curMap="curMap"
+              :baseWidth="baseWidth"
+              :baseHeight="baseHeight"
+              :key="curPark + curMap"
+            />
+          </div>
+          <div class="securityWarning-right">
+            <div class="securityWarning-right-top">
+              <div class="securityWarning-right-top-title">
+                <img
+                  src="../../assets/images/homePage/title_p.png"
+                  alt=""
+                  class="securityWarning-right-top-title-img"
+                />
+                <span class="securityWarning-right-top-title-text"
+                  >告警列表</span
+                >
+              </div>
+              <img
+                src="../../assets/images/homePage/title_b.png"
+                alt=""
+                class="securityWarning-right-top-img"
+              />
+            </div>
+            <div class="securityWarning-right-main">
+              <div class="securityWarning-right-main-top">
+                <el-select
+                  v-model="listQuery.dailyTrafficFlowPark"
+                  placeholder="请选择停车场"
+                  clearable
+                  class="filter-item"
+                  @change="getStatistics"
+                  style="width: 150px;margin-left:10px"
+                  size="small"
+                >
+                  <el-option
+                    v-for="item in parkingList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"
                   />
-                </div>
-                <div class="securityWarning-right-main">
-                  <div class="securityWarning-right-main-top">
-                    <el-select
-                      v-model="listQuery.dailyTrafficFlowPark"
-                      placeholder="请选择停车场"
-                      clearable
-                      class="filter-item"
-                      @change="getStatistics"
-                      style="width: 150px;margin-left:10px"
-                      size="small"
-                    >
-                      <el-option
-                        v-for="item in parkingList"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item.id"
-                      />
-                    </el-select>
-                    <el-select
-                      v-model="listQuery.dailyTrafficFlowPark"
-                      placeholder="请选择停车场"
-                      clearable
-                      class="filter-item"
-                      @change="getStatistics"
-                      style="width: 150px;margin-left:10px"
-                      size="small"
-                    >
-                      <el-option
-                        v-for="item in parkingList"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item.id"
-                      />
-                    </el-select>
-                    <el-select
-                      v-model="listQuery.dailyTrafficFlowPark"
-                      placeholder="请选择停车场"
-                      clearable
-                      class="filter-item"
-                      @change="getStatistics"
-                      style="width: 150px;margin-left:10px"
-                      size="small"
-                    >
-                      <el-option
-                        v-for="item in parkingList"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item.id"
-                      />
-                    </el-select>
-                    <span class="securityWarning-right-main-top-pageBox"
-                      >共 {{ cameraListQuery.total }} 条</span
-                    >
-                  </div>
-                  <div class="securityWarning-right-main-content">
-                    <ul
-                      class="list"
-                      v-infinite-scroll="load"
-                      infinite-scroll-disabled="disabled"
-                    >
-                      <li
-                        v-for="(el, index) in alarmList"
-                        :key="index"
-                        class="list-item"
-                      >
-                        {{ el }}
-                      </li>
-                    </ul>
-                    <p v-if="loading">加载中...</p>
-                    <p v-if="noMore">没有更多了</p>
-                  </div>
-                </div>
+                </el-select>
+                <el-select
+                  v-model="listQuery.dailyTrafficFlowPark"
+                  placeholder="请选择停车场"
+                  clearable
+                  class="filter-item"
+                  @change="getStatistics"
+                  style="width: 150px;margin-left:10px"
+                  size="small"
+                >
+                  <el-option
+                    v-for="item in parkingList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"
+                  />
+                </el-select>
+                <el-select
+                  v-model="listQuery.dailyTrafficFlowPark"
+                  placeholder="请选择停车场"
+                  clearable
+                  class="filter-item"
+                  @change="getStatistics"
+                  style="width: 150px;margin-left:10px"
+                  size="small"
+                >
+                  <el-option
+                    v-for="item in parkingList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"
+                  />
+                </el-select>
+                <span class="securityWarning-right-main-top-pageBox"
+                  >共 {{ cameraListQuery.total }} 条</span
+                >
+              </div>
+              <div class="securityWarning-right-main-content">
+                <ul
+                  class="list"
+                  v-infinite-scroll="load"
+                  infinite-scroll-disabled="disabled"
+                >
+                  <li
+                    v-for="(el, index) in alarmList"
+                    :key="index"
+                    class="list-item"
+                  >
+                    {{ el }}
+                  </li>
+                </ul>
+                <p v-if="loading">加载中...</p>
+                <p v-if="noMore">没有更多了</p>
               </div>
             </div>
           </div>
-        </el-tab-pane>
-      </el-tabs>
+        </div>
+      </div>
+      <!-- </el-tab-pane>
+      </el-tabs> -->
     </div>
     <!-- <div class="homePage_btn" @click="addCar">.</div> -->
     <div class="homePage_btn" @click="addCar">.</div>
@@ -657,6 +685,10 @@ import {
   vehicleRetention, //车辆驻留
   deviceListTree //设备树形列表
 } from "@/api/homePage";
+import {
+  getInfo //设备树形列表
+} from "@/api/user";
+
 import VehicleFlowChart from "@/components/Charts/vehicleFlowChart"; //当日车流实时趋势1
 import MonthlyCollection from "@/components/Charts/monthlyCollection"; //当日车流实时趋势1
 import OpenlayersMap from "@/components/Map/openlayersMap"; //当日车流实时趋势1
@@ -705,7 +737,7 @@ export default {
         monthlyCollectionStatisticsPark: null, //当月收款筛选停车场id
         dailyTrafficFlowPark: null //车流筛选停车场id
       },
-      pageType: "2", //1.运营数据 2.监控指挥 3.安防预警
+      pageType: "1", //1.运营数据 2.监控指挥 3.安防预警
       parkingList: [],
       dataStatisticsVo: {
         parkCount: null, //停车场数量
@@ -774,6 +806,7 @@ export default {
     }
     this.getparking();
     this.initWebSocket();
+    this.getInfo();
   },
   beforeDestroy() {
     if (this.getInfoInterval) {
@@ -787,6 +820,20 @@ export default {
   },
 
   methods: {
+    //获取当前首页权限
+    getInfo() {
+      let para = {};
+      getInfo(para).then(res => {
+        console.log(123, res);
+        let list = res.data.resourceList;
+        const hasRes1 = list.some(item => item.resourceId == 911101);
+        const hasRes2 = list.some(item => item.resourceId == 911102);
+        const hasRes3 = list.some(item => item.resourceId == 911201);
+        console.log(1, hasRes1);
+        console.log(2, hasRes2);
+        console.log(3, hasRes3);
+      });
+    },
     initWebSocket() {
       // 初始化weosocket
       // console.log("websocket", this.GLOBAL.ws.onopen);
@@ -876,6 +923,18 @@ export default {
     handleClick() {
       console.log(123, this.pageType);
       if (this.pageType == "1") {
+        this.getStatistics();
+      } else {
+        this.getparking();
+        this.curPark = null;
+        this.curMap = null;
+        this.curMapId = null;
+        this.firstRendering = true;
+      }
+    },
+    changeTab(e) {
+      this.pageType = e;
+      if (e == "1") {
         this.getStatistics();
       } else {
         this.getparking();
@@ -1253,6 +1312,31 @@ export default {
     left: 0;
     padding-left: 20px;
     width: calc(100vw - 20px);
+  }
+  .homePage_tab_top {
+    height: 40px;
+    padding: 5px 10px;
+    display: flex;
+  }
+  .homePage_tab_top_btn {
+    height: 30px;
+    line-height: 30px;
+    width: 100px;
+    color: #037659;
+    text-align: center;
+    margin: 0 10px;
+    border-bottom: 2px solid #037659;
+    cursor: pointer;
+  }
+  .homePage_tab_top_btn2 {
+    height: 30px;
+    line-height: 30px;
+    width: 100px;
+    color: #303133;
+    text-align: center;
+    margin: 0 10px;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
   }
   .homePage_btn {
     position: fixed;

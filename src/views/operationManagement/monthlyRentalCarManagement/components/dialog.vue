@@ -73,13 +73,14 @@
                           newList.drivingLicense !== null
                       "
                       slot="reference"
-                      :src="
-                        newList.drivingLicense +
-                          '?x-oss-process=image/resize,h_36,w_48'
-                      "
+                      :src="newList.drivingLicense"
                       width="48"
                       height="36"
                     />
+                    <!-- :src="
+                        newList.drivingLicense +
+                          '?x-oss-process=image/resize,h_36,w_48'
+                      " -->
                     <span v-else>
                       <div min-width="48" height="36"></div>
                     </span>
@@ -105,13 +106,14 @@
                           newList.enterpriseSeal !== null
                       "
                       slot="reference"
-                      :src="
-                        newList.enterpriseSeal +
-                          '?x-oss-process=image/resize,h_36,w_48'
-                      "
+                      :src="newList.enterpriseSeal"
                       width="48"
                       height="36"
                     />
+                    <!-- :src="
+                        newList.enterpriseSeal +
+                          '?x-oss-process=image/resize,h_36,w_48'
+                      " -->
                     <span v-else>
                       <div min-width="48" height="36"></div>
                     </span>
@@ -232,11 +234,8 @@
         </div>
       </el-form>
       <div class="base_dialog_main_btnBox" v-if="pageType == 2">
-        <el-button type="info" icon="el-icon-circle-plus" @click="toPass"
-          >通过</el-button
-        ><el-button type="danger" icon="el-icon-error" @click="tonoPass"
-          >不通过</el-button
-        >
+        <el-button type="info" @click="toPass">通过</el-button
+        ><el-button type="danger" @click="tonoPass">不通过</el-button>
       </div>
     </div>
     <el-dialog
@@ -248,7 +247,7 @@
       :modal="false"
     >
       <div class="base_dialog_main_content">
-        <el-form :model="newList" ref="userForm">
+        <el-form :model="newList" ref="userForm" :rules="rules">
           <div class="base_dialog_main_content">
             <div class="base_dialog_main_left" style="padding:20px 80px">
               <span class="base_dialog_condit2" style="">
@@ -270,11 +269,8 @@
           </div>
         </el-form>
         <div class="base_dialog_main_btnBox" style="padding:0px 240px 30px">
-          <el-button type="info" icon="el-icon-circle-plus" @click="noPass"
-            >保存</el-button
-          ><el-button type="danger" icon="el-icon-error" @click="closeDialog2"
-            >取消</el-button
-          >
+          <el-button type="info" @click="noPass">保存</el-button
+          ><el-button type="danger" @click="closeDialog2">取消</el-button>
         </div>
       </div>
     </el-dialog>
@@ -306,6 +302,12 @@ export default {
         beginTime: "", //长租开始时间
         dueTime: "" //长租结束时间
       }, //详情
+      rules: {
+        reason: [
+          { required: true, message: "请输入不通过原因描述", trigger: "blur" }
+        ]
+      },
+
       dialogFormVisible: false //不同意弹窗
     };
   },
@@ -369,10 +371,10 @@ export default {
           this.$emit("openLoading", {});
           this.$emit("getList", {});
         } else {
-          this.$message({
-            type: "warning",
-            message: "审核失败"
-          });
+          // this.$message({
+          //   type: "error",
+          //   message: "审核失败"
+          // });
         }
       });
     },
@@ -405,17 +407,17 @@ export default {
                   message: "审核成功"
                 });
               } else {
-                this.$message({
-                  type: "warning",
-                  message: "审核失败"
-                });
+                // this.$message({
+                //   type: "error",
+                //   message: "审核失败"
+                // });
               }
             })
             .catch(() => {
-              this.$message({
-                type: "warning",
-                message: "审核失败"
-              });
+              // this.$message({
+              //   type: "error",
+              //   message: "审核失败"
+              // });
             });
         } else {
           console.log("error submit!!");

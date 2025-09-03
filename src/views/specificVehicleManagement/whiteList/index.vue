@@ -37,14 +37,20 @@
       >
     </div>
     <div class="btn_box">
-      <el-button type="info" icon="el-icon-circle-plus-outline" @click="toAdd"
+      <el-button
+        type="info"
+        icon="el-icon-circle-plus-outline"
+        @click="toAdd"
+        v-has="{ red: 'whiteListAdd', type: 1 }"
         >新增</el-button
       >
-      <!-- v-has="{ red: 'addBox', type: 1 }" -->
-      <el-button type="danger" icon="el-icon-circle-close" @click="toDel"
+      <el-button
+        type="danger"
+        icon="el-icon-circle-close"
+        @click="toDel"
+        v-has="{ red: 'whiteListDelete', type: 1 }"
         >删除</el-button
       >
-      <!-- v-has="{ red: 'deleteBox', type: 1 }" -->
     </div>
 
     <div class="content_box">
@@ -138,12 +144,14 @@
             <span
               class="operation_button update_btn"
               @click="toEdit(scope.row)"
+              v-has="{ red: 'whiteListEdit', type: 1 }"
             >
               编辑
             </span>
             <span
               class="operation_button update_btn"
               @click="toDetails(scope.row)"
+              v-has="{ red: 'whiteListDetails', type: 1 }"
             >
               详情
             </span>
@@ -345,10 +353,10 @@ export default {
               this.openLoading();
               this.getList();
             } else {
-              this.$message({
-                type: "warning",
-                message: "删除失败"
-              });
+              // this.$message({
+              //   type: "error",
+              //   message: "删除失败"
+              // });
             }
           });
         });

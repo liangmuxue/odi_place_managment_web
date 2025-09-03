@@ -80,6 +80,7 @@
                 <el-date-picker
                   v-else
                   style="width: 72%"
+                  size="small"
                   v-model="time"
                   type="datetimerange"
                   :disabled="pageType > 1"
@@ -88,12 +89,13 @@
                   end-placeholder
                   :default-time="['00:00:00', '23:59:59']"
                 ></el-date-picker>
+                <!-- :picker-options="pickerOptions" -->
               </el-form-item>
             </span>
             <span class="base_dialog_condit">
               <el-form-item label="免费通行次数" prop="freeTime">
                 <el-radio-group
-                  v-model="newList.freeTimeType"
+                  v-model="newList.type"
                   :disabled="pageType > 1"
                   @change="freeTimeTypeChange"
                 >
@@ -102,12 +104,12 @@
                 </el-radio-group>
                 <!-- <span
                   class="base_dialog_condit_text"
-                  v-if="pageType == 3 && newList.freeTimeType == 1"
+                  v-if="pageType == 3 && newList.type == 1"
                 >
                   {{ newList.freeTime }}</span
                 > -->
                 <el-input
-                  v-if="newList.freeTimeType == 1"
+                  v-if="newList.type == 1"
                   v-model="newList.freeTime"
                   :disabled="pageType > 1"
                   placeholder="输入"
@@ -116,14 +118,27 @@
                   class="filter-item"
                   size="small"
                 />
+                <span
+                  v-if="pageType < 3 && newList.type == 1"
+                  style="font-size: 12px;"
+                >
+                  (每个适用车场各有该次数)
+                </span>
               </el-form-item>
             </span>
 
-            <span class="base_dialog_condit">
+            <span class="base_dialog_condit bdc">
               <el-form-item label="适用车场" prop="parkingLotId">
                 <span class="base_dialog_condit_text" v-if="pageType == 3">
-                  {{ newList.parkingLotName }}</span
-                >
+                  <div
+                    v-for="item in newList.vehicleWaiverParkingLots"
+                    :key="item.parkingLotId"
+                  >
+                    <span>
+                      {{ item.parkingLot ? item.parkingLot.name : "" }}
+                    </span>
+                  </div>
+                </span>
                 <el-select
                   v-else
                   v-model="newList.parkingLotId"
@@ -144,12 +159,29 @@
                   />
                 </el-select>
               </el-form-item>
+              <span
+                class="base_dialog_condit bdcp"
+                v-if="pageType == 3 && newList.type == 1"
+              >
+                <el-form-item label="剩余次数" prop="parkingLotId">
+                  <span class="base_dialog_condit_text">
+                    <div
+                      v-for="item in newList.vehicleWaiverParkingLots"
+                      :key="item.parkingLotId"
+                    >
+                      <span v-if="item.parkingLot">
+                        {{ item.parkingLot.name }}&nbsp;&nbsp;
+                        {{ item.remainderFree }}次
+                      </span>
+                    </div>
+                  </span>
+                </el-form-item>
+              </span>
             </span>
-
             <span class="base_dialog_condit" v-if="pageType == 3">
               <el-form-item label="状态" prop="status">
                 <span class="offLine_ball" v-show="newList.status == 1"></span>
-                <span v-show="newList.status == 1" class="offLine"> 失效</span>
+                <span v-show="newList.status == 1" class="offLine"> 到期</span>
                 <span class="onLine_ball" v-show="newList.status == 0"></span>
                 <span v-show="newList.status == 0" class="onLine"> 正常</span>
               </el-form-item>
@@ -158,11 +190,8 @@
         </div>
       </el-form>
       <div class="base_dialog_main_btnBox" v-if="pageType !== 3">
-        <el-button type="info" icon="el-icon-circle-plus" @click="toSave"
-          >保存</el-button
-        ><el-button type="danger" icon="el-icon-error" @click="closeDialog"
-          >取消</el-button
-        >
+        <el-button type="info" @click="toSave">保存</el-button
+        ><el-button type="danger" @click="closeDialog">取消</el-button>
       </div>
     </div>
   </div>
@@ -214,11 +243,20 @@ export default {
         expirationStartTime: "", //开始时间
         expirationEndTime: "", //结束时间
         freeTime: -1, //免费通行次数
-        freeTimeType: 0, //
+        type: 0, //'类型 0-无限次 1-有限次',
+        status: 0, //状态 1-已失效 0-未失效
+        vehicleWaiverParkingLots: [],
         parkingLots: [] //车场信息
       }, //车位详情
       parkingList: [],
       oldOptions: [], //
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() < Date.now() - 86400000; // 禁止选择今天之前的日期，86400000 等于 24 * 60 * 60 * 1000，即一天的毫秒数
+        },
+        minDate: new Date() // 直接设置最大日期为当前日期
+      },
+
       time: [],
       rules: {
         licensePlate: [
@@ -227,13 +265,13 @@ export default {
             pattern: /^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领][A-HJ-NP-Z][A-HJ-NP-Z0-9]{4,5}[A-HJ-NP-Z0-9挂学警港澳]$/,
             message: "请输入正确车牌号",
             trigger: "blur"
-          },
-          {
-            required: true,
-            message: "车牌号已存在",
-            trigger: "blur",
-            validator: validateEditLicensePlate
           }
+          // {
+          //   required: true,
+          //   message: "车牌号已存在",
+          //   trigger: "blur",
+          //   validator: validateEditLicensePlate
+          // }
         ],
         expirationStartTime: [
           { required: true, message: "请选择有效期限", trigger: "blur" }
@@ -271,9 +309,8 @@ export default {
   },
   methods: {
     freeTimeTypeChange(e) {
-      console.log(111, e);
       if (e === 1) {
-        this.newList.freeTime = 1;
+        this.newList.freeTime = "";
       } else {
         this.newList.freeTime = -1;
       }
@@ -289,6 +326,15 @@ export default {
     },
 
     changeTime() {
+      // let now = new Date().getTime();
+
+      // if (this.time[0] && now > this.time[0].getTime()) {
+      //   this.time = [];
+      //   this.$message({
+      //     type: "warning",
+      //     message: "限免车有效期限不得早于当前时间"
+      //   });
+      // } else
       if (this.time[0].getTime) {
         this.newList.expirationStartTime = this.time[0].getTime();
         this.newList.expirationEndTime = this.time[1].getTime();
@@ -339,6 +385,10 @@ export default {
         if (val.length === allValues.length - 1)
           this.newList.parkingLotId = [0].concat(val);
       }
+      const newArr = this.newList.parkingLotId.map(id =>
+        this.parkingList.find(item => item.id === id)
+      );
+      this.newList.vehicleWaiverParkingLots = newArr;
       this.oldOptions = this.newList.parkingLotId;
     },
 
@@ -381,8 +431,10 @@ export default {
           expirationStartTime: "", //开始时间
           expirationEndTime: "", //结束时间
           freeTime: -1, //免费通行次数
-          freeTimeType: 0, //
+          type: 0, //'类型 0-无限次 1-有限次',
+          status: 0, //状态 1-已失效 0-未失效
           parkingLotId: [],
+          vehicleWaiverParkingLots: [],
           parkingLots: [] //车场信息
         };
         this.time = [];
@@ -399,22 +451,25 @@ export default {
       let para = { id: id };
       vehicleWaiverDetail(para).then(response => {
         this.newList = response.data;
-        if (response.data.freeTime > 0) {
-          this.$set(this.newList, "freeTimeType", 1);
-        } else {
-          this.$set(this.newList, "freeTimeType", 0);
-        }
+        // if (response.data.freeTime > 0) {
+        //   this.$set(this.newList, "freeTimeType", 1);
+        // } else {
+        //   this.$set(this.newList, "freeTimeType", 0);
+        // }
 
-        let lots = this.newList.parkingLots;
+        let lots = this.newList.vehicleWaiverParkingLots;
         let ids = [];
         let names = [];
         lots.forEach(el => {
-          ids.push(el.id);
-          names.push(el.name);
+          ids.push(el.parkingLotId);
+          if (el.parkingLot) {
+            names.push(el.parkingLot.name);
+          }
         });
-        if (lots.length == this.parkingList.length - 1) {
-          ids.unshift(0);
-        }
+
+        // if (lots.length == this.parkingList.length) {
+        //   ids.unshift(0);
+        // }
         this.$set(this.newList, "parkingLotId", ids);
         this.newList.parkingLotName = names.toString();
         this.time = [
@@ -448,10 +503,16 @@ export default {
             this.isShow = false;
             this.$emit("openLoading", {});
             let para = JSON.parse(JSON.stringify(this.newList));
-            para.parkingLots = para.parkingLotId.map(n => ({
-              id: n
+            para.vehicleWaiverParkingLots = para.parkingLotId.map(n => ({
+              parkingLotId: n
             }));
+            // const newArr = this.newList.parkingLotId.map(id =>
+            //   this.parkingList.find(item => item.id === id)
+            // );
+            // para.vehicleWaiverParkingLots = newArr;
+
             delete para.parkingLotId;
+            delete para.parkingLots;
 
             vehicleWaiverInsert(para)
               .then(response => {
@@ -462,20 +523,20 @@ export default {
                   });
                   // this.getDetials(response.id);
                 } else {
-                  this.$message({
-                    type: "warning",
-                    message: "提交失败"
-                  });
+                  // this.$message({
+                  //   type: "error",
+                  //   message: "提交失败"
+                  // });
                 }
                 setTimeout(() => {
                   this.$emit("getList", {});
                 }, 300);
               })
               .catch(() => {
-                this.$message({
-                  type: "warning",
-                  message: "提交失败"
-                });
+                // this.$message({
+                //   type: "error",
+                //   message: "提交失败"
+                // });
                 setTimeout(() => {
                   this.$emit("getList", {});
                 }, 300);
@@ -494,10 +555,16 @@ export default {
             this.isShow = false;
             this.$emit("openLoading", {});
             let para = JSON.parse(JSON.stringify(this.newList));
-            para.parkingLots = para.parkingLotId.map(n => ({
-              id: n
+            para.vehicleWaiverParkingLots = para.parkingLotId.map(n => ({
+              parkingLotId: n
             }));
+            // const newArr = this.newList.parkingLotId.map(id =>
+            //   this.parkingList.find(item => item.id === id)
+            // );
+            // para.vehicleWaiverParkingLots = newArr;
+
             delete para.parkingLotId;
+            delete para.parkingLots;
 
             vehicleWaiverUpdate(para)
               .then(response => {
@@ -507,20 +574,20 @@ export default {
                     message: "提交成功"
                   });
                 } else {
-                  this.$message({
-                    type: "warning",
-                    message: "提交失败"
-                  });
+                  // this.$message({
+                  //   type: "error",
+                  //   message: "提交失败"
+                  // });
                 }
                 setTimeout(() => {
                   this.$emit("getList", {});
                 }, 300);
               })
               .catch(() => {
-                this.$message({
-                  type: "warning",
-                  message: "提交失败"
-                });
+                // this.$message({
+                //   type: "error",
+                //   message: "提交失败"
+                // });
                 setTimeout(() => {
                   this.$emit("getList", {});
                 }, 300);
@@ -539,5 +606,26 @@ export default {
 <style lang="scss" scoped>
 .a {
   padding-left: 160px;
+}
+.base_dialog_main_prompt {
+  width: 72%;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  margin-left: 136px;
+  background: rgba($color: #ffd986, $alpha: 0.3);
+  color: #f50e0e;
+  margin-top: -24px;
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+.bdc {
+  position: relative;
+}
+.bdcp {
+  position: absolute;
+  top: 0;
+  left: 300px;
+  width: 500px;
 }
 </style>

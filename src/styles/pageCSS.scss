@@ -51,7 +51,7 @@
 
   .search_content2 {
     flex: 1;
-    max-width: 470px;
+    max-width: 490px;
     margin-right: 10px;
     display: flex;
 
@@ -286,6 +286,17 @@
 
       }
 
+      .base_dialog_main_left3 {
+        flex: 1;
+        max-width: 1500px;
+        padding: 20px 20px 0px 100px;
+
+        .el-form-item__label {
+          width: 90px;
+        }
+
+      }
+
       .el-form-item__label {
         width: 136px;
       }
@@ -415,6 +426,10 @@
       margin: 10px auto 0;
       display: flex;
       justify-content: space-around;
+
+      .el-button {
+        min-width: 80px;
+      }
     }
   }
 }

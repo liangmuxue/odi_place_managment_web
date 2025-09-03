@@ -35,7 +35,7 @@
 }
 
 .el-message {
-  top: 20px !important;
+  // top: 20px !important;
 }
 
 .el-input-group__prepend {
@@ -449,6 +449,69 @@
   }
 }
 
+.parkingTable {
+  border: transparent 1px solid;
+
+  .el-table__header-wrapper {
+
+    .el-table__header {
+
+      .has-gutter {
+
+        background: #fff;
+
+        tr {
+          height: 30px;
+          border-bottom: #fff 1px solid;
+
+          th {
+            font-size: 14px;
+            color: #333;
+          }
+        }
+
+      }
+    }
+  }
+
+  .el-table__body-wrapper {
+    background: #fff;
+
+    .el-table__body {
+      background: #fff;
+
+      .el-table__row {
+        background: #fff;
+      }
+
+      .current-row {
+        background: #fff !important;
+      }
+
+      .current-row.el-table__row--striped td {
+        background: #fff !important;
+      }
+
+      .current-row td {
+        background: transparent !important;
+      }
+
+      .el-table__row:hover td {
+        background: #F5F7FA !important;
+      }
+
+      tr {
+        height: 30px;
+
+        td {
+          font-size: 14px;
+        }
+
+
+      }
+    }
+  }
+}
 
 
 
@@ -559,4 +622,25 @@
 .app-breadcrumb.el-breadcrumb .no-redirect {
   color: $titleTextH;
   cursor: text;
+}
+
+.rloe-tree {
+  display: flex;
+  flex-direction: column;
+
+  .el-tree-node__children {
+    display: flex;
+    flex-direction: column;
+
+    .el-tree-node__children {
+      display: flex;
+      flex-direction: row;
+      // white-space: wrap;
+
+      // .el-tree-node__content {
+      //   width: 100px;
+      // }
+    }
+  }
+
 }

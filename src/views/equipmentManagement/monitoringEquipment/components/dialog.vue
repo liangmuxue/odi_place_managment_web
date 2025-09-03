@@ -9,7 +9,7 @@
     <div class="base_dialog_main">
       <el-form :model="newList" :rules="rules" ref="parkingForm">
         <div class="base_dialog_main_content">
-          <div class="base_dialog_main_left" style="padding: 60px 100px">
+          <div class="base_dialog_main_left" style="padding: 20px 100px">
             <!-- <div
               v-if="pageType == 1"
               class="base_dialog_main_prompt
@@ -27,6 +27,7 @@
                   v-model="newList.parkId"
                   placeholder="选择停车场"
                   clearable
+                  @change="parkChange"
                   class="filter-item"
                   style="width: 72%"
                   size="small"
@@ -41,13 +42,13 @@
               </el-form-item>
             </span>
             <span class="base_dialog_condit">
-              <el-form-item label="设备名称" prop="name">
+              <el-form-item label="设备名称" prop="deviceName">
                 <span class="base_dialog_condit_text" v-if="pageType == 3">
-                  {{ newList.name }}</span
+                  {{ newList.deviceName }}</span
                 >
                 <el-input
                   v-else
-                  v-model="newList.name"
+                  v-model="newList.deviceName"
                   placeholder="输入设备名称"
                   style="width: 72%"
                   class="filter-item"
@@ -56,13 +57,13 @@
               </el-form-item>
             </span>
             <span class="base_dialog_condit">
-              <el-form-item label="设备厂家" prop="parkId">
+              <el-form-item label="设备厂家" prop="deviceBrand">
                 <span class="base_dialog_condit_text" v-if="pageType == 3">
-                  {{ newList.parkName }}</span
+                  {{ getDeviceBrandName(newList.deviceBrand) }}</span
                 >
                 <el-select
                   v-else
-                  v-model="newList.parkId"
+                  v-model="newList.deviceBrand"
                   placeholder="选择设备厂家"
                   clearable
                   class="filter-item"
@@ -70,24 +71,23 @@
                   size="small"
                 >
                   <el-option
-                    v-for="item in parkingList"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"
+                    v-for="item in equipmentManufacturerList"
+                    :key="item.enumValue"
+                    :label="item.enumName"
+                    :value="item.enumValue"
                   />
                 </el-select>
               </el-form-item>
             </span>
 
             <span class="base_dialog_condit">
-              <el-form-item label="IP地址" prop="equipmentNumber">
+              <el-form-item label="IP地址" prop="ip">
                 <span class="base_dialog_condit_text" v-if="pageType == 3">
-                  {{ newList.equipmentNumber }}</span
+                  {{ newList.ip }}</span
                 >
                 <el-input
                   v-else
-                  v-model="newList.equipmentNumber"
-                  :disabled="pageType == 2"
+                  v-model="newList.ip"
                   placeholder="输入IP地址"
                   style="width: 72%"
                   class="filter-item"
@@ -96,14 +96,13 @@
               </el-form-item>
             </span>
             <span class="base_dialog_condit">
-              <el-form-item label="用户名" prop="equipmentNumber">
+              <el-form-item label="用户名" prop="loginName">
                 <span class="base_dialog_condit_text" v-if="pageType == 3">
-                  {{ newList.equipmentNumber }}</span
+                  {{ newList.loginName }}</span
                 >
                 <el-input
                   v-else
-                  v-model="newList.equipmentNumber"
-                  :disabled="pageType == 2"
+                  v-model="newList.loginName"
                   placeholder="输入用户名"
                   style="width: 72%"
                   class="filter-item"
@@ -112,13 +111,13 @@
               </el-form-item>
             </span>
             <span class="base_dialog_condit">
-              <el-form-item label="网关ID" prop="type">
+              <el-form-item label="网关ID" prop="gatewayId">
                 <span class="base_dialog_condit_text" v-if="pageType == 3">
-                  {{ getType(newList.type) }}</span
+                  {{ getGatewae(newList.gatewayId) }}</span
                 >
                 <el-select
                   v-else
-                  v-model="newList.type"
+                  v-model="newList.gatewayId"
                   placeholder="选择网关ID"
                   clearable
                   class="filter-item"
@@ -126,23 +125,22 @@
                   size="small"
                 >
                   <el-option
-                    v-for="item in typeList"
-                    :key="item.enumValue"
-                    :label="item.enumName"
-                    :value="item.enumValue"
+                    v-for="item in gatewayList"
+                    :key="item.id"
+                    :label="item.ip"
+                    :value="item.id"
                   />
                 </el-select>
               </el-form-item>
             </span>
             <span class="base_dialog_condit">
-              <el-form-item label="主码流地址" prop="cameraNumber">
+              <el-form-item label="主码流地址" prop="mainStream">
                 <span class="base_dialog_condit_text" v-if="pageType == 3">
-                  {{ newList.cameraNumber }}</span
+                  {{ newList.mainStream }}</span
                 >
                 <el-input
                   v-else
-                  v-model="newList.cameraNumber"
-                  :disabled="pageType == 2"
+                  v-model="newList.mainStream"
                   placeholder="输入主码流地址"
                   style="width: 72%"
                   class="filter-item"
@@ -151,7 +149,15 @@
               </el-form-item>
             </span>
             <span class="base_dialog_condit">
-              <el-form-item label="设备坐标" prop="cameraNumber">
+              <el-form-item label="设备坐标" prop="coordinate">
+                <el-input
+                  v-show="false"
+                  v-model="newList.coordinate"
+                  placeholder="输入"
+                  style="width: 72%"
+                  class="filter-item"
+                  size="small"
+                />
                 <div v-if="!curMap" class="base_dialog_condit_noMap">
                   <img
                     src="../../../../assets/images/homePage/noMap.png"
@@ -163,12 +169,16 @@
                   </div>
                 </div>
 
-                <OpenlayersMapCamera
+                <openlayersMapEquipment
                   v-else
-                  ref="OpenlayersMapCamera"
+                  ref="openlayersMapEquipment"
+                  class="base_dialog_condit_noMap"
                   :curMap="curMap"
                   :baseWidth="baseWidth"
                   :baseHeight="baseHeight"
+                  :coordinates="coordinates"
+                  :pageType="pageType"
+                  @addPoint="addPoint"
                   :key="newList.parkId + curMap"
                 />
               </el-form-item>
@@ -176,36 +186,36 @@
           </div>
           <div class="base_dialog_main_right" style="padding:60px 100px">
             <span class="base_dialog_condit">
-              <el-form-item label="是否道闸像机" prop="parkId">
+              <el-form-item label="是否道闸像机" prop="isGate">
                 <span class="base_dialog_condit_text" v-if="pageType == 3">
-                  {{ newList.parkName }}</span
+                  {{ newList.isGate == 1 ? "是" : "否" }}</span
                 >
                 <el-select
                   v-else
-                  v-model="newList.parkId"
-                  placeholder="选择是否道闸像机"
+                  v-model="newList.isGate"
+                  placeholder="选择是否设备像机"
                   clearable
                   class="filter-item"
                   style="width: 72%"
                   size="small"
                 >
                   <el-option
-                    v-for="item in parkingList"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"
+                    v-for="item in gateList"
+                    :key="item.enumValue"
+                    :label="item.enumName"
+                    :value="item.enumValue"
                   />
                 </el-select>
               </el-form-item>
             </span>
             <span class="base_dialog_condit">
-              <el-form-item label="设备编号" prop="name">
+              <el-form-item label="设备编号" prop="deviceId">
                 <span class="base_dialog_condit_text" v-if="pageType == 3">
-                  {{ newList.name }}</span
+                  {{ newList.deviceId }}</span
                 >
                 <el-input
                   v-else
-                  v-model="newList.name"
+                  v-model="newList.deviceId"
                   placeholder="输入设备编号"
                   style="width: 72%"
                   class="filter-item"
@@ -215,13 +225,13 @@
             </span>
 
             <span class="base_dialog_condit">
-              <el-form-item label="设备类型" prop="type">
+              <el-form-item label="设备类型" prop="deviceType">
                 <span class="base_dialog_condit_text" v-if="pageType == 3">
-                  {{ getType(newList.type) }}</span
+                  {{ getType(newList.deviceType) }}</span
                 >
                 <el-select
                   v-else
-                  v-model="newList.type"
+                  v-model="newList.deviceType"
                   placeholder="选择设备类型"
                   clearable
                   class="filter-item"
@@ -238,14 +248,13 @@
               </el-form-item>
             </span>
             <span class="base_dialog_condit">
-              <el-form-item label="端口号" prop="equipmentNumber">
+              <el-form-item label="端口号" prop="port">
                 <span class="base_dialog_condit_text" v-if="pageType == 3">
-                  {{ newList.equipmentNumber }}</span
+                  {{ newList.port }}</span
                 >
                 <el-input
                   v-else
-                  v-model="newList.equipmentNumber"
-                  :disabled="pageType == 2"
+                  v-model="newList.port"
                   placeholder="输入端口号"
                   style="width: 72%"
                   class="filter-item"
@@ -255,14 +264,13 @@
             </span>
 
             <span class="base_dialog_condit">
-              <el-form-item label="密码" prop="cameraNumber">
+              <el-form-item label="密码" prop="password">
                 <span class="base_dialog_condit_text" v-if="pageType == 3">
-                  {{ newList.cameraNumber }}</span
+                  {{ newList.password }}</span
                 >
                 <el-input
                   v-else
-                  v-model="newList.cameraNumber"
-                  :disabled="pageType == 2"
+                  v-model="newList.password"
                   placeholder="输入密码"
                   style="width: 72%"
                   class="filter-item"
@@ -271,13 +279,13 @@
               </el-form-item>
             </span>
             <span class="base_dialog_condit">
-              <el-form-item label="协议类型" prop="type">
+              <el-form-item label="协议类型" prop="protocols">
                 <span class="base_dialog_condit_text" v-if="pageType == 3">
-                  {{ getType(newList.type) }}</span
+                  {{ getprotocolName(newList.protocols) }}</span
                 >
                 <el-select
                   v-else
-                  v-model="newList.type"
+                  v-model="newList.protocols"
                   placeholder="选择协议类型"
                   clearable
                   class="filter-item"
@@ -285,7 +293,7 @@
                   size="small"
                 >
                   <el-option
-                    v-for="item in typeList"
+                    v-for="item in protocolTypes"
                     :key="item.enumValue"
                     :label="item.enumName"
                     :value="item.enumValue"
@@ -295,14 +303,13 @@
             </span>
 
             <span class="base_dialog_condit">
-              <el-form-item label="子码流地址" prop="cameraNumber">
+              <el-form-item label="子码流地址" prop="subStream">
                 <span class="base_dialog_condit_text" v-if="pageType == 3">
-                  {{ newList.cameraNumber }}</span
+                  {{ newList.subStream }}</span
                 >
                 <el-input
                   v-else
-                  v-model="newList.cameraNumber"
-                  :disabled="pageType == 2"
+                  v-model="newList.subStream"
                   placeholder="输入子码流地址"
                   style="width: 72%"
                   class="filter-item"
@@ -314,11 +321,8 @@
         </div>
       </el-form>
       <div class="base_dialog_main_btnBox" v-if="pageType < 3">
-        <el-button type="info" icon="el-icon-circle-plus" @click="toSave"
-          >保存</el-button
-        ><el-button type="danger" icon="el-icon-error" @click="closeDialog"
-          >取消</el-button
-        >
+        <el-button type="info" @click="toSave">保存</el-button
+        ><el-button type="danger" @click="closeDialog">取消</el-button>
       </div>
     </div>
   </div>
@@ -329,46 +333,32 @@ import {
   lotSelect //获取车场下拉框
 } from "@/api/yardManagement";
 import {
-  gateGetInfo, //获取单个道闸信息
-  gateAdd, //新增道闸
-  gateUpdate, //编辑道闸
-  gateCheckFive //字段重复校验
+  SsBaseDeviceGetInfo, //获取单个设备信息
+  ssBaseGateway, //获取网关
+  addEquipment, //新增设备
+  SsBaseDeviceUpdate, //编辑设备
+  checkSsBaseDevice //字段重复校验
 } from "@/api/equipmentManagement";
-import OpenlayersMapCamera from "@/components/Map/openlayersMapCamera"; //当日车流实时趋势1
+import openlayersMapEquipment from "@/components/Map/openlayersMapEquipment"; //当日车流实时趋势1
+import {
+  monitoringCommandPage //监控指挥分页
+} from "@/api/homePage";
 
 export default {
-  components: { OpenlayersMapCamera },
+  components: { openlayersMapEquipment },
   data() {
     const validateName = (rule, value, callback) => {
       if (this.editName !== value) {
         let para = {
-          name: value
+          deviceName: value
         };
-        gateCheckFive(para)
+        checkSsBaseDevice(para)
           .then(response => {
             callback();
           })
           .catch(err => {
-            if (err == "Error: 检查道闸名称是否已存在") {
-              callback(new Error("检查道闸名称是否已存在"));
-            }
-          });
-      } else {
-        callback();
-      }
-    };
-    const validateIp = (rule, value, callback) => {
-      if (this.editIp !== value) {
-        let para = {
-          ip: value
-        };
-        gateCheckFive(para)
-          .then(response => {
-            callback();
-          })
-          .catch(err => {
-            if (err == "Error: 检查道闸IP是否已存在") {
-              callback(new Error("检查道闸IP是否已存在"));
+            if (err == "Error: 检查设备名称是否已存在") {
+              callback(new Error("检查设备名称是否已存在"));
             }
           });
       } else {
@@ -378,9 +368,9 @@ export default {
     const validateEquipmentNumber = (rule, value, callback) => {
       if (this.editEquipmentNumber !== value) {
         let para = {
-          equipmentNumber: value
+          deviceId: value
         };
-        gateCheckFive(para)
+        checkSsBaseDevice(para)
           .then(response => {
             callback();
           })
@@ -393,40 +383,11 @@ export default {
         callback();
       }
     };
-    const validateCameraNumber = (rule, value, callback) => {
-      if (this.editCameraNumber !== value) {
-        let para = {
-          cameraNumber: value
-        };
-        gateCheckFive(para)
-          .then(response => {
-            callback();
-          })
-          .catch(err => {
-            if (err == "Error: 检查辅助相机序列号是否已存在") {
-              callback(new Error("检查辅助相机序列号是否已存在"));
-            }
-          });
-      } else {
+    const validateCoordinate = (rule, value, callback) => {
+      if (this.newList.coordinate) {
         callback();
-      }
-    };
-    const validateCameraIp = (rule, value, callback) => {
-      if (this.editCameraIp !== value) {
-        let para = {
-          cameraIp: value
-        };
-        gateCheckFive(para)
-          .then(response => {
-            callback();
-          })
-          .catch(err => {
-            if (err == "Error: 检查辅助相机IP是否已存在") {
-              callback(new Error("检查辅助相机IP是否已存在"));
-            }
-          });
       } else {
-        callback();
+        callback(new Error("请选择设备坐标"));
       }
     };
 
@@ -434,82 +395,103 @@ export default {
       pageType: 1,
       title: "新增",
       isShow: false,
-      editParkingSpaceId: null, //编辑泊位号
-      editGeomagnetismId: null, //编辑地磁编号
-      editName: null, //道闸名称
+      editName: null, //设备名称
       editEquipmentNumber: null, //设备序列号
-      editIp: null, //道闸ip
-      editCameraNumber: null, //辅助像机序列号
-      editCameraIp: null, //相机IP
       curMap: null,
       baseWidth: 1080,
       baseHeight: 758,
+      coordinates: [],
       newList: {
         parkId: null, //停车场id
-        name: "", //道闸名称
-        ip: "", //道闸IP
-        equipmentNumber: "", //设备序列号
-        type: null, //道闸类型1入2出
-        cameraNumber: "", //相机序列号
-        cameraIp: "" //相机IP
-      }, //道闸详情
+        isGate: 0, //是否是闸机设备
+        deviceName: "", //设备名称
+        deviceId: "", //设备编号
+        deviceBrand: null, //设备厂商
+        deviceType: 2, //设备类型
+        ip: "", //设备IP
+        port: "", //端口
+        loginName: "", //用户名
+        password: "", //密码
+        gatewayId: "", //网关
+        protocols: 1, //协议类型
+        mainStream: "", //主码流地址
+        subStream: "", //子码流地址
+        coordinate: "", //设备坐标
+        status: 1, //启用、停用
+        streamState: null, //流状态
+        state: null //流状态
+      }, //设备详情
       typeList: [
-        { enumName: "地上入口", enumValue: 1 },
-        { enumName: "地下入口", enumValue: 2 },
-        { enumName: "地上出口", enumValue: 3 },
-        { enumName: "地下出口", enumValue: 4 }
+        { enumName: "抓拍机", enumValue: 1 },
+        { enumName: "摄像机", enumValue: 2 }
       ],
+      gateList: [
+        { enumName: "是", enumValue: 1 },
+        { enumName: "否", enumValue: 0 }
+      ],
+      equipmentManufacturerList: [
+        { enumName: "海康", enumValue: 1 },
+        { enumName: "宇视", enumValue: 2 },
+        { enumName: "大华", enumValue: 3 }
+      ],
+      protocolTypes: [
+        { enumName: "TCP", enumValue: 1 },
+        { enumName: "UDP", enumValue: 2 }
+      ],
+      gatewayList: [],
       parkingList: [],
       rules: {
         parkId: [
           { required: true, message: "请选择停车场", trigger: "change" }
         ],
-        name: [
-          { required: true, message: "请输入道闸名称", trigger: "blur" },
+        isGate: [
+          { required: true, message: "请选择是否道闸像机", trigger: "change" }
+        ],
+        deviceName: [
+          { required: true, message: "请输入设备名称", trigger: "blur" },
           {
             required: true,
-            message: "检查道闸名称是否已存在",
+            message: "检查设备名称是否已存在",
             trigger: "blur",
             validator: validateName
           }
         ],
-        ip: [
-          { required: true, message: "请输入道闸IP", trigger: "blur" },
+        deviceId: [
+          { required: true, message: "请输入设备编号", trigger: "blur" },
           {
             required: true,
-            message: "检查道闸IP是否已存在",
-            trigger: "blur",
-            validator: validateIp
-          }
-        ],
-        equipmentNumber: [
-          { required: true, message: "请输入设备序列号", trigger: "blur" },
-          {
-            required: true,
-            message: "检查设备序列号是否已存在",
+            message: "检查设备编号是否已存在",
             trigger: "blur",
             validator: validateEquipmentNumber
           }
         ],
-        type: [
-          { required: true, message: "请选择道闸类型", trigger: "change" }
+        deviceBrand: [
+          { required: true, message: "请选择设备厂商", trigger: "change" }
         ],
-        cameraNumber: [
-          { required: true, message: "请输入辅助相机序列号", trigger: "blur" },
+        deviceType: [
+          { required: true, message: "请选择设备类型", trigger: "change" }
+        ],
+        ip: [{ required: true, message: "请输入设备IP", trigger: "blur" }],
+        port: [{ required: true, message: "请输入端口号", trigger: "blur" }],
+        loginName: [
+          { required: true, message: "请输入用户名", trigger: "blur" }
+        ],
+        password: [{ required: true, message: "请输入密码", trigger: "blur" }],
+        protocols: [
+          { required: true, message: "请选择协议类型", trigger: "change" }
+        ],
+        mainStream: [
+          { required: true, message: "请输入主码流地址", trigger: "blur" }
+        ],
+        subStream: [
+          { required: true, message: "请输入子码流地址", trigger: "blur" }
+        ],
+        coordinate: [
           {
             required: true,
-            message: "检查辅助相机序列号是否已存在",
-            trigger: "blur",
-            validator: validateCameraNumber
-          }
-        ],
-        cameraIp: [
-          { required: true, message: "请输入辅助相机IP", trigger: "blur" },
-          {
-            required: true,
-            message: "检查辅助相机IP是否已存在",
-            trigger: "blur",
-            validator: validateCameraIp
+            message: "请选择设备坐标",
+            trigger: "change",
+            validator: validateCoordinate
           }
         ]
       }
@@ -519,18 +501,75 @@ export default {
     this.getparking();
   },
   methods: {
-    //获取道闸类型
-    getType(type) {
-      let name;
-      if (type == 1) {
-        name = "地上入口";
-      } else if (type == 2) {
-        name = "地下入口";
-      } else if (type == 3) {
-        name = "地上出口";
-      } else if (type == 4) {
-        name = "地下出口";
+    addPoint(e) {
+      this.coordinates = e;
+      if (e.length) {
+        this.newList.coordinate = JSON.stringify(e);
+      } else {
+        this.newList.coordinate = "";
       }
+    },
+    getDeviceBrandName(id) {
+      let arr = this.equipmentManufacturerList;
+      let name;
+      arr.forEach(el => {
+        if (el.enumValue == id) {
+          name = el.enumName;
+        }
+      });
+      return name;
+    },
+    getprotocolName(id) {
+      let arr = this.protocolTypes;
+      let name;
+      arr.forEach(el => {
+        if (el.enumValue == id) {
+          name = el.enumName;
+        }
+      });
+      return name;
+    },
+    getGatewae(id) {
+      let arr = this.gatewayList;
+      let name;
+      arr.forEach(el => {
+        if (el.id == id) {
+          name = el.ip;
+        }
+      });
+      return name;
+    },
+    parkChange(e) {
+      if (e) {
+        let para = { pageNum: 1, pageSize: 1000, parkingLotId: this.curPark };
+        monitoringCommandPage(para).then(response => {
+          if (response.rows.length > 0) {
+            this.curMapId = response.rows[0].id;
+            this.curMap = response.rows[0].img;
+            this.baseWidth = response.rows[0].width;
+            this.baseHeight = response.rows[0].height;
+            setTimeout(() => {
+              if (this.coordinates) {
+                this.$refs.openlayersMapEquipment.newCar(this.coordinates);
+              }
+            }, 200);
+          } else {
+            this.curMapId = null;
+            this.curMap = null;
+            this.coordinates = [];
+          }
+        });
+      }
+    },
+    //获取设备类型
+    getType(type) {
+      let arr = this.typeList;
+      arr.forEach(el => {
+        if (el.enumValue == type) {
+          name = el.enumName;
+        }
+      });
+      let name;
       return name;
     },
 
@@ -539,10 +578,14 @@ export default {
         this.parkingList = response.data;
       });
     },
-    //打开注册、编辑道闸弹窗
+    //打开注册、编辑设备弹窗
     showDialog(id, pageType) {
       this.isShow = true;
       this.pageType = pageType;
+      let para = {};
+      ssBaseGateway(para).then(response => {
+        this.gatewayList = response.data;
+      });
       if (this.$refs["parkingForm"]) {
         this.$refs["parkingForm"].resetFields();
       }
@@ -556,20 +599,29 @@ export default {
       } else {
         this.title = "新增";
         this.newList = {
-          parkingDirection: null, //道闸方向 0-上行 1-下行 2-左行 3-右行
-          parkingLotId: "", //停车场id
-          status: 1, //状态 0-离线 1-空闲  2-占用
-          parkingSpaceId: "", //道闸ID 泊位号
-          geomagnetismId: "" //地磁ID
+          parkId: null, //停车场id
+          isGate: 0, //是否是闸机设备
+          deviceName: "", //设备名称
+          deviceId: "", //设备编号
+          deviceBrand: null, //设备厂商
+          deviceType: 2, //设备类型
+          ip: "", //设备IP
+          port: "", //端口
+          loginName: "", //用户名
+          password: "", //密码
+          gatewayId: "", //网关
+          protocols: 1, //协议类型
+          mainStream: "", //主码流地址
+          subStream: "", //子码流地址
+          coordinate: "", //设备坐标
+          status: 1, //启用、停用
+          streamState: null, //流状态
+          state: null //流状态
         };
+        this.coordinates = [];
         this.editName = null;
         this.editEquipmentNumber = null;
-        this.editIp = null;
-        this.editCameraNumber = null;
-        this.editCameraIp = null;
-        this.editParkingSpaceId = null;
-        this.editGeomagnetismId = null;
-
+        this.curMap = null;
         if (this.$refs["parkingForm"]) {
           this.$nextTick(() => {
             this.$refs["parkingForm"].clearValidate();
@@ -580,18 +632,17 @@ export default {
     //获取详情
     getDetials(id) {
       let para = { id: id };
-      gateGetInfo(para).then(response => {
+      SsBaseDeviceGetInfo(para).then(response => {
         this.newList = response.data;
-        this.editName = response.data.name;
-        this.editEquipmentNumber = response.data.equipmentNumber;
-        this.editIp = response.data.ip;
-        this.editCameraNumber = response.data.cameraNumber;
-        this.editCameraIp = response.data.cameraIp;
-        this.editParkingSpaceId = response.data.parkingSpaceId;
-        this.editGeomagnetismId = response.data.geomagnetismId;
+        if (response.data.coordinate) {
+          this.coordinates = JSON.parse(response.data.coordinate);
+        }
+        this.editName = response.data.deviceName;
+        this.editEquipmentNumber = response.data.deviceId;
+        this.parkChange(response.data.parkId);
       });
     },
-    //关闭新增/编辑道闸弹窗
+    //关闭新增/编辑设备弹窗
     closeDialog() {
       this.isShow = false;
       this.$emit("openLoading", {});
@@ -605,15 +656,15 @@ export default {
         this.toEidt();
       }
     },
-    //添加道闸
+    //添加设备
     toAdd() {
       this.$refs["parkingForm"].validate(valid => {
         if (valid) {
-          this.$confirm("确认提交保存道闸信息吗?", "提示", {
+          this.$confirm("确认提交保存设备信息吗?", "提示", {
             type: "warning"
           }).then(() => {
             let para = this.newList;
-            gateAdd(para)
+            addEquipment(para)
               .then(response => {
                 this.isShow = false;
                 this.$emit("openLoading", {});
@@ -624,10 +675,10 @@ export default {
                   });
                   // this.getDetials(response.id);
                 } else {
-                  this.$message({
-                    type: "warning",
-                    message: "提交失败"
-                  });
+                  // this.$message({
+                  //   type: "error",
+                  //   message: "提交失败"
+                  // });
                 }
                 setTimeout(() => {
                   this.$emit("getList", {});
@@ -635,7 +686,7 @@ export default {
               })
               .catch(() => {
                 // this.$message({
-                //   type: "warning",
+                //   type: "error",
                 //   message: "提交失败"
                 // });
                 setTimeout(() => {
@@ -646,17 +697,17 @@ export default {
         }
       });
     },
-    //编辑道闸
+    //编辑设备
     toEidt() {
       this.$refs["parkingForm"].validate(valid => {
         if (valid) {
-          this.$confirm("确认提交编辑的道闸信息吗?", "提示", {
+          this.$confirm("确认提交编辑的设备信息吗?", "提示", {
             type: "warning"
           }).then(() => {
             this.isShow = false;
             this.$emit("openLoading", {});
             let para = this.newList;
-            gateUpdate(para)
+            SsBaseDeviceUpdate(para)
               .then(response => {
                 if (response.code == "200") {
                   this.$message({
@@ -664,10 +715,10 @@ export default {
                     message: "提交成功"
                   });
                 } else {
-                  this.$message({
-                    type: "warning",
-                    message: "提交失败"
-                  });
+                  // this.$message({
+                  //   type: "error",
+                  //   message: "提交失败"
+                  // });
                 }
                 setTimeout(() => {
                   this.$emit("getList", {});
@@ -675,7 +726,7 @@ export default {
               })
               .catch(() => {
                 // this.$message({
-                //   type: "warning",
+                //   type: "error",
                 //   message: "提交失败"
                 // });
                 setTimeout(() => {

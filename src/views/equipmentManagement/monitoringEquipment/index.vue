@@ -7,16 +7,17 @@
       </span>
       <span class="search_content">
         <div class="search_content_title">设备编号</div>
-        <el-input v-model="listQuery.parkName" placeholder="请输入"> </el-input>
+        <el-input v-model="listQuery.deviceId" placeholder="请输入"> </el-input>
       </span>
       <span class="search_content">
         <div class="search_content_title">设备名称</div>
-        <el-input v-model="listQuery.parkName" placeholder="请输入"> </el-input>
+        <el-input v-model="listQuery.deviceName" placeholder="请输入">
+        </el-input>
       </span>
       <span class="search_content">
         <div class="search_content_title">是否道闸像机</div>
         <el-select
-          v-model="listQuery.type"
+          v-model="listQuery.isGate"
           placeholder="请选择"
           clearable
           class="filter-item"
@@ -38,11 +39,18 @@
       >
     </div>
     <div class="btn_box">
-      <el-button type="info" icon="el-icon-circle-plus-outline" @click="toAdd"
+      <el-button
+        type="info"
+        icon="el-icon-circle-plus-outline"
+        v-has="{ red: 'monitoringEquipmentAdd', type: 1 }"
+        @click="toAdd"
         >新增</el-button
       >
-      <!-- v-has="{ red: 'addBox', type: 1 }" -->
-      <el-button type="danger" icon="el-icon-circle-close" @click="toDel"
+      <el-button
+        type="danger"
+        icon="el-icon-circle-close"
+        v-has="{ red: 'monitoringEquipmentDelete', type: 1 }"
+        @click="toDel"
         >删除</el-button
       >
     </div>
@@ -76,22 +84,22 @@
         </el-table-column>
         <el-table-column label="设备名称" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.name }}</span>
+            <span class="content">{{ scope.row.deviceName }}</span>
           </template>
         </el-table-column>
         <el-table-column label="设备厂家" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.name }}</span>
+            <span class="content">{{ getBrand(scope.row.deviceBrand) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="设备类型" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ getType(scope.row.type) }}
+            {{ getType(scope.row.deviceType) }}
           </template>
         </el-table-column>
         <el-table-column label="设备编号" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.barrierNumber }}</span>
+            <span class="content">{{ scope.row.deviceId }}</span>
           </template>
         </el-table-column>
 
@@ -102,37 +110,39 @@
         </el-table-column>
         <el-table-column label="端口号" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.ip }}</span>
+            <span class="content">{{ scope.row.port }}</span>
           </template>
         </el-table-column>
         <el-table-column label="网关ID" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.ip }}</span>
+            <span class="content">{{ scope.row.gatewayId }}</span>
           </template>
         </el-table-column>
         <el-table-column label="设备状态" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="offLine_ball" v-show="scope.row.online == 0"></span>
-            <span v-show="scope.row.online == 0" class="offLine"> 离线</span>
-            <span class="onLine_ball" v-show="scope.row.online == 1"></span>
-            <span v-show="scope.row.online == 1" class="onLine"> 在线</span>
+            <span class="offLine_ball" v-show="scope.row.state == 0"></span>
+            <span v-show="scope.row.state == 0" class="offLine"> 离线</span>
+            <span class="onLine_ball" v-show="scope.row.state == 1"></span>
+            <span v-show="scope.row.state == 1" class="onLine"> 在线</span>
           </template>
         </el-table-column>
         <el-table-column label="流状态" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span
-              class="offLine_ball"
-              v-show="scope.row.cameraOnline == 0"
-            ></span>
-            <span v-show="scope.row.cameraOnline == 0" class="offLine">
-              离线</span
+            <svg-icon
+              icon-class="WIFI"
+              v-show="scope.row.streamState == 0"
+              class="offLine"
+            />
+            <span v-show="scope.row.streamState == 0" class="offLine">
+              网络不通</span
             >
-            <span
-              class="onLine_ball"
-              v-show="scope.row.cameraOnline == 1"
-            ></span>
-            <span v-show="scope.row.cameraOnline == 1" class="onLine">
-              在线</span
+            <svg-icon
+              icon-class="WIFI"
+              v-show="scope.row.streamState == 1"
+              class="onLine"
+            />
+            <span v-show="scope.row.streamState == 1" class="onLine">
+              网络正常</span
             >
           </template>
         </el-table-column>
@@ -146,33 +156,37 @@
           <template slot-scope="scope">
             <span
               class="operation_button update_btn"
+              v-has="{ red: 'monitoringEquipmentEdit', type: 1 }"
               @click="toEdit(scope.row)"
             >
               编辑
             </span>
             <span
               class="operation_button update_btn"
-              v-if="scope.row.state == 0"
-              @click="toEdit(scope.row)"
+              v-if="scope.row.status == 0"
+              v-has="{ red: 'monitoringEquipmentEnable', type: 1 }"
+              @click="toEnable(scope.row)"
             >
               启用
             </span>
             <span
               class="operation_button update_btn"
-              v-if="scope.row.state == 1"
-              @click="toEdit(scope.row)"
+              v-if="scope.row.status == 1"
+              v-has="{ red: 'monitoringEquipmentEnable', type: 1 }"
+              @click="toDeactivate(scope.row)"
             >
               停用
             </span>
-            <span
+            <!-- <span
               class="operation_button update_btn"
-              @click="toEdit(scope.row)"
+              v-has="{ red: 'monitoringEquipmentROI', type: 1 }"
+              @click="toROI(scope.row)"
             >
               ROI
-            </span>
-            <!-- v-has="{ red: 'editBox', type: 1 }" -->
+            </span> -->
             <span
               class="operation_button update_btn"
+              v-has="{ red: 'monitoringEquipmentDetails', type: 1 }"
               @click="toDetails(scope.row)"
             >
               详情
@@ -193,21 +207,24 @@
       />
     </div>
     <Dialog ref="dialog" @getList="getList" @openLoading="openLoading"></Dialog>
+    <DialogROI ref="dialogROI"></DialogROI>
   </div>
 </template>
 
 <script>
 import {
-  gateList, //道闸管理分页查询
+  SsBaseDeviceList, //监控设备分页查询
+  SsBaseDeviceUpdate, //监控设备编辑设备
   openGate, //远程开闸
-  gateDelete //删除道闸
+  SsBaseDevice //删除监控设备
 } from "@/api/equipmentManagement";
 import Dialog from "./components/dialog";
 import { fieldTable } from "@/api/common";
+import DialogROI from "./components/dialogROI";
 
 export default {
   name: "MonitoringEquipment",
-  components: { Dialog },
+  components: { Dialog, DialogROI },
   data() {
     return {
       listQuery: {
@@ -215,15 +232,14 @@ export default {
         pageSize: 10,
         total: 0,
         parkName: "", //停车场名称
-        name: "", //道闸
-        type: null //道闸类型
+        deviceName: "", //设备名称
+        deviceId: "", //设备编号
+        isGate: null //道闸类型
       },
       selGateway: null,
       typeList: [
-        { enumName: "地上入口", enumValue: 1 },
-        { enumName: "地下入口", enumValue: 2 },
-        { enumName: "地上出口", enumValue: 3 },
-        { enumName: "地下出口", enumValue: 4 }
+        { enumName: "是", enumValue: 1 },
+        { enumName: "否", enumValue: 0 }
       ],
       Dictionaries: {
         enumTypes: "STATUS"
@@ -237,17 +253,25 @@ export default {
     this.toSearchList();
   },
   methods: {
-    //获取道闸类型
+    //获取设备类型
+    getBrand(type) {
+      let name;
+      if (type == 1) {
+        name = "海康";
+      } else if (type == 2) {
+        name = "宇视";
+      } else if (type == 3) {
+        name = "大华";
+      }
+      return name;
+    },
+    //获取设备类型
     getType(type) {
       let name;
       if (type == 1) {
-        name = "地上入口";
+        name = "抓拍机";
       } else if (type == 2) {
-        name = "地下入口";
-      } else if (type == 3) {
-        name = "地上出口";
-      } else if (type == 4) {
-        name = "地下出口";
+        name = "摄像头";
       }
       return name;
     },
@@ -258,6 +282,7 @@ export default {
       this.openLoading();
       this.getList();
     },
+
     //重置查询条件
     resetList() {
       this.listQuery = {
@@ -265,34 +290,12 @@ export default {
         pageSize: 10,
         total: 0,
         parkName: "", //停车场名称
-        name: "", //道闸
-        type: null //道闸类型
+        deviceName: "", //设备名称
+        deviceId: "", //设备编号
+        isGate: null //道闸类型
       };
       this.openLoading();
       this.getList();
-    },
-    //选择区域地址
-    selectAddress(data) {
-      this.listQuery.address = data;
-    },
-    //显示溢出隐藏
-    showTips(obj, row) {
-      /*obj为鼠标移入时的事件对象*/
-      /*currentWidth 为文本在页面中所占的宽度，创建标签，加入到页面，获取currentWidth ,最后在移除*/
-      let TemporaryTag = document.createElement("span");
-      TemporaryTag.innerText = row.note;
-      TemporaryTag.className = "getTextWidth";
-      document.querySelector("body").appendChild(TemporaryTag);
-      let currentWidth = document.querySelector(".getTextWidth").offsetWidth;
-      document.querySelector(".getTextWidth").remove();
-
-      /*cellWidth为表格容器的宽度*/
-      const cellWidth = obj.target.offsetWidth;
-
-      /*当文本宽度小于||等于容器宽度两倍时，代表文本显示未超过两行*/
-      currentWidth <= 2 * cellWidth
-        ? (row.showTooltip = false)
-        : (row.showTooltip = true);
     },
     openLoading() {
       let claeeName;
@@ -313,7 +316,7 @@ export default {
     //获取设备列表
     getList() {
       let para = this.listQuery;
-      gateList(para)
+      SsBaseDeviceList(para)
         .then(response => {
           this.list = response.rows;
           if (response.total > 0) {
@@ -364,7 +367,7 @@ export default {
         this.$confirm(text, "提示", {
           type: "warning"
         }).then(() => {
-          gateDelete(arr.toString()).then(response => {
+          SsBaseDevice(arr.toString()).then(response => {
             if (response.code == "200") {
               this.$message({
                 type: "success",
@@ -373,10 +376,10 @@ export default {
               this.openLoading();
               this.getList();
             } else {
-              this.$message({
-                type: "warning",
-                message: "删除失败"
-              });
+              // this.$message({
+              //   type: "error",
+              //   message: "删除失败"
+              // });
             }
           });
         });
@@ -414,10 +417,10 @@ export default {
               message: "开闸成功"
             });
           } else {
-            this.$message({
-              type: "warning",
-              message: "开闸失败"
-            });
+            // this.$message({
+            //   type: "error",
+            //   message: "开闸失败"
+            // });
           }
         });
         this.$refs.selTable.clearSelection();
@@ -432,12 +435,67 @@ export default {
     },
     //取消常开
     openDoorCancel() {},
+    //启用
+    toEnable(e) {
+      let para = { ...e };
+      para.status = 1;
+      this.openLoading();
+
+      SsBaseDeviceUpdate(para).then(response => {
+        setTimeout(() => {
+          this.listLoading.close();
+        }, 300);
+
+        if (response.code == "200") {
+          this.$message({
+            type: "success",
+            message: "启用成功"
+          });
+          e.status = 1;
+        } else {
+          // this.$message({
+          //   type: "error",
+          //   message: "启用失败"
+          // });
+        }
+      });
+    },
+    //停用
+    toDeactivate(e) {
+      let para = { ...e };
+      para.status = 0;
+      this.openLoading();
+
+      SsBaseDeviceUpdate(para).then(response => {
+        setTimeout(() => {
+          this.listLoading.close();
+        }, 300);
+
+        if (response.code == "200") {
+          this.$message({
+            type: "success",
+            message: "停用成功"
+          });
+          e.status = 0;
+        } else {
+          // this.$message({
+          //   type: "error",
+          //   message: "停用失败"
+          // });
+        }
+      });
+    },
     //打开编辑道闸
     toEdit(e) {
       let id = e.id;
       let pageType = 2;
       this.$refs.dialog.showDialog(id, pageType);
     },
+    //ROI配置
+    toROI(e) {
+      this.$refs.dialogROI.showDialog(e);
+    },
+
     //打开道闸详情
     toDetails(e) {
       let id = e.id;

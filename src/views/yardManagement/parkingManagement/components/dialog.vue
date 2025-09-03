@@ -215,7 +215,7 @@
               class="wenzi"
               style="font-size: 12px;padding-left: 136px;color:#ccc;height:20px;ling-height:20px"
             >
-              *最多支持上传4张，上格式jpg/jpeg/png/bmp
+              *最多支持上传4张，格式jpg/jpeg/png/bmp，建议图片尺寸为960px*540px
             </div>
 
             <span class="base_dialog_condit">
@@ -286,7 +286,7 @@
               class="base_dialog_main_right_wenzi"
               style="font-size: 12px;padding-left: 148px;color:#ccc;height:20px;ling-height:20px"
             >
-              达到此车位占用率后，仅限长租车可进入，临停车禁止进入
+              达到此在场率后，仅限长租车可进入，临停车禁止进入
             </div>
 
             <span class="base_dialog_condit">
@@ -465,11 +465,8 @@
         </el-transfer>
       </div>
       <div class="base_dialog_main_btnBox" style="" v-show="pageType < 3">
-        <el-button type="info" icon="el-icon-circle-plus" @click="toSave"
-          >保存</el-button
-        ><el-button type="danger" icon="el-icon-error" @click="closeDialog"
-          >取消</el-button
-        >
+        <el-button type="info" @click="toSave">保存</el-button
+        ><el-button type="danger" @click="closeDialog">取消</el-button>
       </div>
     </div>
   </div>
@@ -486,7 +483,7 @@ import {
 } from "@/api/yardManagement";
 
 import Cascader from "@/components/Cascader/cascader_regionIdAndNames.vue";
-import BaiduMap from "@/components/Map/map.vue";
+import BaiduMap from "@/components/Map/mapOnload.vue";
 import { UploadImage } from "@/api/common";
 
 export default {
@@ -775,11 +772,13 @@ export default {
     //删除照片
     delPic(index) {
       this.photos.splice(index, 1);
+      this.newList.photos = this.photos.toString();
       this.$refs.parkingForm.validateField("photos");
     },
 
     //地图获取地址信息
     getLocation(data) {
+      console.log(123, data);
       let arr = [data.coordinate.longitude, data.coordinate.latitude];
       this.newList.coordinate = arr.toString();
     },
@@ -974,17 +973,17 @@ export default {
                   });
                   this.getDetials(response.data.id, true);
                 } else {
-                  this.$message({
-                    type: "warning",
-                    message: "提交失败"
-                  });
+                  // this.$message({
+                  //   type: "error",
+                  //   message: "提交失败"
+                  // });
                 }
               })
               .catch(() => {
-                this.$message({
-                  type: "warning",
-                  message: "提交失败"
-                });
+                // this.$message({
+                //   type: "error",
+                //   message: "提交失败"
+                // });
               });
           });
         }
@@ -1010,10 +1009,10 @@ export default {
                     message: "提交成功"
                   });
                 } else {
-                  this.$message({
-                    type: "warning",
-                    message: "提交失败"
-                  });
+                  // this.$message({
+                  //   type: "error",
+                  //   message: "提交失败"
+                  // });
                 }
                 if (this.step == 3 || this.step == 2) {
                   setTimeout(() => {
@@ -1024,10 +1023,10 @@ export default {
                 }
               })
               .catch(() => {
-                this.$message({
-                  type: "warning",
-                  message: "提交失败"
-                });
+                // this.$message({
+                //   type: "error",
+                //   message: "提交失败"
+                // });
 
                 if (this.step == 2) {
                   setTimeout(() => {

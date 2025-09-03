@@ -35,6 +35,7 @@
           range-separator="-"
           start-placeholder="请选择时间"
           end-placeholder
+          :default-time="['00:00:00', '23:59:59']"
         ></el-date-picker>
         <!-- :default-time="['00:00:00', '23:59:59']" -->
       </span>
@@ -47,7 +48,11 @@
       >
     </div>
     <div class="btn_box">
-      <el-button type="info" icon="el-icon-upload2" @click="toExport"
+      <el-button
+        type="info"
+        icon="el-icon-upload2"
+        @click="toExport"
+        v-has="{ red: 'collectionStatisticsExport', type: 1 }"
         >导出</el-button
       >
     </div>
@@ -80,7 +85,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="实收总额(元)"
+          label="实收总额（元）"
           align="center"
           show-overflow-tooltip
         >
@@ -89,7 +94,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="长租实收(元)"
+          label="长租实收（元）"
           align="center"
           show-overflow-tooltip
         >
@@ -98,7 +103,8 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="长租分成(元)建设发展公司"
+          label="长租分成（元）建设发展公司"
+          width="120px"
           align="center"
           show-overflow-tooltip
         >
@@ -107,7 +113,8 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="长租分成(元)海创物业公司"
+          label="长租分成（元）海创物业公司"
+          width="120px"
           align="center"
           show-overflow-tooltip
         >
@@ -116,7 +123,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="临停实收(元)"
+          label="临停实收（元）"
           align="center"
           show-overflow-tooltip
         >
@@ -126,7 +133,7 @@
         </el-table-column>
 
         <el-table-column
-          label="临停退款(元)"
+          label="临停退款（元）"
           align="center"
           show-overflow-tooltip
         >
@@ -135,7 +142,8 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="临停分成(元)建设发展公司"
+          label="临停分成（元）建设发展公司"
+          width="120px"
           align="center"
           show-overflow-tooltip
         >
@@ -144,7 +152,8 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="临停分成(元)海创物业公司"
+          label="临停分成（元）海创物业公司"
+          width="120px"
           align="center"
           show-overflow-tooltip
         >
@@ -154,7 +163,7 @@
         </el-table-column>
 
         <el-table-column
-          label="欠款总额(元)"
+          label="欠款总额（元）"
           align="center"
           show-overflow-tooltip
         >

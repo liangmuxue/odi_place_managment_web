@@ -77,3 +77,60 @@ export function openGate(data) {
     data
   })
 }
+//监控设备分页
+export function SsBaseDeviceList(data) {
+  return request({
+    url: '/system/SsBaseDevice/list',
+    method: 'get',
+    params: data
+
+  })
+}
+//监控设备添加前校验参数
+export function checkSsBaseDevice(data) {
+  return request({
+    url: '/system/SsBaseDevice/checkSsBaseDevice',
+    method: 'post',
+    data
+  })
+}
+//监控设备添加设备
+export function addEquipment(data) {
+  return request({
+    url: '/system/equipment',
+    method: 'post',
+    data
+  })
+}
+//获取网关
+export function ssBaseGateway(data) {
+  return request({
+    url: '/system/gateway/ssBaseGateway',
+    method: 'post',
+    data
+  })
+}
+//监控设备编辑设备
+export function SsBaseDeviceUpdate(data) {
+  return request({
+    url: '/system/SsBaseDevice/update',
+    method: 'post',
+    data
+  })
+}
+//监控设备详情
+export function SsBaseDeviceGetInfo(data) {
+  return request({
+    url: '/system/SsBaseDevice/getInfo',
+    method: 'get',
+    params: data
+
+  })
+}
+//删除监控设备
+export function SsBaseDevice(data) {
+  return request({
+    url: '/system/SsBaseDevice/' + data,
+    method: 'post',
+  })
+}

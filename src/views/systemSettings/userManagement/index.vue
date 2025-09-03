@@ -47,14 +47,20 @@
       >
     </div>
     <div class="btn_box">
-      <el-button type="info" icon="el-icon-circle-plus-outline" @click="toAdd"
+      <el-button
+        type="info"
+        icon="el-icon-circle-plus-outline"
+        @click="toAdd"
+        v-has="{ red: 'userAdd', type: 1 }"
         >新增</el-button
       >
-      <!-- v-has="{ red: 'addBox', type: 1 }" -->
-      <el-button type="danger" icon="el-icon-circle-close" @click="toDel"
+      <el-button
+        type="danger"
+        icon="el-icon-circle-close"
+        @click="toDel"
+        v-has="{ red: 'userDelete', type: 1 }"
         >删除</el-button
       >
-      <!-- v-has="{ red: 'deleteBox', type: 1 }" -->
     </div>
 
     <div class="content_box">
@@ -67,7 +73,11 @@
         @selection-change="handleSelectionChange"
         align="left"
       >
-        <el-table-column type="selection" width="34"></el-table-column>
+        <el-table-column
+          type="selection"
+          width="34"
+          :selectable="selectable"
+        ></el-table-column>
         <el-table-column
           label="序号"
           type="index"
@@ -119,6 +129,7 @@
               v-if="!scope.row.admin"
               class="operation_button update_btn"
               @click="toEdit(scope.row)"
+              v-has="{ red: 'userEdit', type: 1 }"
             >
               编辑
             </span>
@@ -126,6 +137,7 @@
               class="operation_button update_btn"
               style="width:80px"
               @click="toChangePassword(scope.row)"
+              v-has="{ red: 'resetPassword', type: 1 }"
             >
               重置密码
             </span>
@@ -202,6 +214,14 @@ export default {
           this.roleList = response.data;
         })
         .catch(() => {});
+    },
+    //判断是否可选
+    selectable(e) {
+      if (!e.admin) {
+        return true;
+      } else {
+        return false;
+      }
     },
 
     //查询用户列表
@@ -305,10 +325,10 @@ export default {
               this.openLoading();
               this.getList();
             } else {
-              this.$message({
-                type: "warning",
-                message: "删除失败"
-              });
+              // this.$message({
+              //   type: "error",
+              //   message: "删除失败"
+              // });
             }
           });
         });

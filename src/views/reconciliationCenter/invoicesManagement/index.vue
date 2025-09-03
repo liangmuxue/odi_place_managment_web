@@ -179,6 +179,7 @@
             <span
               class="operation_button update_btn"
               @click="toDetial(scope.row)"
+              v-has="{ red: 'invoicesManagementDetails', type: 1 }"
             >
               查看明细
             </span>

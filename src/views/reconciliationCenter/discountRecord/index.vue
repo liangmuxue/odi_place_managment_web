@@ -41,6 +41,7 @@
           range-separator="-"
           start-placeholder="请选择时间"
           end-placeholder
+          :default-time="['00:00:00', '23:59:59']"
         ></el-date-picker>
         <!-- :default-time="['00:00:00', '23:59:59']" -->
       </span>
@@ -57,7 +58,11 @@
       >
     </div>
     <div class="btn_box">
-      <el-button type="info" icon="el-icon-upload2" @click="toExport"
+      <el-button
+        type="info"
+        icon="el-icon-upload2"
+        @click="toExport"
+        v-has="{ red: 'discountRecordExport', type: 1 }"
         >导出</el-button
       >
     </div>
@@ -112,7 +117,7 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.park }}</span>
+            <span class="content">{{ scope.row.parkName }}</span>
           </template>
         </el-table-column>
 

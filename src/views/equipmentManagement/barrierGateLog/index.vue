@@ -6,7 +6,7 @@
         <el-input v-model="listQuery.parkName" placeholder="请输入"> </el-input>
       </span>
       <span class="search_content">
-        <div class="search_content_title">道闸类型</div>
+        <div class="search_content_title">开闸类型</div>
         <el-select
           v-model="listQuery.type"
           placeholder="选择状态"
@@ -47,7 +47,11 @@
       >
     </div>
     <div class="btn_box">
-      <el-button type="info" icon="el-icon-upload2" @click="toExport"
+      <el-button
+        type="info"
+        icon="el-icon-upload2"
+        @click="toExport"
+        v-has="{ red: 'barrierGateLogExport', type: 1 }"
         >导出</el-button
       >
     </div>
@@ -95,10 +99,10 @@
         <el-table-column label="开闸类型" min-width="90px" align="center">
           <template slot-scope="scope">
             <div class="content" v-if="scope.row.type == 1">
-              手动开闸
+              有牌车入场
             </div>
             <div class="content" v-else>
-              {{ scope.row.type == 2 ? "有牌车入场" : "有牌车出场" }}
+              {{ scope.row.type == 2 ? "有牌车出场" : "手动开闸" }}
             </div>
           </template>
         </el-table-column>
@@ -150,8 +154,9 @@ export default {
         type: null //道闸类型
       },
       typeList: [
-        { enumName: "入口道闸", enumValue: 1 },
-        { enumName: "出口道闸", enumValue: 2 }
+        { enumName: "有牌车入场", enumValue: 1 },
+        { enumName: "有牌车出场", enumValue: 2 },
+        { enumName: "手动抬杆", enumValue: 3 }
       ],
       selGateway: null,
       time: [],
