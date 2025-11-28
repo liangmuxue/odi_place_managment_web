@@ -7,7 +7,7 @@
       </div>
     </div>
     <div class="base_dialog_main">
-      <div style="padding:15px">欠费总额：{{ totalMoney }}元</div>
+      <div style="padding:15px">欠费总额：{{ totalMoney | getMoney }}元</div>
       <el-table
         :data="newList"
         highlight-current-row
@@ -63,7 +63,7 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.arrears }}</span>
+            <span class="content">{{ scope.row.arrears | getMoney }}</span>
           </template>
         </el-table-column>
         <el-table-column label="状态" align="center" show-overflow-tooltip>

@@ -319,6 +319,8 @@ export default {
     //打开注册、编辑角色弹窗
     showDialog(e, pageType) {
       this.isShow = true;
+      this.filterText = "";
+      this.filterText2 = "";
       this.pageType = pageType;
       if (this.$refs["roleForm"]) {
         this.$refs["roleForm"].resetFields();

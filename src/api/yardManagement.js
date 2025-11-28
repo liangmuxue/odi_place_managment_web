@@ -167,6 +167,16 @@ export function lotSelect() {
 
   })
 }
+//获取车场下拉框（停车缴费）
+export function getName(data) {
+  return request({
+    url: '/system/order/getName',
+    method: 'post',
+    data
+
+  })
+}
+
 //获取所有车场下拉框
 export function lotSelectAll() {
   return request({

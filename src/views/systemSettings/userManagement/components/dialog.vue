@@ -32,7 +32,7 @@
               <el-form-item label="真实姓名" prop="nickName">
                 <el-input
                   v-model="newList.nickName"
-                  placeholder="选择真实姓名"
+                  placeholder="输入真实姓名"
                   style="width: 72%"
                   class="filter-item"
                   size="small"
@@ -86,11 +86,8 @@
         </div>
       </el-form>
       <div class="base_dialog_main_btnBox">
-        <el-button type="info"  @click="toSave"
-          >保存</el-button
-        ><el-button type="danger"  @click="closeDialog"
-          >取消</el-button
-        >
+        <el-button type="info" @click="toSave">保存</el-button
+        ><el-button type="danger" @click="closeDialog">取消</el-button>
       </div>
     </div>
   </div>

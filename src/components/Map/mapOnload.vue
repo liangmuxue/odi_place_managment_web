@@ -102,10 +102,10 @@ export default {
       //					this.map.setMinZoom(2);
       var point = new BMap.Point(121.534528, 38.865049); // 创建点坐标
       this.map.centerAndZoom(point, this.mapZoom); // 初始化地图，设置中心点坐标和地图级别
-      this.map.setMapStyle({ style: "normal" });
+      // this.map.setMapStyle({ style: "normal" });
       this.map.enableScrollWheelZoom(); //获取缩放等级,这里没什么用写着玩的;
       this.map.setCurrentCity("大连"); // 设置地图显示的城市 此项是必须设置的
-      this.map.enableScrollWheelZoom();
+      // this.map.enableScrollWheelZoom();
       // var nowHc2 = document.documentElement.clientHeight / 2; //算出高的一半
       // var nowWc2 = document.documentElement.width() / 2; //宽的一半
       // map.panBy(nowWc2, nowHc2); //定位
@@ -114,15 +114,15 @@ export default {
         this.map.addOverlay(this.marker);*/
 
       // 初始化地图类型和缩略图控件变量
-      this.map.mapType1 = new BMap.MapTypeControl({
-        mapTypes: [BMAP_NORMAL_MAP, BMAP_HYBRID_MAP],
-        anchor: BMAP_ANCHOR_TOP_RIGHT
-      });
-      this.map.overView = new BMap.OverviewMapControl();
-      this.map.overViewOpen = new BMap.OverviewMapControl({
-        isOpen: true,
-        anchor: BMAP_ANCHOR_BOTTOM_RIGHT
-      });
+      // this.map.mapType1 = new BMap.MapTypeControl({
+      //   mapTypes: [BMAP_NORMAL_MAP, BMAP_HYBRID_MAP],
+      //   anchor: BMAP_ANCHOR_TOP_RIGHT
+      // });
+      // this.map.overView = new BMap.OverviewMapControl();
+      // this.map.overViewOpen = new BMap.OverviewMapControl({
+      //   isOpen: true,
+      //   anchor: BMAP_ANCHOR_BOTTOM_RIGHT
+      // });
       this.getLngLat();
     },
     //向上传递绘制信息

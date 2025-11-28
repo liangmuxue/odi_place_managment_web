@@ -171,7 +171,31 @@
                 </el-form-item>
                 <span class="feelRules_content_prompt">(每次进场都可用)</span>
               </span>
-              <span class="base_dialog_condit base_dialog_condit_hasprompt">
+              <span class="base_dialog_condit" v-if="newList.isDayNight == 1">
+                <el-form-item label="白天开始计时时间" prop="dayBegin">
+                  <span class="base_dialog_condit_text" v-if="pageType == 3">
+                    {{ newList.dayBegin }}</span
+                  >
+                  <el-time-picker
+                    v-else
+                    v-model="newList.dayBegin"
+                    :picker-options="{
+                      selectableRange: '00:00:00 - 23:59:59'
+                    }"
+                    format="HH:mm:ss"
+                    value-format="HH:mm:ss"
+                    placeholder="选择时间"
+                    style="width: 60%"
+                    size="small"
+                  >
+                  </el-time-picker>
+                </el-form-item>
+              </span>
+
+              <span
+                class="base_dialog_condit base_dialog_condit_hasprompt"
+                v-if="newList.isDayNight !== 1"
+              >
                 <el-form-item label="每日最高收费限额" prop="smallCarMaxCharge">
                   <span v-if="newList.isVehicleType == 1">小型车</span>
                   <span
@@ -229,24 +253,165 @@
                   >(停车24小时最高收费金额)</span
                 >
               </span>
-              <span class="base_dialog_condit" v-if="newList.isDayNight == 1">
-                <el-form-item label="白天开始计时时间" prop="dayBegin">
+              <!-- <span
+                class="base_dialog_condit base_dialog_condit_hasprompt"
+                v-if="newList.isDayNight == 1"
+              >
+                <el-form-item
+                  label="充电赠免费停车时长(分钟)"
+                  prop="afterChargeFreeTime"
+                >
                   <span class="base_dialog_condit_text" v-if="pageType == 3">
-                    {{ newList.dayBegin }}</span
+                    {{ newList.afterChargeFreeTime }}</span
                   >
-                  <el-time-picker
+                  <el-input
                     v-else
-                    v-model="newList.dayBegin"
-                    :picker-options="{
-                      selectableRange: '00:00:00 - 23:59:59'
-                    }"
-                    format="HH:mm:ss"
-                    value-format="HH:mm:ss"
-                    placeholder="选择时间"
+                    v-model="newList.afterChargeFreeTime"
+                    placeholder="请输入"
                     style="width: 60%"
+                    class="filter-item"
                     size="small"
-                  >
-                  </el-time-picker>
+                  />
+                </el-form-item>
+                <span class="feelRules_content_prompt"
+                  >(本车场内充电赠送免费停车时长，不可叠加使用)</span
+                >
+              </span> -->
+
+              <span class="base_dialog_condit " v-if="newList.isDayNight == 1">
+                <el-form-item label="最高收费限额" prop="smallCarMaxCharge">
+                  <div>
+                    <div>
+                      <el-radio-group
+                        v-model="hasNight"
+                        :disabled="pageType == 3"
+                        @input="hasNightChange"
+                      >
+                        <el-radio :label="0">每日收费限额</el-radio>
+                        <el-radio :label="1">白天夜间收费限额</el-radio>
+                      </el-radio-group>
+                    </div>
+                    <div class="base_dialog_condit_hasprompt_box">
+                      <span v-if="newList.isVehicleType == 1">小型车</span>
+                      <span
+                        class="base_dialog_condit_text small_text2"
+                        v-if="pageType == 3"
+                      >
+                        {{ newList.smallCarMaxCharge }}</span
+                      >
+                      <el-input
+                        v-else
+                        v-model="newList.smallCarMaxCharge"
+                        placeholder="请输入"
+                        style="width: 13%"
+                        class="filter-item"
+                        size="small"
+                      />
+                      <span v-if="newList.isVehicleType == 1">
+                        元，中型车
+                        <span
+                          class="base_dialog_condit_text small_text2"
+                          v-if="pageType == 3 && newList.isVehicleType == 1"
+                        >
+                          {{ newList.midCarMaxCharge }}</span
+                        >
+                        <el-input
+                          v-else
+                          v-model="newList.midCarMaxCharge"
+                          placeholder="请输入"
+                          style="width: 13%"
+                          class="filter-item"
+                          size="small"
+                        />
+                      </span>
+
+                      <span v-if="newList.isVehicleType == 1">
+                        元，大型车
+                        <span
+                          class="base_dialog_condit_text small_text2"
+                          v-if="pageType == 3"
+                        >
+                          {{ newList.bigCarMaxCharge }}</span
+                        >
+                        <el-input
+                          v-else
+                          v-model="newList.bigCarMaxCharge"
+                          placeholder="请输入"
+                          style="width: 13%"
+                          class="filter-item"
+                          size="small"
+                        />
+                      </span>
+                      元
+                      <span
+                        class="feelRules_content_prompt"
+                        v-if="hasNight === 0"
+                        >(停车24小时最高收费金额)</span
+                      >
+                      <span class="feelRules_content_prompt" v-else
+                        >(白天停车时段最高收费金额)</span
+                      >
+                    </div>
+                    <div
+                      class="base_dialog_condit_hasprompt_box"
+                      v-if="hasNight === 1"
+                    >
+                      <span v-if="newList.isVehicleType == 1">小型车</span>
+                      <span
+                        class="base_dialog_condit_text small_text2"
+                        v-if="pageType == 3"
+                      >
+                        {{ newList.smallCarNightMaxCharge }}</span
+                      >
+                      <el-input
+                        v-else
+                        v-model="newList.smallCarNightMaxCharge"
+                        placeholder="请输入"
+                        style="width: 13%"
+                        class="filter-item"
+                        size="small"
+                      />
+                      <span v-if="newList.isVehicleType == 1">
+                        元，中型车
+                        <span
+                          class="base_dialog_condit_text small_text2"
+                          v-if="pageType == 3 && newList.isVehicleType == 1"
+                        >
+                          {{ newList.midCarNightMaxCharge }}</span
+                        >
+                        <el-input
+                          v-else
+                          v-model="newList.midCarNightMaxCharge"
+                          placeholder="请输入"
+                          style="width: 13%"
+                          class="filter-item"
+                          size="small"
+                        />
+                      </span>
+
+                      <span v-if="newList.isVehicleType == 1">
+                        元，大型车
+                        <span
+                          class="base_dialog_condit_text small_text2"
+                          v-if="pageType == 3"
+                        >
+                          {{ newList.bigCarNightMaxCharge }}</span
+                        >
+                        <el-input
+                          v-else
+                          v-model="newList.bigCarNightMaxCharge"
+                          placeholder="请输入"
+                          style="width: 13%"
+                          class="filter-item"
+                          size="small"
+                        />
+                      </span>
+                      元
+                      <span class="feelRules_content_prompt"
+                        >(夜间时段停车最高收费金额)</span
+                      >
+                    </div>
+                  </div>
                 </el-form-item>
               </span>
             </div>
@@ -269,7 +434,14 @@
                   >(场内支付后，在该时长内离场不会产生费用)</span
                 >
               </span>
-              <span class="base_dialog_condit base_dialog_condit_hasprompt">
+              <!-- <div
+                style="width:100px;height:79px"
+                v-if="newList.isDayNight == 1"
+              ></div> -->
+              <!-- <span
+                class="base_dialog_condit base_dialog_condit_hasprompt"
+                v-if="newList.isDayNight !== 1"
+              >
                 <el-form-item
                   label="充电赠免费停车时长(分钟)"
                   prop="afterChargeFreeTime"
@@ -289,7 +461,7 @@
                 <span class="feelRules_content_prompt"
                   >(本车场内充电赠送免费停车时长，不可叠加使用)</span
                 >
-              </span>
+              </span> -->
               <span class="base_dialog_condit" v-if="newList.isDayNight == 1">
                 <el-form-item label="夜间开始计时时间" prop="nightBegin">
                   <span class="base_dialog_condit_text" v-if="pageType == 3">
@@ -389,7 +561,7 @@
                     item.isHoliday == 1 ? "工作日" : "节假日"
                   }}：{{ item.isDayNight == 1 ? "白天" : "夜间" }} -->
                   <el-form-item
-                    label="免费时长后停放"
+                    label="停放"
                     :rules="rules['tolls']"
                     :prop="'tolls.' + index"
                   >
@@ -643,7 +815,7 @@
                     item.isHoliday == 1 ? "工作日" : "节假日"
                   }}：{{ item.isDayNight == 1 ? "白天" : "夜间" }} -->
                   <el-form-item
-                    label="免费时长后停放"
+                    label="停放"
                     :rules="rules['tolls']"
                     :prop="'tolls.' + index"
                   >
@@ -826,11 +998,8 @@
         </div>
       </el-form>
       <div class="base_dialog_main_btnBox" v-if="pageType !== 3">
-        <el-button type="info"  @click="toSave"
-          >保存</el-button
-        ><el-button type="danger"  @click="closeDialog"
-          >取消</el-button
-        >
+        <el-button type="info" @click="toSave">保存</el-button
+        ><el-button type="danger" @click="closeDialog">取消</el-button>
       </div>
     </div>
   </div>
@@ -866,39 +1035,62 @@ export default {
     };
     const validateSmallCarMaxCharge = (rule, value, callback) => {
       if (this.newList.isVehicleType == 1) {
-        if (
-          this.newList.smallCarMaxCharge &&
-          this.newList.midCarMaxCharge &&
-          this.newList.bigCarMaxCharge
-        ) {
-          const regex = /^\d+(\.\d{1})?$/;
-          const isValids = regex.test(this.newList.smallCarMaxCharge);
-          const isValidm = regex.test(this.newList.midCarMaxCharge);
-          const isValidb = regex.test(this.newList.bigCarMaxCharge);
-          if (isValids && isValidm && isValidb) {
+        // if (
+        //   this.newList.smallCarMaxCharge &&
+        //   this.newList.midCarMaxCharge &&
+        //   this.newList.bigCarMaxCharge
+        // ) {
+        const regex = /^\d+(\.\d{1})?$/;
+        const isValids = regex.test(this.newList.smallCarMaxCharge);
+        const isValidm = regex.test(this.newList.midCarMaxCharge);
+        const isValidb = regex.test(this.newList.bigCarMaxCharge);
+        if (this.hasNight == 1) {
+          const isValids2 = regex.test(this.newList.smallCarNightMaxCharge);
+          const isValidm2 = regex.test(this.newList.midCarNightMaxCharge);
+          const isValidb2 = regex.test(this.newList.bigCarNightMaxCharge);
+          if (
+            isValids &&
+            isValidm &&
+            isValidb &&
+            isValids2 &&
+            isValidm2 &&
+            isValidb2
+          ) {
             callback();
           } else {
             callback(new Error("请输入不小于0的数字，最多保留一位小数"));
           }
+        } else if (isValids && isValidm && isValidb) {
+          callback();
         } else {
-          callback(new Error("请输入每日最高收费限额"));
+          callback(new Error("请输入不小于0的数字，最多保留一位小数"));
         }
+        // } else {
+        //   callback(new Error("请输入每日最高收费限额"));
+        // }
       } else {
-        if (this.newList.smallCarMaxCharge) {
-          const regex = /^\d+(\.\d{1})?$/;
-          const isValid = regex.test(this.newList.smallCarMaxCharge);
-          if (isValid) {
+        // if (this.newList.smallCarMaxCharge) {
+        const regex = /^\d+(\.\d{1})?$/;
+        const isValid = regex.test(this.newList.smallCarMaxCharge);
+        const isValid2 = regex.test(this.newList.smallCarNightMaxCharge);
+        if (this.hasNight == 1) {
+          if (isValid && isValid2) {
             callback();
           } else {
             callback(new Error("请输入不小于0的数字，最多保留一位小数"));
           }
+        } else if (isValid) {
+          callback();
         } else {
-          callback(new Error("请输入每日最高收费限额"));
+          callback(new Error("请输入不小于0的数字，最多保留一位小数"));
         }
+        // } else {
+        //   callback(new Error("请输入每日最高收费限额"));
+        // }
       }
     };
     const validateNo30 = (rule, value, callback) => {
-      const regex = /^[1-9]$|^[12]\d$|30$/;
+      const regex = /^[0-9]$|^[12]\d$|30$/;
       const isValid = regex.test(value);
       if (isValid) {
         callback();
@@ -963,17 +1155,15 @@ export default {
         }
         // }
       } else {
-        if (!value.smallCarPay || !value.beyondSmallCarPay) {
-          callback(new Error("请输入单位金额"));
-        } else {
-          const isValids = regexNo.test(value.smallCarPay);
-          const isValidbs = regexNo.test(value.beyondSmallCarPay);
-          if (!isValids || !isValidbs) {
-            callback(
-              new Error("单位金额请输入不小于0的数字，最多保留一位小数")
-            );
-          }
+        // if (!value.smallCarPay || !value.beyondSmallCarPay) {
+        //   callback(new Error("请输入单位金额"));
+        // } else {
+        const isValids = regexNo.test(value.smallCarPay);
+        const isValidbs = regexNo.test(value.beyondSmallCarPay);
+        if (!isValids || !isValidbs) {
+          callback(new Error("单位金额请输入不小于0的数字，最多保留一位小数"));
         }
+        // }
       }
       callback();
     };
@@ -984,6 +1174,7 @@ export default {
       isShow: false,
       editRuleName: null, //编辑规则名
       parkingLots: "", //使用中的停车场
+      hasNight: 0,
       newList: {
         ruleName: "", //规则名称
         isVehicleType: 1, //'是否车辆类型 1-是 2-否',
@@ -993,9 +1184,12 @@ export default {
         remark: "", //描述
         freeTime: null, //免费时长
         stayTimePay: 15, //场内支付滞留时间
-        smallCarMaxCharge: null, //每日最高收取额度小型车
-        midCarMaxCharge: null, //每日最高收取额度中型车
-        bigCarMaxCharge: null, //每日最高收取额度大型车
+        smallCarMaxCharge: null, //每日(或白天)最高收取额度小型车
+        midCarMaxCharge: null, //每日(或白天)最高收取额度中型车
+        bigCarMaxCharge: null, //每日(或白天)最高收取额度大型车
+        smallCarNightMaxCharge: null, //夜间最高收取额度小型车
+        midCarNightMaxCharge: null, //夜间最高收取额度中型车
+        bigCarNightMaxCharge: null, //夜间最高收取额度大型车
         dayBegin: "06:00:00", //白天开始时间
         nightBegin: "18:00:00", //夜晚开始时间
         createTime: null, //创建时间
@@ -1144,6 +1338,21 @@ export default {
   methods: {
     //获取单位名
     getTollsList() {
+      if (this.newList.isDayNight == 2) {
+        this.hasNight = 0;
+        this.newList.smallCarNightMaxCharge = null;
+        this.newList.midCarNightMaxCharge = null;
+        this.newList.bigCarNightMaxCharge = null;
+        this.newList.dayBegin = "06:00:00";
+        this.newList.nightBegin = "18:00:00";
+      }
+      if (this.newList.isVehicleType == 2) {
+        this.newList.midCarMaxCharge = null;
+        this.newList.bigCarNightMaxCharge = null;
+        this.newList.midCarNightMaxCharge = null;
+        this.newList.bigCarNightMaxCharge = null;
+      }
+
       if (
         this.newList.isGround == 1 &&
         this.newList.isHoliday == 1 &&
@@ -1228,6 +1437,9 @@ export default {
         tollsList.push(this.getObj(0, 0, 0));
         this.newList.tolls = tollsList;
       }
+      setTimeout(() => {
+        this.$refs["parkingForm"].clearValidate();
+      }, 300);
     },
     getObj(isGround, isHoliday, cisDayNight) {
       let obj = {
@@ -1267,6 +1479,7 @@ export default {
         this.getDetials(id);
       } else {
         this.title = "新增";
+        this.hasNight = 0;
         this.newList = {
           ruleName: "", //规则名称
           isVehicleType: 1, //'是否车辆类型 1-是 2-否',
@@ -1276,9 +1489,12 @@ export default {
           remark: "", //描述
           freeTime: null, //免费时长
           stayTimePay: 15, //场内支付滞留时间
-          smallCarMaxCharge: null, //每日最高收取额度小型车
-          midCarMaxCharge: null, //每日最高收取额度中型车
-          bigCarMaxCharge: null, //每日最高收取额度大型车
+          smallCarMaxCharge: null, //每日(或白天)最高收取额度小型车
+          midCarMaxCharge: null, //每日(或白天)最高收取额度中型车
+          bigCarMaxCharge: null, //每日(或白天)最高收取额度大型车
+          smallCarNightMaxCharge: null, //夜间最高收取额度小型车
+          midCarNightMaxCharge: null, //夜间最高收取额度中型车
+          bigCarNightMaxCharge: null, //夜间最高收取额度大型车
           dayBegin: "06:00:00", //白天开始时间
           nightBegin: "18:00:00", //夜晚开始时间
           createTime: null, //创建时间
@@ -1310,11 +1526,24 @@ export default {
         }
       }
     },
+    hasNightChange(e) {
+      if (e == 0) {
+        this.newList.smallCarNightMaxCharge = null;
+        this.newList.midCarNightMaxCharge = null;
+        this.newList.bigCarNightMaxCharge = null;
+      }
+      setTimeout(() => {
+        this.$refs["parkingForm"].clearValidate();
+      }, 300);
+    },
     //获取详情
     getDetials(id) {
       let para = { id: id };
       ruleTemporaryParkingDetail(para).then(response => {
         this.newList = response.data;
+        if (response.data.smallCarNightMaxCharge) {
+          this.hasNight = 1;
+        }
         this.newList.tolls.sort(this.getSort);
         console.log(111, this.newList.tolls);
         // this.tollsList = response.data.tolls;
@@ -1544,6 +1773,20 @@ export default {
       font-size: 12px;
     }
   }
+  .base_dialog_condit_hasprompt_box {
+    height: 40px;
+    padding-left: 180px;
+    position: relative;
+    margin-bottom: 40px;
+    .feelRules_content_prompt {
+      position: absolute;
+      width: 300px;
+      top: 40px;
+      left: 180px;
+      font-size: 12px;
+    }
+  }
+
   .small_text {
     width: 90px;
     text-align: center;

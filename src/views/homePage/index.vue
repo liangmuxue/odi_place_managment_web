@@ -90,7 +90,7 @@
               <div class="homePage_top_card_ico todayPayments"></div>
               <div class="homePage_top_card_textBox">
                 <div class="homePage_top_card_textBox_title">
-                  {{ dataStatisticsVo.todayPayments }}
+                  {{ dataStatisticsVo.todayPayments | getMoney }}
                 </div>
                 <div class="homePage_top_card_textBox_text">
                   今日收款(元)
@@ -101,7 +101,7 @@
               <div class="homePage_top_card_ico yesterdayPayments"></div>
               <div class="homePage_top_card_textBox">
                 <div class="homePage_top_card_textBox_title">
-                  {{ dataStatisticsVo.yesterdayPayments }}
+                  {{ dataStatisticsVo.yesterdayPayments | getMoney }}
                 </div>
                 <div class="homePage_top_card_textBox_text">
                   昨日收款(元)
@@ -112,7 +112,7 @@
               <div class="homePage_top_card_ico monthPayments"></div>
               <div class="homePage_top_card_textBox">
                 <div class="homePage_top_card_textBox_title">
-                  {{ dataStatisticsVo.monthPayments }}
+                  {{ dataStatisticsVo.monthPayments | getMoney }}
                 </div>
                 <div class="homePage_top_card_textBox_text">
                   本月收款(元)
@@ -123,7 +123,7 @@
               <div class="homePage_top_card_ico yearPayments"></div>
               <div class="homePage_top_card_textBox">
                 <div class="homePage_top_card_textBox_title">
-                  {{ dataStatisticsVo.yearPayments }}
+                  {{ dataStatisticsVo.yearPayments | getMoney }}
                 </div>
                 <div class="homePage_top_card_textBox_text">
                   今年收款(元)
@@ -217,7 +217,8 @@
                 ></el-table-column>
                 <el-table-column
                   label="停车场"
-                  align="center"
+                  header-align="center"
+                  align="left"
                   show-overflow-tooltip
                 >
                   <template slot-scope="scope">
@@ -231,7 +232,9 @@
                   show-overflow-tooltip
                 >
                   <template slot-scope="scope">
-                    <span class="content">{{ scope.row.totalPayMoney }}</span>
+                    <span class="content">{{
+                      scope.row.totalPayMoney | getMoney
+                    }}</span>
                   </template>
                 </el-table-column>
               </el-table>
@@ -258,7 +261,8 @@
                 ></el-table-column>
                 <el-table-column
                   label="停车场"
-                  align="center"
+                  header-align="center"
+                  align="left"
                   show-overflow-tooltip
                 >
                   <template slot-scope="scope">
@@ -695,6 +699,7 @@ import OpenlayersMap from "@/components/Map/openlayersMap"; //当日车流实时
 import OpenlayersMapCamera from "@/components/Map/openlayersMapCamera"; //当日车流实时趋势1
 import DistrictTree from "./components/districtTree";
 import videoWindow from "@/components/Video/videoWindow";
+import user from "@/store/modules/user"; // has directive
 
 import {
   lotSelect //获取车场下拉框
@@ -801,12 +806,14 @@ export default {
     };
   },
   created() {
-    if (this.pageType == "1") {
-      this.getStatistics();
-    }
+    // const permission = user.state.Permission;
+    // console.log(123, permission);
+    // if (this.pageType == "1") {
+    //   this.getStatistics();
+    // }
     this.getparking();
-    this.initWebSocket();
     this.getInfo();
+    this.initWebSocket();
   },
   beforeDestroy() {
     if (this.getInfoInterval) {
@@ -832,6 +839,13 @@ export default {
         console.log(1, hasRes1);
         console.log(2, hasRes2);
         console.log(3, hasRes3);
+        if (hasRes1) {
+          this.changeTab(1);
+        } else if (hasRes2) {
+          this.changeTab(2);
+        } else if (hasRes3) {
+          this.changeTab(3);
+        }
       });
     },
     initWebSocket() {
@@ -1428,7 +1442,7 @@ export default {
           .homePage_top_card_textBox_title {
             height: 32px;
             line-height: 36px;
-            font-size: 24px;
+            font-size: 20px;
             color: #037659;
             font-weight: bold;
           }

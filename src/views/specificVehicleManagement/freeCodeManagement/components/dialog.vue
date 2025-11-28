@@ -457,19 +457,50 @@ export default {
         //   this.$set(this.newList, "freeTimeType", 0);
         // }
 
-        let lots = this.newList.vehicleWaiverParkingLots;
+        let lots = [...this.newList.vehicleWaiverParkingLots];
+        lots.forEach(el => {
+          el.id = el.parkingLotId;
+        });
+        if (!lots[0].parkingLot) {
+          lots.shift();
+        }
+        let list = [...this.parkingList];
+        list.shift();
+        // console.log(111, lots);
+        // console.log(112, list);
+        // let ids = [];
+        // let names = [];
+        // lots.forEach(el => {
+        //   ids.push(el.parkingLotId);
+        //   if (el.parkingLot) {
+        //     names.push(el.parkingLot.name);
+        //   }
+        // });
+
+        // // if (lots.length == this.parkingList.length) {
+        // //   ids.unshift(0);
+        // // }
+
+        //判断两个数组某字段是否一致
+        function compareArraysByField(arr1, arr2, field) {
+          if (arr1.length !== arr2.length) {
+            return false;
+          }
+          return arr1.every((obj, index) => obj[field] === arr2[index][field]);
+        }
         let ids = [];
         let names = [];
         lots.forEach(el => {
-          ids.push(el.parkingLotId);
-          if (el.parkingLot) {
-            names.push(el.parkingLot.name);
-          }
+          ids.push(el.id);
+          names.push(el.name);
         });
+        let isSame = compareArraysByField(list, lots, id);
+        // console.log(113, isSame);
+        //如果
+        if (isSame) {
+          ids.unshift(0);
+        }
 
-        // if (lots.length == this.parkingList.length) {
-        //   ids.unshift(0);
-        // }
         this.$set(this.newList, "parkingLotId", ids);
         this.newList.parkingLotName = names.toString();
         this.time = [

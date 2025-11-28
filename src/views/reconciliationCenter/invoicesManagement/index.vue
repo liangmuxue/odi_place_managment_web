@@ -131,7 +131,7 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.total }}</span>
+            <span class="content">{{ scope.row.total | getMoney }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -141,7 +141,7 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.tax }}</span>
+            <span class="content">{{ scope.row.tax | getMoney }}</span>
           </template>
         </el-table-column>
         <el-table-column

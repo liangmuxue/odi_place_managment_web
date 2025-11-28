@@ -4,10 +4,30 @@
 
 .totalMoney_box {
   padding-left: 15px;
+  font-size: 16px;
+  height: 30px;
+  line-height: 30px;
+  display: flex;
 
-  .totalMoney_box_smal {
-    padding: 0 10px;
+  .totalMoney_box_small {
+    padding-right: 50px;
     font-size: 14px;
+  }
+
+  .totalMoney_com_box {
+    width: 120px;
+    height: 36px;
+    text-align: center;
+    background: #33ae73;
+    border-radius: 5px;
+    margin-right: 10px;
+
+    .totalMoney_com_box_text {
+      height: 18px;
+      line-height: 18px;
+      font-size: 14px;
+      color: #fff;
+    }
   }
 }
 
@@ -196,6 +216,7 @@
   text-align: center;
 
 }
+
 
 .base_dialog {
   position: absolute;
@@ -434,6 +455,16 @@
   }
 }
 
+.merchantDeductAndIssue_main .base_dialog_main_content .base_dialog_main_left .base_dialog_condit {
+  .el-form-item__label {
+    width: 100px;
+  }
+
+  .el-form-item__error {
+    margin-left: 100px;
+  }
+}
+
 .password_dialog_condit {
   .el-form-item__label {
     width: 200px !important;
@@ -444,6 +475,7 @@
 .base_dialog_condit_text {
   display: inline-block;
   width: 72%;
+  word-wrap: break-word;
 }
 
 .base_dialog_condit_flex {
@@ -459,4 +491,8 @@
     }
 
   }
+}
+
+.releaseRule_err1 .el-form-item__error {
+  margin-left: 285px;
 }

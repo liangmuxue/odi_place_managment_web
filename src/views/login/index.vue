@@ -32,6 +32,7 @@
             name="username"
             type="text"
             tabindex="1"
+            @change="userNameChange"
             autocomplete="on"
             class="input-content"
           />
@@ -188,6 +189,9 @@ export default {
     // window.removeEventListener('storage', this.afterQRScan)
   },
   methods: {
+    userNameChange(e) {
+      this.loginForm.username = e;
+    },
     getList() {
       //获取系统信息
       // let queryList = {};
@@ -255,9 +259,9 @@ export default {
                 query: this.otherQuery
               }); //登录成功，向首页跳转
               this.loading = false;
-              // setTimeout(() => {
-              //   location.reload();
-              // }, 3000);
+              setTimeout(() => {
+                location.reload();
+              }, 300);
             })
             .catch(() => {
               console.log("login fail");

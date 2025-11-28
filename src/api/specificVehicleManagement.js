@@ -160,3 +160,56 @@ export function vehicleBlacklistBatchDelete(data) {
 
   })
 }
+//内部临停车列表
+export function internalCarList(data) {
+  return request({
+    url: 'system/internalCar/list',
+    method: 'post',
+    data
+  })
+}
+//内部临停车新增
+export function internalCarAdd(data) {
+  return request({
+    url: 'system/internalCar/add',
+    method: 'post',
+    data
+
+  })
+}
+//内部临停车牌重复校验
+export function internalCarCheck(data) {
+  return request({
+    url: 'system/internalCar/check',
+    method: 'post',
+    data
+
+  })
+}
+//内部临停车修改
+export function internalCarEdit(data) {
+  return request({
+    url: 'system/internalCar/edit',
+    method: 'post',
+    data
+
+  })
+}
+//内部临停车详情
+export function internalCarDetails(data) {
+  return request({
+    url: 'system/internalCar/details',
+    method: 'get',
+    params: data
+
+  })
+}
+//内部临停车删除
+export function internalCarDelete(data) {
+  return request({
+    url: 'system/internalCar/delete',
+    method: 'post',
+    data
+
+  })
+}

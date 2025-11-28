@@ -1,6 +1,8 @@
 <template>
   <div class="commit_page">
-    <div class="totalMoney_box">长租实收统计：{{ totalMoney }}元</div>
+    <div class="totalMoney_box">
+      长租实收统计：{{ totalMoney | getMoney }}元
+    </div>
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">订单号</div>
@@ -142,7 +144,7 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.orderMoney }}</span>
+            <span class="content">{{ scope.row.orderMoney | getMoney }}</span>
           </template>
         </el-table-column>
         <el-table-column label="优惠" align="center" show-overflow-tooltip>
@@ -156,9 +158,15 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.payMoney }}</span>
+            <span class="content">{{ scope.row.payMoney | getMoney }}</span>
           </template>
         </el-table-column>
+        <el-table-column label="备注" align="center" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span class="content">{{ scope.row.remark }}</span>
+          </template>
+        </el-table-column>
+
         <el-table-column label="支付方式" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="content">{{

@@ -5,6 +5,7 @@ const UserIdKey = 'Admin-UserId-Portrait'
 const TenantIdKey = 'Admin-TenantId-Portrait'
 const InitflagKey = 'Admin-InitflagKey-Portrait'
 const UserNameKey = 'Admin-UserName-Portrait'
+const NickNameKey = 'Admin-NickName-Portrait'
 const RoleNameKey = 'Admin-RoleName-Portrait'
 const UserBoxKey = 'Admin-UserBox'
 
@@ -57,6 +58,13 @@ export function getUserName() {
 
 export function setUserName(userName) {
   return Cookies.set(UserNameKey, userName)
+}
+export function getNickName() {
+  return Cookies.get(NickNameKey)
+}
+
+export function setNickName(userName) {
+  return Cookies.set(NickNameKey, userName)
 }
 export function getRoleName() {
   return Cookies.get(RoleNameKey)

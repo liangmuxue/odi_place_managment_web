@@ -1,6 +1,6 @@
 <template>
   <div class="commit_page">
-    <div class="totalMoney_box">充值统计：{{ totalMoney }}元</div>
+    <div class="totalMoney_box">充值统计：{{ totalMoney | getMoney }}元</div>
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">用户ID</div>
@@ -90,9 +90,15 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.money }}</span>
+            <span class="content">{{ scope.row.money | getMoney }}</span>
           </template>
         </el-table-column>
+        <el-table-column label="备注" align="center" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span class="content">{{ scope.row.remark }}</span>
+          </template>
+        </el-table-column>
+
         <el-table-column label="充值时间" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="content">{{ scope.row.payTime }}</span></template

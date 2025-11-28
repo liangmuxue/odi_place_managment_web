@@ -210,8 +210,8 @@ export default {
             callback();
           })
           .catch(err => {
-            if (err == "Error: 检查道闸名称是否已存在") {
-              callback(new Error("检查道闸名称是否已存在"));
+            if (err == "Error: 道闸名称已存在") {
+              callback(new Error("道闸名称已存在"));
             }
           });
       } else {
@@ -228,8 +228,8 @@ export default {
             callback();
           })
           .catch(err => {
-            if (err == "Error: 检查道闸IP是否已存在") {
-              callback(new Error("检查道闸IP是否已存在"));
+            if (err == "Error: 道闸IP已存在") {
+              callback(new Error("道闸IP已存在"));
             }
           });
       } else {
@@ -246,8 +246,8 @@ export default {
             callback();
           })
           .catch(err => {
-            if (err == "Error: 检查设备序列号是否已存在") {
-              callback(new Error("检查设备序列号是否已存在"));
+            if (err == "Error: 设备序列号已存在") {
+              callback(new Error("设备序列号已存在"));
             }
           });
       } else {
@@ -264,8 +264,8 @@ export default {
             callback();
           })
           .catch(err => {
-            if (err == "Error: 检查辅助相机序列号是否已存在") {
-              callback(new Error("检查辅助相机序列号是否已存在"));
+            if (err == "Error: 辅助相机序列号已存在") {
+              callback(new Error("辅助相机序列号已存在"));
             }
           });
       } else {
@@ -282,8 +282,8 @@ export default {
             callback();
           })
           .catch(err => {
-            if (err == "Error: 检查辅助相机IP是否已存在") {
-              callback(new Error("检查辅助相机IP是否已存在"));
+            if (err == "Error: 辅助相机IP已存在") {
+              callback(new Error("辅助相机IP已存在"));
             }
           });
       } else {
@@ -326,7 +326,7 @@ export default {
           { required: true, message: "请输入道闸名称", trigger: "blur" },
           {
             required: true,
-            message: "检查道闸名称是否已存在",
+            message: "道闸名称已存在",
             trigger: "blur",
             validator: validateName
           }
@@ -335,7 +335,7 @@ export default {
           { required: true, message: "请输入道闸IP", trigger: "blur" },
           {
             required: true,
-            message: "检查道闸IP是否已存在",
+            message: "道闸IP已存在",
             trigger: "blur",
             validator: validateIp
           }
@@ -344,7 +344,7 @@ export default {
           { required: true, message: "请输入设备序列号", trigger: "blur" },
           {
             required: true,
-            message: "检查设备序列号是否已存在",
+            message: "设备序列号已存在",
             trigger: "blur",
             validator: validateEquipmentNumber
           }
@@ -356,7 +356,7 @@ export default {
           { required: true, message: "请输入辅助相机序列号", trigger: "blur" },
           {
             required: true,
-            message: "检查辅助相机序列号是否已存在",
+            message: "辅助相机序列号已存在",
             trigger: "blur",
             validator: validateCameraNumber
           }
@@ -365,7 +365,7 @@ export default {
           { required: true, message: "请输入辅助相机IP", trigger: "blur" },
           {
             required: true,
-            message: "检查辅助相机IP是否已存在",
+            message: "辅助相机IP已存在",
             trigger: "blur",
             validator: validateCameraIp
           }

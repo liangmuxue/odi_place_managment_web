@@ -38,6 +38,16 @@ const specificVehicleManagement = {
         title: '黑名单',
         icon: 'blackList'
       },
+
+    },
+    {
+      path: 'internalCar',
+      component: () => import('@/views/specificVehicleManagement/internalCar/index'),
+      name: 'InternalCar',
+      meta: {
+        title: '内部临停车',
+        icon: 'specificVehicleManagement'
+      }
     },
   ]
 }

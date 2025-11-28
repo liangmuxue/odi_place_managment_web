@@ -244,7 +244,6 @@ export default {
 
     //通过
     passNext() {
-      this.isShow = false;
       let arr = [];
       arr.push(this.newList.id);
       let para = {
@@ -252,20 +251,27 @@ export default {
         status: 1,
         reason: ""
       };
-      certificationAudit(para).then(response => {
-        if (response.code == "200") {
-          this.$message({
-            type: "success",
-            message: "审核成功"
-          });
-          this.$emit("openLoading", {});
-          this.$emit("getList", {});
-        } else {
-          // this.$message({
-          //   type: "error",
-          //   message: "审核失败"
-          // });
-        }
+      let text = "确认审核通过该申请吗?";
+      this.$confirm(text, "提示", {
+        type: "warning"
+      }).then(() => {
+        this.isShow = false;
+
+        certificationAudit(para).then(response => {
+          if (response.code == "200") {
+            this.$message({
+              type: "success",
+              message: "审核成功"
+            });
+            this.$emit("openLoading", {});
+            this.$emit("getList", {});
+          } else {
+            // this.$message({
+            //   type: "error",
+            //   message: "审核失败"
+            // });
+          }
+        });
       });
     },
     //开启不通过弹窗
@@ -284,31 +290,35 @@ export default {
             status: -1,
             reason: this.newList.reason
           };
-
-          certificationAudit(para)
-            .then(response => {
-              if (response.code == "200") {
-                this.dialogFormVisible = false;
-                this.isShow = false;
-                this.$emit("openLoading", {});
-                this.$emit("getList", {});
-                this.$message({
-                  type: "success",
-                  message: "审核成功"
-                });
-              } else {
+          let text = "确认审核不通过该申请吗?";
+          this.$confirm(text, "提示", {
+            type: "warning"
+          }).then(() => {
+            certificationAudit(para)
+              .then(response => {
+                if (response.code == "200") {
+                  this.dialogFormVisible = false;
+                  this.isShow = false;
+                  this.$emit("openLoading", {});
+                  this.$emit("getList", {});
+                  this.$message({
+                    type: "success",
+                    message: "审核成功"
+                  });
+                } else {
+                  // this.$message({
+                  //   type: "error",
+                  //   message: "审核失败"
+                  // });
+                }
+              })
+              .catch(() => {
                 // this.$message({
                 //   type: "error",
                 //   message: "审核失败"
                 // });
-              }
-            })
-            .catch(() => {
-              // this.$message({
-              //   type: "error",
-              //   message: "审核失败"
-              // });
-            });
+              });
+          });
         } else {
           console.log("error submit!!");
           return false;

@@ -164,9 +164,9 @@
         </el-table-column>
         <el-table-column
           label="操作"
-          align="center"
+          align="left"
           header-align="center"
-          min-width="200px"
+          width="380px"
           class-name="small-padding fixed-width"
         >
           <template slot-scope="scope">
@@ -229,6 +229,14 @@
             >
               {{ scope.row.type > 2 ? "出场码" : "入场码" }}
             </span>
+            <span
+              class="operation_button update_btn"
+              style="width:60px"
+              @click="toReleaseRule(scope.row)"
+              v-if="scope.row.type < 3"
+              v-has="{ red: 'releaseRule', type: 1 }"
+              >放行规则
+            </span>
           </template>
         </el-table-column>
       </el-table>
@@ -245,6 +253,11 @@
     </div>
     <Dialog ref="dialog" @getList="getList" @openLoading="openLoading"></Dialog>
     <QrCode ref="qrCode" @getList="getList" @openLoading="openLoading"></QrCode>
+    <ReleaseRule
+      ref="releaseRule"
+      @getList="getList"
+      @openLoading="openLoading"
+    ></ReleaseRule>
   </div>
 </template>
 
@@ -254,13 +267,18 @@ import {
   openGate, //远程开闸
   gateDelete //删除道闸
 } from "@/api/equipmentManagement";
+import {
+  tranceFrom //远程开闸(通过传参实现)
+} from "@/api/operationManagement";
+
 import Dialog from "./components/dialog";
 import QrCode from "./components/qrCode";
+import ReleaseRule from "./components/releaseRule";
 import { fieldTable } from "@/api/common";
 
 export default {
   name: "BarrierGateManagement",
-  components: { Dialog, QrCode },
+  components: { Dialog, QrCode, ReleaseRule },
   data() {
     return {
       listQuery: {
@@ -453,9 +471,9 @@ export default {
       let arr = [e.barrierNumber];
       let arr2 = [e.parkId];
       const result = createObjectFromArrays(arr, arr2);
-      let para = { gateMap: result };
+      let para = { gateMap: result, path: "/hiCar/system/gate/openGate" };
       this.$set(e, "loading", true);
-      openGate(para)
+      tranceFrom(para)
         .then(response => {
           if (response.code == "200") {
             this.$message({
@@ -504,8 +522,8 @@ export default {
         });
         const result = createObjectFromArrays(arr, arr2);
         console.log(123, result);
-        let para = { gateMap: result };
-        openGate(para).then(response => {
+        let para = { gateMap: result, path: "/hiCar/system/gate/openGate" };
+        tranceFrom(para).then(response => {
           if (response.code == "200") {
             this.$message({
               type: "success",
@@ -547,7 +565,10 @@ export default {
       let id = e.id;
       this.$refs.qrCode.showDialog(id);
     },
-
+    toReleaseRule(e) {
+      let id = e.id;
+      this.$refs.releaseRule.showDialog(id);
+    },
     // 切换页码方法
     handleSizeChange(val) {
       this.listQuery.pageNum = 1;
@@ -574,6 +595,7 @@ export default {
   line-height: 28px;
   border-radius: 5px;
   width: 56px;
+  text-align: center;
   font-size: 14px;
   color: #fff;
   margin: 0 2px;
@@ -586,6 +608,7 @@ export default {
   line-height: 28px;
   border-radius: 5px;
   width: 56px;
+  text-align: center;
   font-size: 14px;
   color: #fff;
   margin: 0 2px;

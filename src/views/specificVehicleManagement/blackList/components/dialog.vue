@@ -370,8 +370,10 @@ export default {
         this.newList = response.data;
 
         let lots = this.newList.parkingLots;
+        let list = [...this.parkingList];
+        list.shift();
         if (this.newList.type == 1) {
-          lots = this.parkingList;
+          lots = list;
         }
         let ids = [];
         let names = [];

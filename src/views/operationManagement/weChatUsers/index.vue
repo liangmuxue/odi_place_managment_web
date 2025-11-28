@@ -98,7 +98,7 @@
             <span class="content">{{ scope.row.nickname }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="头像" min-width="90px" align="center">
+        <el-table-column label="头像" width="90px" align="center">
           <template slot-scope="scope">
             <div class="content" :key="scope.row.id">
               <el-popover placement="top-start" width="500" trigger="click">
@@ -110,14 +110,14 @@
                   v-if="scope.row.avatar !== '' && scope.row.avatar !== null"
                   slot="reference"
                   :src="scope.row.avatar"
-                  width="48"
+                  width="36"
                   height="36"
                 />
                 <!-- :src="
                     scope.row.avatar + '?x-oss-process=image/resize,h_36,w_48'
                   " -->
-                <span v-else>
-                  <div min-width="48" height="36"></div>
+                <span>
+                  <div min-width="36" height="36"></div>
                 </span>
               </el-popover>
             </div>
@@ -197,7 +197,7 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.balance }}</span>
+            <span class="content">{{ scope.row.balance | getMoney }}</span>
           </template>
         </el-table-column>
         <el-table-column

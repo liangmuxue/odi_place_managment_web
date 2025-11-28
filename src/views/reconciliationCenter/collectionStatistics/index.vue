@@ -1,24 +1,57 @@
 <template>
   <div class="commit_page">
     <div class="totalMoney_box">
-      <span>实收总额：{{ totalMoneyList.totalAmount }}元</span>
-      <span class="totalMoney_box_smal"
+      <span>实收总额统计：{{ totalMoneyList.totalAmount | getMoney }}元 </span>
+      <span class="totalMoney_box_small">（实收总额=长租实收+临停实收） </span>
+      <span
+        >长租实收统计：{{ totalMoneyList.termRentalAmount | getMoney }}元</span
+      >
+      <span class="totalMoney_box_small"></span>
+      <span
+        >临停实收统计：{{
+          totalMoneyList.temporaryStopAmount | getMoney
+        }}元</span
+      ><span class="totalMoney_box_small">（临停实收=临停收款-临停退款）</span>
+      <!-- <span class="totalMoney_box_small"
         >(长租实收：{{ totalMoneyList.termRentalAmount }}元、临停实收：{{
           totalMoneyList.temporaryStopAmount
         }}元)
-      </span>
-      <span>建设发展分成总额：{{ totalMoneyList.totalShare }}元</span>
-      <span class="totalMoney_box_smal"
+      </span> -->
+      <!-- <span class="totalMoney_box_small"
         >(长租分成：{{ totalMoneyList.termRentalSharing }}元、临停分成：{{
           totalMoneyList.temporaryStopSharing
         }}元)
-      </span>
-      <span>海创物业分成总额：{{ totalMoneyList.totalShareTwo }}元</span>
-      <span class="totalMoney_box_smal"
+      </span> -->
+      <!-- <span class="totalMoney_box_small"
         >(长租分成：{{ totalMoneyList.termRentalSharingTwo }}元、临停分成：{{
           totalMoneyList.temporaryStopSharingTwo
         }}元)
-      </span>
+      </span> -->
+    </div>
+    <div class="totalMoney_box">
+      <!-- <div class="totalMoney_com_box">
+        <div class="totalMoney_com_box_text">建设发展（元）</div>
+        <div class="totalMoney_com_box_text">
+          {{ (totalMoneyList.totalShare * 100000) | getMoney }}
+        </div>
+      </div> -->
+      <span
+        >建设发展分成统计：{{ totalMoneyList.totalShare | getMoney }}元</span
+      >
+      <!-- <span class="totalMoney_box_small"
+        >(长租分成：{{ totalMoneyList.termRentalSharing }}元、临停分成：{{
+          totalMoneyList.temporaryStopSharing
+        }}元)
+      </span> -->
+      <span class="totalMoney_box_small"></span>
+      <span
+        >海创物业分成统计：{{ totalMoneyList.totalShareTwo | getMoney }}元</span
+      >
+      <!-- <span class="totalMoney_box_small"
+        >(长租分成：{{ totalMoneyList.termRentalSharingTwo }}元、临停分成：{{
+          totalMoneyList.temporaryStopSharingTwo
+        }}元)
+      </span> -->
     </div>
     <div class="search_box">
       <span class="search_content">
@@ -55,6 +88,7 @@
         v-has="{ red: 'collectionStatisticsExport', type: 1 }"
         >导出</el-button
       >
+      <span class="btn_box_text">* 临停退款以退款操作时间计入报表 </span>
     </div>
 
     <div class="content_box">
@@ -63,7 +97,7 @@
         highlight-current-row
         size="mini"
         stripe
-        height="calc(100vh - 320px)"
+        height="calc(100vh - 370px)"
         @selection-change="handleSelectionChange"
         align="left"
       >
@@ -77,7 +111,6 @@
         <el-table-column
           label="停车场名称"
           align="center"
-          min-width="120px"
           show-overflow-tooltip
         >
           <template slot-scope="scope">
@@ -90,7 +123,7 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.totalAmount }}</span>
+            <span class="content">{{ scope.row.totalAmount | getMoney }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -99,10 +132,12 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.termRentalAmount }}</span>
+            <span class="content">{{
+              scope.row.termRentalAmount | getMoney
+            }}</span>
           </template>
         </el-table-column>
-        <el-table-column
+        <!-- <el-table-column
           label="长租分成（元）建设发展公司"
           width="120px"
           align="center"
@@ -121,14 +156,28 @@
           <template slot-scope="scope">
             <span class="content">{{ scope.row.termRentalSharingTwo }}</span>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column
           label="临停实收（元）"
           align="center"
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.temporaryStopAmount }}</span>
+            <span class="content">{{
+              scope.row.temporaryStopAmountReal | getMoney
+            }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          label="临停收款（元）"
+          align="center"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">{{
+              scope.row.temporaryStopAmount | getMoney
+            }}</span>
           </template>
         </el-table-column>
 
@@ -138,10 +187,36 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.temporaryStopRefund }}</span>
+            <span class="content">{{
+              scope.row.temporaryStopRefund | getMoney
+            }}</span>
           </template>
         </el-table-column>
         <el-table-column
+          label="建设发展公司分成（元）"
+          width="170px"
+          align="center"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">{{
+              scope.row.temporaryStopSharing | getMoney
+            }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="海创物业公司分成（元）"
+          width="170px"
+          align="center"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">{{
+              scope.row.temporaryStopSharingTwo | getMoney
+            }}</span>
+          </template>
+        </el-table-column>
+        <!-- <el-table-column
           label="临停分成（元）建设发展公司"
           width="120px"
           align="center"
@@ -160,9 +235,9 @@
           <template slot-scope="scope">
             <span class="content">{{ scope.row.temporaryStopSharingTwo }}</span>
           </template>
-        </el-table-column>
+        </el-table-column> -->
 
-        <el-table-column
+        <!-- <el-table-column
           label="欠款总额（元）"
           align="center"
           show-overflow-tooltip
@@ -170,12 +245,12 @@
           <template slot-scope="scope">
             <span class="content">{{ scope.row.arrearsAmount }}</span>
           </template>
-        </el-table-column>
+        </el-table-column> -->
 
         <el-table-column
           label="日期"
           align="center"
-          min-width="140px"
+          width="120px"
           show-overflow-tooltip
         >
           <template slot-scope="scope">
@@ -216,7 +291,13 @@ export default {
         endTime: "", //结束时间
         parkName: "" //停车场
       },
-      totalMoneyList: null, //收款金额数据
+      totalMoneyList: {
+        totalAmount: 0,
+        termRentalAmount: 0,
+        temporaryStopAmount: 0,
+        totalShare: 0,
+        totalShareTwo: 0
+      }, //收款金额数据
       selGateway: null,
       time: [],
       listLoading: false, //加载
@@ -355,6 +436,11 @@ export default {
 <style lang="scss" scoped>
 .commit_page {
   position: relative;
+}
+.btn_box_text {
+  padding: 15px;
+  font-size: 12px;
+  color: #aaa;
 }
 .content_box {
   .content_row {

@@ -1,6 +1,6 @@
 <template>
   <div class="commit_page">
-    <div class="totalMoney_box">优惠统计：{{ totalMoney }}元</div>
+    <div class="totalMoney_box">优惠统计：{{ totalMoney | getMoney }}元</div>
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">订单号</div>
@@ -145,7 +145,9 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.discountMoney }}</span>
+            <span class="content">{{
+              scope.row.discountMoney | getMoney
+            }}</span>
           </template>
         </el-table-column>
 

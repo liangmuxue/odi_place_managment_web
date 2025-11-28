@@ -57,7 +57,7 @@
                 <el-input
                   v-else
                   v-model="newList.geomagnetismId"
-                  placeholder="输入停泊位号"
+                  placeholder="输入地磁编号"
                   style="width: 72%"
                   class="filter-item"
                   size="small"

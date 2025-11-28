@@ -26,7 +26,7 @@
       >
         <div
           class="base_dialog_main_content"
-          :style="pageType == 3 ? 'height: calc(100vh - 240px);' : ''"
+          :style="pageType == 3 ? 'height: calc(100vh - 200px);' : ''"
         >
           <div class="base_dialog_main_left">
             <span class="base_dialog_condit">
@@ -195,7 +195,7 @@
                 <el-select
                   v-else
                   v-model="newList.charge"
-                  placeholder="选择是否支持优惠券"
+                  placeholder="选择是否支持充电"
                   clearable
                   class="filter-item"
                   style="width: 72%"
@@ -273,7 +273,8 @@
               <el-form-item label="长租规则" prop="feeRules">
                 <span class="base_dialog_condit_text">
                   {{
-                    newList.ruleParkingLeases.length > 0
+                    newList.ruleParkingLeases.length > 0 &&
+                    newList.ruleParkingLeases[0]
                       ? newList.ruleParkingLeases[0].ruleName
                       : ""
                   }}
@@ -284,7 +285,7 @@
           <div class="base_dialog_main_right">
             <div
               class="base_dialog_main_right_wenzi"
-              style="font-size: 12px;padding-left: 148px;color:#ccc;height:20px;ling-height:20px"
+              style="font-size: 12px;padding-left: 148px;color:#ccc;height:20px;ling-height:20px;margin-top:-6px"
             >
               达到此在场率后，仅限长租车可进入，临停车禁止进入
             </div>
@@ -304,6 +305,34 @@
               </el-form-item>
             </span>
             <span class="base_dialog_condit">
+              <el-form-item label="实收分成比例" prop="temporaryStopSharing">
+                <span>建设发展公司</span>
+                <span v-if="pageType == 3">
+                  {{ newList.temporaryStopSharing || " -- " }}</span
+                >
+                <el-input
+                  v-else
+                  v-model.number="newList.temporaryStopSharing"
+                  placeholder="输入0-100的数值，最多保留一位小数"
+                  style="width: 100px"
+                  class="filter-item"
+                  size="small"
+                />%
+                <span>海创物业公司</span>
+                <span v-if="pageType == 3">
+                  {{ newList.temporaryStopSharingTwo || " -- " }}</span
+                >
+                <el-input
+                  v-else
+                  v-model.number="newList.temporaryStopSharingTwo"
+                  placeholder="输入0-100的数值，最多保留一位小数"
+                  style="width: 100px"
+                  class="filter-item"
+                  size="small"
+                />%
+              </el-form-item>
+            </span>
+            <!-- <span class="base_dialog_condit">
               <el-form-item
                 label="临停收入分成比例"
                 prop="temporaryStopSharing"
@@ -364,7 +393,7 @@
                   size="small"
                 />%
               </el-form-item>
-            </span>
+            </span> -->
             <span class="base_dialog_condit">
               <el-form-item label="放行规则" prop="accessType">
                 <el-radio-group
@@ -778,9 +807,41 @@ export default {
 
     //地图获取地址信息
     getLocation(data) {
-      console.log(123, data);
+      // let coordinate = this.convert2TencentMap(
+      //   data.coordinate.longitude,
+      //   data.coordinate.latitude
+      // );
       let arr = [data.coordinate.longitude, data.coordinate.latitude];
       this.newList.coordinate = arr.toString();
+    },
+    convert2TencentMap(lng, lat) {
+      var x_pi = (3.14159265358979324 * 3000.0) / 180.0;
+      var x = lng - 0.0065;
+      var y = lat - 0.006;
+      var z = Math.sqrt(x * x + y * y) - 0.00002 * Math.sin(y * x_pi);
+      var theta = Math.atan2(y, x) - 0.000003 * Math.cos(x * x_pi);
+      var qqlng = z * Math.cos(theta);
+      var qqlat = z * Math.sin(theta);
+      let arr = [qqlng.toFixed(6), qqlat.toFixed(6)];
+      let coor = arr.toString();
+      return coor;
+
+      // return { longitude: qqlng.toFixed(6), latitude: qqlat.toFixed(6) };
+    },
+    convert2BaiduMap(coordinate) {
+      const list = coordinate.split(",");
+      let lng = list[0];
+      let lat = list[1];
+      const x_pi = (3.14159265358979324 * 3000.0) / 180.0;
+      const x = lng;
+      const y = lat;
+      const z = Math.sqrt(x * x + y * y) + 0.00002 * Math.sin(y * x_pi);
+      const theta = Math.atan2(y, x) + 0.000003 * Math.cos(x * x_pi);
+      const lngs = z * Math.cos(theta) + 0.0065;
+      const lats = z * Math.sin(theta) + 0.006;
+      let arr = [lngs.toFixed(6), lats.toFixed(6)];
+      let coor = arr.toString();
+      return coor;
     },
     leftRules(data) {
       if (data.length > 1) {
@@ -878,6 +939,8 @@ export default {
       let para = { id: id };
       parkingInfo(para).then(response => {
         this.newList = response.data;
+        let coor = this.convert2BaiduMap(this.newList.coordinate);
+        this.newList.coordinate = coor;
         if (isAdd) {
           this.toStep(2);
         }
@@ -886,7 +949,8 @@ export default {
         }
         if (
           this.newList.ruleParkingLeases &&
-          this.newList.ruleParkingLeases.length > 0
+          this.newList.ruleParkingLeases.length > 0 &&
+          this.newList.ruleParkingLeases[0]
         ) {
           this.newList.ruleParkingLeasesIds = [
             this.newList.ruleParkingLeases[0].id
@@ -964,6 +1028,9 @@ export default {
             type: "warning"
           }).then(() => {
             let para = this.newList;
+            let coor = this.newList.coordinate.split(",");
+            let coordinate = this.convert2TencentMap(coor[0], coor[1]);
+            para.coordinate = coordinate;
             parkingAdd(para)
               .then(response => {
                 if (response.code == "200") {
@@ -1001,6 +1068,12 @@ export default {
               this.$emit("openLoading", {});
             }
             let para = this.newList;
+            // console.log(111, this.newList.coordinate);
+            let coor = this.newList.coordinate.split(",");
+            let coordinate = this.convert2TencentMap(coor[0], coor[1]);
+            para.coordinate = coordinate;
+            // console.log(222, para.coordinate);
+
             parkingUpadte(para)
               .then(response => {
                 if (response.code == "200") {
@@ -1048,7 +1121,7 @@ export default {
 <style lang="scss" scoped>
 .map_box {
   margin-left: 20px;
-  height: 270px;
+  height: 300px;
 }
 .base_dialog_condit {
   .photos_div {

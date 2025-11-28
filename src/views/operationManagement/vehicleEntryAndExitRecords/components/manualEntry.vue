@@ -423,6 +423,7 @@ export default {
     showDialog(id, pageType) {
       this.isShow = true;
       this.pageType = pageType;
+      this.newList.type = 1;
       this.$nextTick(() => {
         if (this.$refs["parkingForm"]) {
           this.$refs["parkingForm"].resetFields();

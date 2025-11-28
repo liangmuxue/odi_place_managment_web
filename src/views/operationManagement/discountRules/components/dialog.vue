@@ -85,7 +85,7 @@
                 <el-select
                   v-else
                   v-model="newList.offerType"
-                  placeholder="选择适用购买单位"
+                  placeholder="选择优惠券类型"
                   @change="offerTypeChange"
                   :disabled="pageType == 2"
                   clearable

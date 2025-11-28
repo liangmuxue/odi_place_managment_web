@@ -45,7 +45,7 @@ export default {
   data() {
     return {
       pageType: 1,
-      title: "修改密码",
+      title: "重置密码",
       isShow: false,
       newList: {
         userId: null, //用户id
@@ -70,6 +70,7 @@ export default {
     showDialog(e, pageType) {
       this.isShow = true;
       this.pageType = pageType;
+
       if (this.$refs["userForm"]) {
         this.$refs["userForm"].resetFields();
       }
@@ -78,6 +79,7 @@ export default {
     //获取详情
     getDetials(e) {
       this.newList = e;
+      this.newList.password = "";
       this.newList.roleId = e.roles[0].roleId;
     },
     //关闭新增/编辑弹窗

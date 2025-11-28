@@ -111,6 +111,18 @@ export function getQueryObject(url) {
   })
   return obj
 }
+/**
+ * @param {number} input value
+ * @returns {number} output value
+ */
+export function getMoney(value) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'decimal',
+    currency: 'USD', // 可以改为其他货币，如 'CNY'、'EUR' 等
+    minimumFractionDigits: 2, // 最小小数位数
+    maximumFractionDigits: 2 // 最大小数位数
+  }).format(value);
+}
 
 /**
  * @param {string} input value

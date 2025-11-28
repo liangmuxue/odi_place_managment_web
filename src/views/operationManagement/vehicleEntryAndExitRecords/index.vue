@@ -250,11 +250,9 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="出场设备" min-width="100px" align="center">
+        <el-table-column label="出场设备" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <div class="content">
-              {{ scope.row.leaveBarrierName }}
-            </div>
+            <span class="content">{{ scope.row.leaveBarrierName }}</span>
           </template>
         </el-table-column>
 

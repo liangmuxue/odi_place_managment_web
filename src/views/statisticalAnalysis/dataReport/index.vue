@@ -85,7 +85,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column
+        <!-- <el-table-column
           label="实收总额(元)"
           align="center"
           show-overflow-tooltip
@@ -102,7 +102,7 @@
           <template slot-scope="scope">
             <span class="content">{{ scope.row.totalDebt }}</span>
           </template>
-        </el-table-column>
+        </el-table-column> -->
       </el-table>
       <el-pagination
         :current-page="listQuery.pageNum"

@@ -1,6 +1,8 @@
 <template>
   <div class="commit_page">
-    <div class="totalMoney_box">临停实收统计：{{ totalMoney }}元</div>
+    <div class="totalMoney_box">
+      临停实收统计：{{ totalMoney | getMoney }}元（不含已退款）
+    </div>
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">订单号</div>
@@ -8,7 +10,21 @@
       </span>
       <span class="search_content">
         <div class="search_content_title">停车场</div>
-        <el-input v-model="listQuery.parkName" placeholder="请输入"> </el-input>
+        <el-select
+          v-model="listQuery.parkNameEq"
+          placeholder="选择停车场"
+          clearable
+          class="filter-item"
+        >
+          <el-option
+            v-for="item in parkingList"
+            :key="item"
+            :label="item"
+            :value="item"
+          />
+        </el-select>
+
+        <!-- <el-input v-model="listQuery.parkName" placeholder="请输入"> </el-input> -->
       </span>
       <span class="search_content">
         <div class="search_content_title">车牌号</div>
@@ -158,17 +174,23 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.orderMoney }}</span>
+            <span class="content">{{ scope.row.orderMoney | getMoney }}</span>
           </template>
         </el-table-column>
         <el-table-column label="优惠" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content" v-if="scope.row.discountType == 0">{{
-              scope.row.discountMoney + "折" || "无"
+            <span
+              class="content"
+              v-if="scope.row.discountType == 0 && scope.row.discountMoney"
+              >{{ scope.row.discountMoney + "折" }}</span
+            >
+            <span class="content" v-else-if="scope.row.discountType == 2">{{
+              scope.row.discountMoney + "分钟(充电券)"
             }}</span>
-            <span class="content" v-if="scope.row.discountType == 1">{{
-              scope.row.discountMoney + "元" || "无"
+            <span class="content" v-else-if="scope.row.discountType == 1">{{
+              scope.row.discountMoney + "元"
             }}</span>
+            <span class="content" v-else>无</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -177,7 +199,12 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.payMoney }}</span>
+            <span class="content">{{ scope.row.payMoney | getMoney }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="备注" align="center" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span class="content">{{ scope.row.remark }}</span>
           </template>
         </el-table-column>
         <el-table-column label="支付方式" align="center" show-overflow-tooltip>
@@ -187,13 +214,24 @@
             }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="是否开票" align="center" show-overflow-tooltip>
+        <el-table-column
+          label="是否已开票"
+          align="center"
+          show-overflow-tooltip
+        >
           <template slot-scope="scope">
             <span class="content">{{
               scope.row.invoice == 1 ? "是" : "否"
             }}</span>
           </template>
         </el-table-column>
+        <!-- <el-table-column label="是否退款" align="center" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span class="content" v-if="scope.row.status == 2"> 否</span>
+            <span class="content-g" v-if="scope.row.status == 1"> 待退款</span>
+            <span class="content" v-if="scope.row.status == -1"> 已退款</span>
+          </template>
+        </el-table-column> -->
         <el-table-column
           label="操作"
           align="center"
@@ -203,7 +241,7 @@
           <template slot-scope="scope">
             <span
               class="operation_button update_btn"
-              v-if="scope.row.status == 2"
+              v-if="scope.row.status == 2 || scope.row.status == 1"
               @click="openRefund(scope.row.id)"
               v-has="{ red: 'parkingPaymentRefund', type: 1 }"
             >
@@ -275,6 +313,9 @@ import {
   orderRefund // 停车缴费退款
 } from "@/api/reconciliationCenter";
 import { fieldTable } from "@/api/common";
+import {
+  getName //获取车场下拉框（停车缴费）
+} from "@/api/yardManagement";
 
 export default {
   name: "userRecharge",
@@ -287,6 +328,8 @@ export default {
         total: 0,
         orderNum: "", //订单号
         parkName: "", //停车场
+        parkNameEq: "", //停车场名称全
+        park: "", //停车场id
         vehicle: "", //车牌号
         startTime: "", //开始时间
         endTime: "", //结束时间
@@ -307,11 +350,15 @@ export default {
         { enumName: "钱包余额", enumValue: 2 }
       ],
       invoiceList: [
+        // { enumName: "已退款", enumValue: -1 },
+        // { enumName: "待退款", enumValue: 1 },
+        // { enumName: "否", enumValue: 2 }
         { enumName: "是", enumValue: 1 },
         { enumName: "否", enumValue: 0 }
       ],
       selGateway: null,
       time: [],
+      parkingList: [],
       Dictionaries: {
         enumTypes: "STATUS"
       },
@@ -332,6 +379,7 @@ export default {
   created() {
     this.toSearchList();
     // this.getFieldTable();
+    this.getparking();
   },
   methods: {
     changeTime() {
@@ -342,6 +390,12 @@ export default {
     getFieldTable() {
       fieldTable(this.Dictionaries).then(response => {
         this.enumsData = response.data;
+      });
+    },
+    getparking() {
+      let para = {};
+      getName(para).then(response => {
+        this.parkingList = response.data;
       });
     },
 
@@ -359,6 +413,8 @@ export default {
         total: 0,
         orderNum: "", //订单号
         parkName: "", //停车场
+        parkNameEq: "", //停车场名称全
+        park: "", //停车场id
         vehicle: "", //车牌号
         startTime: "", //开始时间
         endTime: "", //结束时间
@@ -427,6 +483,8 @@ export default {
       let para = {
         orderNum: this.listQuery.orderNum,
         parkName: this.listQuery.parkName,
+        parkNameEq: this.listQuery.parkNameEq,
+        park: this.listQuery.park,
         vehicle: this.listQuery.vehicle,
         startTime: this.listQuery.startTime,
         endTime: this.listQuery.endTime,
@@ -527,6 +585,9 @@ export default {
       color: rgba($color: #828484, $alpha: 0.5);
       font-size: 14px;
       padding-right: 5px;
+    }
+    .content-g {
+      color: #5ac00a;
     }
   }
 }

@@ -60,6 +60,15 @@ const operationManagement = {
       },
     },
     {
+      path: 'refundApplicationReview',
+      component: () => import('@/views/operationManagement/refundApplicationReview/index'),
+      name: 'RefundApplicationReview',
+      meta: {
+        title: '退款申请审核',
+        icon: 'refundRecord'
+      },
+    },
+    {
       path: 'vehicleEntryAndExitRecords',
       component: () => import('@/views/operationManagement/vehicleEntryAndExitRecords/index'),
       name: 'VehicleEntryAndExitRecords',

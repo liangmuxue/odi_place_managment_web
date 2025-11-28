@@ -18,6 +18,24 @@ export function gateGetInfo(data) {
 
   })
 }
+//获取道闸全部规则
+export function barrierRuleBarrier(data) {
+  return request({
+    url: '/system/barrierRule/barrier/' + data.barrierId,
+    method: 'get',
+    // params: data
+
+  })
+}
+//编辑道闸规则
+export function barrierRuleEdit(data) {
+  return request({
+    url: '/system/barrierRule',
+    method: 'put',
+    data
+
+  })
+}
 //删除道闸
 export function gateDelete(data) {
   return request({

@@ -367,16 +367,37 @@ export default {
       vehicleWhitelistDetail(para).then(response => {
         this.newList = response.data;
 
-        let lots = this.newList.parkingLots;
+        // let lots = this.newList.parkingLots;
+        // let ids = [];
+        // let names = [];
+        // lots.forEach(el => {
+        //   ids.push(el.id);
+        //   names.push(el.name);
+        // });
+        // if (lots.length == this.parkingList.length - 1) {
+        //   ids.unshift(0);
+        // }
+        let lots = [...this.newList.parkingLots];
+        let list = [...this.parkingList];
+        list.shift();
+        function compareArraysByField(arr1, arr2, field) {
+          if (arr1.length !== arr2.length) {
+            return false;
+          }
+          return arr1.every((obj, index) => obj[field] === arr2[index][field]);
+        }
         let ids = [];
         let names = [];
         lots.forEach(el => {
           ids.push(el.id);
           names.push(el.name);
         });
-        if (lots.length == this.parkingList.length - 1) {
+        let isSame = compareArraysByField(list, lots, id);
+        //如果
+        if (isSame) {
           ids.unshift(0);
         }
+
         this.$set(this.newList, "parkingLotId", ids);
         this.newList.parkingLotName = names.toString();
         this.editLicensePlate = response.data.licensePlate;

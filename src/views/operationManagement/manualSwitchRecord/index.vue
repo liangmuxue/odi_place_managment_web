@@ -65,7 +65,6 @@
         <el-table-column
           label="停车场名称"
           align="center"
-          min-width="120px"
           show-overflow-tooltip
         >
           <template slot-scope="scope">

@@ -8,6 +8,7 @@ import Layout from '@/layout'
 
 /* Router Modules */
 import homePage from './modules/homePage'; //首页
+import videoManagement from './modules/videoManagement'; //视频管理
 import operationManagement from './modules/operationManagement'; //运营管理
 import reconciliationCenter from './modules/reconciliationCenter'; //对账中心
 import yardManagement from './modules/yardManagement'; //车场管理
@@ -15,6 +16,7 @@ import specificVehicleManagement from './modules/specificVehicleManagement'; //�
 import equipmentManagement from './modules/equipmentManagement'; //设备管理
 import statisticalAnalysis from './modules/statisticalAnalysis'; //统计分析
 import systemSettings from './modules/systemSettings'; //系统设置
+import merchantManagement from './modules/merchantManagement'; //商户管理
 
 
 /**
@@ -81,6 +83,7 @@ export const constantRoutes = [
   },
 
   // homePage, //首页
+  // videoManagement, //视频管理
   // operationManagement, //运营管理
   // reconciliationCenter, //对账中心
   // yardManagement, //车场管理
@@ -88,6 +91,7 @@ export const constantRoutes = [
   // equipmentManagement, //设备管理
   // statisticalAnalysis, //统计分析
   // systemSettings, //系统设置
+  // merchantManagement, //商户管理
 ]
 
 /**
@@ -96,6 +100,7 @@ export const constantRoutes = [
  */
 export const asyncRoutes = [
   homePage, //首页
+  // videoManagement, //视频管理
   operationManagement, //运营管理
   reconciliationCenter, //对账中心
   yardManagement, //车场管理

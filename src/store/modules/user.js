@@ -13,6 +13,7 @@ import {
   setTenantId,
   setInitflag,
   setUserName,
+  setNickName,
   setRoleName,
   getRoleName,
   getUserName,
@@ -116,6 +117,7 @@ const actions = {
         const {
           roles,
           nickName,
+          userName,
           avatar,
           introduction,
           resourceList,
@@ -133,7 +135,8 @@ const actions = {
         commit('SET_PERMISSION', resourceList) //将权限表传给vuex
         commit('SET_NAME', nickName)
         commit('SET_AVATAR', avatar)
-        setUserName(nickName) //调用utils/auth中的方法向cookie中存储username
+        setUserName(userName) //调用utils/auth中的方法向cookie中存储username
+        setNickName(nickName) //调用utils/auth中的方法向cookie中存储username
 
         // commit('SET_INTRODUCTION', introduction)
         // commit('SET_TID', tenantId) //向vuex中存储tenantId

@@ -99,7 +99,12 @@
             <span class="content">{{ scope.row.roles[0].roleName }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="备注" min-width="90px" align="center">
+        <el-table-column
+          label="备注"
+          min-width="90px"
+          align="center"
+          show-overflow-tooltip
+        >
           <template slot-scope="scope">
             <div class="content">
               {{ scope.row.remark }}

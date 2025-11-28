@@ -200,7 +200,7 @@
 <script>
 import {
   vehicleEntryDetail, //出入记录详情
-  leave, //出场
+  tranceFrom, //出场
   getGateByParkId //获取出入闸机
 } from "@/api/operationManagement";
 import { UploadImage } from "@/api/common";
@@ -393,7 +393,7 @@ export default {
       this.$emit("openLoading", {});
       this.$emit("getList", {});
     },
-    //点击保存按钮
+    //点击出场按钮
     toSave() {
       this.$refs["parkingForm"].validate(valid => {
         if (valid) {
@@ -403,9 +403,10 @@ export default {
             this.$emit("openLoading", {});
             let para = {
               id: this.newList.id,
-              leaveBarrierNumber: this.newList.leaveBarrierNumber
+              leaveBarrierNumber: this.newList.leaveBarrierNumber,
+              path: "/hiCar/system/vehicleEntry/leave"
             };
-            leave(para)
+            tranceFrom(para)
               .then(response => {
                 if (response.code == "200") {
                   this.$message({

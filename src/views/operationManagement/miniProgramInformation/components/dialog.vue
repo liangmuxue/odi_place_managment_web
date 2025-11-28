@@ -149,7 +149,7 @@
                 <el-input
                   v-else
                   v-model="newList.url"
-                  placeholder="输入AppID"
+                  placeholder="输入网址"
                   style="width: 72%"
                   class="filter-item"
                   size="small"
@@ -179,6 +179,20 @@ import { UploadImage } from "@/api/common";
 export default {
   components: {},
   data() {
+    const validateUrl = (rule, value, callback) => {
+      if (!value) {
+        if (this.newList.urlType == 1) {
+          callback(new Error("请选择页面"));
+        } else if (this.newList.urlType == 2) {
+          callback(new Error("请输入AppID"));
+        } else if (this.newList.urlType == 3) {
+          callback(new Error("请输入网址"));
+        }
+      } else {
+        callback();
+      }
+    };
+
     return {
       pageType: 2,
       title: "回复",
@@ -203,7 +217,7 @@ export default {
         ],
         pageUrl: [{ required: true, message: "请选择页面", trigger: "change" }],
         AppId: [{ required: true, message: "请输入AppId", trigger: "blur" }],
-        url: [{ required: true, message: "请输入网址", trigger: "blur" }]
+        url: [{ required: true, trigger: "blur", validator: validateUrl }]
       },
       htmlList: [],
       consultTypes: [
@@ -262,6 +276,7 @@ export default {
     },
     changeUrlType() {
       this.newList.url = "";
+      this.$refs["minForm"].validateField("url");
     },
     //打开弹窗
     showDialog(id, pageType) {

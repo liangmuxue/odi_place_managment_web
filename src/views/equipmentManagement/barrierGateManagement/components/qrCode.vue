@@ -210,9 +210,10 @@ export default {
 }
 .base_dialog_main {
   display: flex;
+  overflow-y: auto;
 }
 .qrBox {
-  margin: 100px 100px 0 100px;
+  margin: 50px 100px 0 100px;
   width: 502px;
   height: 542px;
   border: 1px solid #bbb;
@@ -271,7 +272,7 @@ export default {
   }
 }
 .qrBtn {
-  margin: 50px 100px;
+  margin: 30px 100px;
   width: 100px;
   height: 32px;
   line-height: 32px;

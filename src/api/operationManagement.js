@@ -124,6 +124,34 @@ export function vehiclesToExamine(data) {
 
   })
 }
+//退款申请审核list条件查询
+export function queryRefundApplicationList(data) {
+  return request({
+    url: 'system/refundApplication/queryRefundApplicationList',
+    method: 'get',
+    params: data
+
+  })
+}
+//退款申请审核detail单条查询
+export function queryRefundApplicationDetail(data) {
+  return request({
+    url: 'system/refundApplication/queryRefundApplicationDetail',
+    method: 'get',
+    params: data
+
+  })
+}
+//退款申请批量审核
+export function auditRefundApplication(data) {
+  return request({
+    url: 'system/refundApplication/auditRefundApplication',
+    method: 'post',
+    data
+
+  })
+}
+
 //出入记录分页
 export function vehicleEntryList(data) {
   return request({
@@ -174,6 +202,15 @@ export function updateLeave(data) {
 export function leave(data) {
   return request({
     url: '/system/vehicleEntry/leave',
+    method: 'post',
+    data
+
+  })
+}
+//出场（新）
+export function tranceFrom(data) {
+  return request({
+    url: '/system/forward/tranceFrom',
     method: 'post',
     data
 
