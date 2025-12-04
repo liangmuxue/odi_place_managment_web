@@ -107,7 +107,7 @@
         <el-table-column label="支付方式" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="content">{{
-              scope.row.payType == 1 ? "微信" : "银联"
+              scope.row.payType == 1 ? "微信" : "钱包余额"
             }}</span>
           </template>
         </el-table-column>
@@ -151,7 +151,7 @@ export default {
       },
       typeList: [
         { enumName: "微信", enumValue: 1 },
-        { enumName: "银联", enumValue: 2 }
+        { enumName: "钱包余额", enumValue: 2 }
       ],
       selGateway: null,
       time: [],

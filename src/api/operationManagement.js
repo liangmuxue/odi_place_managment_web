@@ -124,6 +124,15 @@ export function vehiclesToExamine(data) {
 
   })
 }
+//月租车辆修改备注
+export function updateRemark(data) {
+  return request({
+    url: 'system/vehicles/updateRemark',
+    method: 'post',
+    data
+
+  })
+}
 //退款申请审核list条件查询
 export function queryRefundApplicationList(data) {
   return request({

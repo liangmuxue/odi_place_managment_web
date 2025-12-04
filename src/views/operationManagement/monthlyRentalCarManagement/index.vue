@@ -139,7 +139,12 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.vehicle }}</span>
+            <span class="content">
+              <div v-if="!scope.row.photos">{{ scope.row.vehicle }}</div>
+              <div v-for="(item, i) in scope.row.photos" :key="i">
+                {{ item.vehicle }}
+              </div>
+            </span>
           </template>
         </el-table-column>
         <el-table-column
@@ -196,31 +201,29 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="车辆行驶证"
+          label="身份证"
           align="center"
-          :key="8"
-          min-width="110px"
+          :key="71"
           v-if="listQuery.verify < 1"
-          show-overflow-tooltip
         >
           <template slot-scope="scope">
             <div class="content" :key="scope.row.id">
               <el-popover placement="top-start" width="500" trigger="click">
                 <img
                   :src="
-                    scope.row.drivingLicense
-                      ? scope.row.drivingLicense
-                      : scope.row.drivingLicense
+                    scope.row.idcardPhoto
+                      ? scope.row.idcardPhoto
+                      : scope.row.idcardPhoto
                   "
                   width="100%"
                 />
                 <img
                   v-if="
-                    scope.row.drivingLicense !== '' &&
-                      scope.row.drivingLicense !== null
+                    scope.row.idcardPhoto !== '' &&
+                      scope.row.idcardPhoto !== null
                   "
                   slot="reference"
-                  :src="scope.row.drivingLicense"
+                  :src="scope.row.idcardPhoto"
                   width="48"
                   height="36"
                 />
@@ -232,6 +235,27 @@
                   <div min-width="48" height="36"></div>
                 </span>
               </el-popover>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="车辆行驶证"
+          align="center"
+          :key="8"
+          min-width="110px"
+          v-if="listQuery.verify < 1"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <div class="content" :key="scope.row.id">
+              <el-image
+                v-if="scope.row.photos && scope.row.photos.length > 0"
+                style="width: 48px; height: 36px"
+                :src="scope.row.photos[0].drivingLicense"
+                :preview-src-list="getPhotoList(scope.row.photos)"
+                @error="handleImageError(scope.row.photos[0].drivingLicense)"
+              >
+              </el-image>
             </div>
           </template>
         </el-table-column>
@@ -309,6 +333,16 @@
         >
           <template slot-scope="scope">
             <span class="content">{{ scope.row.passTime }} </span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="备注"
+          align="center"
+          :key="121"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">{{ scope.row.remark }}</span>
           </template>
         </el-table-column>
 
@@ -422,7 +456,7 @@
           align="center"
           :key="16"
           header-align="center"
-          min-width="110px"
+          width="170px"
           class-name="small-padding fixed-width"
         >
           <template slot-scope="scope">
@@ -432,6 +466,14 @@
               v-has="{ red: 'monthlyRentalCarManagementDetails', type: 1 }"
             >
               详情
+            </span>
+            <span
+              class="operation_button update_btn"
+              v-if="listQuery.verify == 1"
+              @click="toUpdate(scope.row)"
+              v-has="{ red: 'monthlyRentalCarManagementDetails', type: 1 }"
+            >
+              编辑
             </span>
             <span
               class="operation_button update_btn"
@@ -509,6 +551,41 @@
         </div>
       </div>
     </el-dialog>
+    <el-dialog
+      :visible.sync="dialogFormVisible2"
+      width="700px"
+      title="审核通过备注"
+      center
+      class="dialog_vehicle"
+    >
+      <div class="base_dialog_main_content">
+        <el-form :model="newList" :rules="rules" ref="userForm">
+          <div class="base_dialog_main_content">
+            <div class="base_dialog_main_left" style="padding:20px 80px">
+              <span class="base_dialog_condit">
+                <el-form-item label="备注描述" prop="remark">
+                  <el-input
+                    v-model="newList.remark"
+                    placeholder="请输入"
+                    type="textarea"
+                    :rows="3"
+                    style="width: 72%"
+                    class="filter-item"
+                    maxlength="200"
+                    show-word-limit
+                    size="small"
+                  />
+                </el-form-item>
+              </span>
+            </div>
+          </div>
+        </el-form>
+        <div class="base_dialog_main_btnBox" style="padding:0px 240px 30px">
+          <el-button type="info" @click="toPass">保存</el-button
+          ><el-button type="danger" @click="closeDialog2">取消</el-button>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -525,6 +602,7 @@ export default {
   components: { Dialog },
   data() {
     return {
+      defaultImg: require("../../../assets/images/imgError2.png"),
       listQuery: {
         pageNum: 1,
         pageSize: 10,
@@ -539,12 +617,13 @@ export default {
         endTime: "" //结束时间
       },
       dialogFormVisible: false, //不同意弹窗
+      dialogFormVisible2: false, //同意弹窗
       rules: {
         reason: [
           { required: true, message: "请输入不通过原因描述", trigger: "blur" }
         ]
       },
-      newList: { ids: [], status: null, reason: "" },
+      newList: { ids: [], status: null, reason: "", remark: "" },
       ids: null,
       statusList: [
         { enumName: "使用中", enumValue: 1 },
@@ -578,6 +657,18 @@ export default {
     // this.getFieldTable();
   },
   methods: {
+    handleImageError(e) {
+      // console.log(123, e);
+      // e =
+      //   "https://jizhi-pay.ss-cas.com:4433/hiCar/profile/upload/2025/12/02/aQGowpyvBlFKbe46f7f2c2963d2a12a66b41aea06830_20251202155718A004.jpeg";
+    },
+    getPhotoList(list) {
+      let arr = [];
+      list.forEach(el => {
+        arr.push(el.drivingLicense);
+      });
+      return arr;
+    },
     //判断是否可选
     selectable(e) {
       if (e.status >= 0) {
@@ -610,6 +701,7 @@ export default {
       this.selGateway.forEach(el => {
         arr.push(el.id);
       });
+      this.newList = { ids: [], status: null, reason: "", remark: "" };
       if (this.selGateway.length > 0) {
         this.$confirm("请选择以上批量审核操作", "提示", {
           confirmButtonText: "批量通过",
@@ -618,7 +710,9 @@ export default {
           center: true
         })
           .then(() => {
-            this.toPass(arr);
+            // this.toPass(arr);
+            this.dialogFormVisible2 = true;
+            this.ids = arr;
           })
           .catch(() => {
             this.dialogFormVisible = true;
@@ -637,13 +731,19 @@ export default {
       this.openLoading();
       this.getList();
     },
+    //关闭新增/编辑设备弹窗
+    closeDialog2() {
+      this.dialogFormVisible2 = false;
+      this.openLoading();
+      this.getList();
+    },
 
     //通过
-    toPass(arr) {
+    toPass() {
       let para = {
-        ids: arr,
+        ids: this.ids,
         verify: 1,
-        reason: ""
+        remark: this.newList.remark
       };
       let text = "确认批量审核通过吗?";
       this.$confirm(text, "提示", {
@@ -655,6 +755,7 @@ export default {
               type: "success",
               message: "审核成功"
             });
+            this.dialogFormVisible2 = false;
             this.openLoading();
             this.getList();
           } else {
@@ -876,6 +977,11 @@ export default {
     toAudit(e) {
       let id = e.id;
       this.$refs.dialog.showDialog(id, 2);
+    },
+    //审核
+    toUpdate(e) {
+      let id = e.id;
+      this.$refs.dialog.showDialog(id, 3);
     },
 
     //

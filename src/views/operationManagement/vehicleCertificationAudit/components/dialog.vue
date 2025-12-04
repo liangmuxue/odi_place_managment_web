@@ -49,6 +49,41 @@
               </el-form-item>
             </span>
             <span class="base_dialog_condit">
+              <el-form-item label="身份证：" prop="idcardPhoto">
+                <el-popover
+                  placement="top-start"
+                  width="500"
+                  trigger="click"
+                  :key="newList.id"
+                >
+                  <img
+                    :src="
+                      newList.idcardPhoto
+                        ? newList.idcardPhoto
+                        : newList.idcardPhoto
+                    "
+                    width="100%"
+                  />
+                  <img
+                    v-if="
+                      newList.idcardPhoto !== '' && newList.idcardPhoto !== null
+                    "
+                    slot="reference"
+                    :src="newList.idcardPhoto"
+                    width="48"
+                    height="36"
+                  />
+                  <!-- :src="
+                      newList.idcardPhoto +
+                        '?x-oss-process=image/resize,h_36,w_48'
+                    " -->
+                  <span v-else>
+                    <div min-width="48" height="36"></div>
+                  </span>
+                </el-popover>
+              </el-form-item>
+            </span>
+            <span class="base_dialog_condit">
               <el-form-item label="行驶证：" prop="drivingLicense">
                 <el-popover
                   placement="top-start"

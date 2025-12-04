@@ -125,6 +125,40 @@
             <span class="content">{{ scope.row.idcard }}</span>
           </template>
         </el-table-column>
+        <el-table-column label="身份证" min-width="90px" align="center">
+          <template slot-scope="scope">
+            <div class="content" :key="scope.row.id">
+              <el-popover placement="top-start" width="500" trigger="click">
+                <img
+                  :src="
+                    scope.row.idcardPhoto
+                      ? scope.row.idcardPhoto
+                      : scope.row.idcardPhoto
+                  "
+                  width="100%"
+                />
+                <img
+                  v-if="
+                    scope.row.idcardPhoto !== '' &&
+                      scope.row.idcardPhoto !== null
+                  "
+                  slot="reference"
+                  :src="scope.row.idcardPhoto"
+                  width="48"
+                  height="36"
+                />
+                <!-- :src="
+                    scope.row.idcardPhoto +
+                      '?x-oss-process=image/resize,h_36,w_48'
+                  " -->
+                <span v-else>
+                  <div min-width="48" height="36"></div>
+                </span>
+              </el-popover>
+            </div>
+          </template>
+        </el-table-column>
+
         <el-table-column label="车辆行驶证" min-width="90px" align="center">
           <template slot-scope="scope">
             <div class="content" :key="scope.row.id">
