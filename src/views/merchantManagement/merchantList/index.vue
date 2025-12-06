@@ -3,17 +3,17 @@
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">商户名称</div>
-        <el-input v-model="listQuery.licensePlate" placeholder="请输入">
+        <el-input v-model="listQuery.merchantName" placeholder="请输入">
         </el-input>
       </span>
       <span class="search_content">
         <div class="search_content_title">联系人</div>
-        <el-input v-model="listQuery.parkingLotName" placeholder="请输入">
+        <el-input v-model="listQuery.contact" placeholder="请输入">
         </el-input>
       </span>
       <span class="search_content">
         <div class="search_content_title">联系电话</div>
-        <el-input v-model="listQuery.masterName" placeholder="请输入">
+        <el-input v-model="listQuery.tel" placeholder="请输入">
         </el-input>
       </span>
       <span class="search_content">
@@ -65,22 +65,22 @@
         ></el-table-column>
         <el-table-column label="商户名称" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.licensePlate }}</span>
+            <span class="content">{{ scope.row.merchantName }}</span>
           </template>
         </el-table-column>
         <el-table-column label="商户编号" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.phone }}</span>
+            <span class="content">{{ scope.row.merchantId }}</span>
           </template>
         </el-table-column>
         <el-table-column label="联系人" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.masterName }}</span>
+            <span class="content">{{ scope.row.contact }}</span>
           </template>
         </el-table-column>
         <el-table-column label="联系电话" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.phone }}</span>
+            <span class="content">{{ scope.row.tel }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -89,9 +89,7 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{
-              getNames(scope.row.vehicleWaiverParkingLots)
-            }}</span>
+            <span class="content">{{ scope.row.parkingLotName }}</span>
           </template>
         </el-table-column>
 
@@ -136,15 +134,11 @@
 </template>
 
 <script>
-import {
-  vehicleWaiverList, //限免车列表
-  vehicleWaiverBatchDelete //限免车批量删除
-} from "@/api/specificVehicleManagement";
+import { merchantList, merchantBatchDelete } from "@/api/merchantManagement";
 import Dialog from "./components/dialog";
-import { fieldTable } from "@/api/common";
 
 export default {
-  name: "freeCodeManagement",
+  name: "MerchantList",
   components: { Dialog },
   data() {
     return {
@@ -152,101 +146,40 @@ export default {
         pageNum: 1,
         pageSize: 10,
         total: 0,
-        licensePlate: "", //车牌号
-        parkingLotName: "", //停车场名
-        expirationStartTime: "", //开始时间
-        expirationEndTime: "", //结束时间
-        status: null //使用状态
+        merchantName: "", // 商户名称
+        contact: "", // 联系人
+        tel: "", // 联系电话
+        parkingLotName: "" // 停车场名
       },
-      selGateway: null,
-      statusList: [
-        { enumName: "到期", enumValue: 1 },
-        { enumName: "正常", enumValue: 0 }
-      ],
-      Dictionaries: {
-        enumTypes: "RULE_VEHICLE_TYPE,RULE_PARKING_DIRECTION"
-      },
-      enumsData: {}, //字典表返回数据
-      time: [],
-      listLoading: false, //加载
-      list: [] //信息
+      selGateway: [],
+      listLoading: false,
+      list: []
     };
-  },
-  watch: {
-    time(value) {
-      if (value === null) {
-        this.time = ["", ""];
-      } else if (value.length === 0) {
-        this.time = ["", ""];
-      }
-      this.changeTime();
-    }
   },
 
   created() {
     this.toSearchList();
-    this.getFieldTable();
   },
   methods: {
-    getFieldTable() {
-      fieldTable(this.Dictionaries).then(response => {
-        this.enumsData = response.data;
-      });
-    },
-    getNames(arr) {
-      let names = [];
-      arr.forEach(el => {
-        if (el.parkingLot) {
-          names.push(el.parkingLot.name);
-        }
-      });
-      return names.toString();
-    },
-    changeTime() {
-      this.listQuery.expirationStartTime = this.time[0].getTime();
-      this.listQuery.expirationEndTime = this.time[1].getTime();
-    },
-
-    //查询泊位列表
+    // 查询列表
     toSearchList() {
       this.listQuery.pageNum = 1;
       this.openLoading();
       this.getList();
     },
-    //重置查询条件
+    // 重置查询条件
     resetList() {
       this.listQuery = {
         pageNum: 1,
         pageSize: 10,
         total: 0,
-        licensePlate: "", //车牌号
-        parkingLotName: "", //停车场名
-        expirationStartTime: "", //开始时间
-        expirationEndTime: "", //结束时间
-        status: null //使用状态
+        merchantName: "", // 商户名称
+        contact: "", // 联系人
+        tel: "", // 联系电话
+        parkingLotName: "" // 停车场名
       };
-      this.time = [];
       this.openLoading();
       this.getList();
-    },
-    //显示溢出隐藏
-    showTips(obj, row) {
-      /*obj为鼠标移入时的事件对象*/
-      /*currentWidth 为文本在页面中所占的宽度，创建标签，加入到页面，获取currentWidth ,最后在移除*/
-      let TemporaryTag = document.createElement("span");
-      TemporaryTag.innerText = row.note;
-      TemporaryTag.className = "getTextWidth";
-      document.querySelector("body").appendChild(TemporaryTag);
-      let currentWidth = document.querySelector(".getTextWidth").offsetWidth;
-      document.querySelector(".getTextWidth").remove();
-
-      /*cellWidth为表格容器的宽度*/
-      const cellWidth = obj.target.offsetWidth;
-
-      /*当文本宽度小于||等于容器宽度两倍时，代表文本显示未超过两行*/
-      currentWidth <= 2 * cellWidth
-        ? (row.showTooltip = false)
-        : (row.showTooltip = true);
     },
     openLoading() {
       let claeeName;
@@ -264,10 +197,10 @@ export default {
       });
     },
 
-    //获取数据列表
+    // 获取数据列表
     getList() {
       let para = this.listQuery;
-      vehicleWaiverList(para)
+      merchantList(para)
         .then(response => {
           this.list = response.rows;
           if (response.total > 0) {
@@ -291,28 +224,28 @@ export default {
         });
     },
 
-    //打开添加长租规则
+    // 打开新增弹窗
     toAdd() {
       let id = null;
       let pageType = 1;
       this.$refs.dialog.showDialog(id, pageType);
     },
 
-    //选择复选框
+    // 选择复选框
     handleSelectionChange(val) {
       this.selGateway = val;
     },
 
-    //批量删除
+    // 批量删除
     toDel() {
       if (this.selGateway.length > 0) {
         let arr = [];
         this.selGateway.forEach(el => {
-          arr.push(el.id);
+          arr.push(el.merchantId);
         });
-        let text = "确认批量删除限免车吗?";
+        let text = "确认批量删除商户吗?";
         if (this.selGateway.length == 1) {
-          text = "确认删除该限免车吗?";
+          text = "确认删除该商户吗?";
         }
 
         this.$confirm(text, "提示", {
@@ -321,7 +254,7 @@ export default {
           let para = {
             ids: arr.toString()
           };
-          vehicleWaiverBatchDelete(para).then(response => {
+          merchantBatchDelete(para).then(response => {
             if (response.code == "200") {
               this.$message({
                 type: "success",
@@ -340,31 +273,31 @@ export default {
       } else {
         this.$message({
           type: "warning",
-          message: "请选择删除限免车"
+          message: "请选择删除商户"
         });
       }
     },
 
-    //打开编辑长租规则
+    // 打开编辑弹窗
     toEdit(e) {
-      let id = e.id;
+      let id = e.merchantId;
       let pageType = 2;
       this.$refs.dialog.showDialog(id, pageType);
     },
-    //打开长租规则详情
+    // 打开详情弹窗
     toDetails(e) {
-      let id = e.id;
+      let id = e.merchantId;
       let pageType = 3;
       this.$refs.dialog.showDialog(id, pageType);
     },
-    // 切换页码方法
+    // 切换每页条数
     handleSizeChange(val) {
       this.listQuery.pageNum = 1;
       this.listQuery.pageSize = val;
       this.openLoading();
       this.getList();
     },
-    // 切换每页显示的方法
+    // 切换页码
     handleCurrentChange(val) {
       this.listQuery.pageNum = val;
       this.openLoading();
