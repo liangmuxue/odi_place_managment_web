@@ -111,7 +111,7 @@
               {{
                 scope.row.deductionQuantity == null
                   ? '全免'
-                  : scope.row.deductionQuantity + (scope.row.deductionUnit || '')
+                  : formatDeductionQuantity(scope.row)
               }}
             </span>
           </template>
@@ -324,6 +324,22 @@ export default {
             this.listLoading.close();
           }, 300);
         });
+    },
+
+    formatDeductionQuantity(row) {
+      const quantity = row.deductionQuantity;
+      if (
+        row.deductionType === "固定折扣" &&
+        quantity !== null &&
+        quantity !== undefined
+      ) {
+        const numeric = Number(quantity);
+        if (!isNaN(numeric)) {
+          const displayQuantity = Number((numeric * 10).toFixed(1));
+          return displayQuantity + (row.deductionUnit || "");
+        }
+      }
+      return quantity + (row.deductionUnit || "");
     },
 
     // 打开新增规则

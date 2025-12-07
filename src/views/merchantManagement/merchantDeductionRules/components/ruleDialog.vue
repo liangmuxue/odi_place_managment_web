@@ -401,6 +401,19 @@ export default {
       callback();
     };
 
+    const validateDeductionTimes = (rule, value, callback) => {
+      const type = this.form.deductionType;
+      if (type === "全免抵扣") {
+        // 全免抵扣时，以 radioTimes 是否有值作为是否已选择抵扣次数的依据
+        if (!this.radioTimes) {
+          return callback(new Error("请选择抵扣次数"));
+        }
+        return callback();
+      }
+      // 其他类型抵扣次数固定为单次，不需要额外选择
+      return callback();
+    };
+
     return {
       pageType: 1,
       title: "新增",
@@ -484,7 +497,7 @@ export default {
           }
         ],
         deductionTimes: [
-          { required: true, message: "请选择抵扣次数", trigger: "change" }
+          { validator: validateDeductionTimes, trigger: "change" }
         ],
         deductionAllowOverlay: [
           { required: true, message: "请选择叠加使用", trigger: "change" }
@@ -545,6 +558,14 @@ export default {
         return "无门槛";
       }
       return this.form.deductionThreshold;
+    },
+    timesText() {
+      const type = this.form.deductionType;
+      const times = this.form.deductionTimes;
+      if (type === "全免抵扣") {
+        return times == null || times === 0 ? "有效期内重复使用" : "单次";
+      }
+      return "单次";
     },
     // 使用门槛后缀，根据抵扣类型展示“分钟可用”或“元可用”
     thresholdSuffix() {
@@ -641,6 +662,7 @@ export default {
           memo: ""
         };
         this.thresholdMode = "none";
+        this.radioTimes = "single";
         if (this.$refs["ruleForm"]) {
           this.$nextTick(() => {
             this.$refs["ruleForm"].clearValidate();
@@ -657,13 +679,28 @@ export default {
         this.form.deductionType = data.deductionType;
         this.form.deductionMode = data.deductionMode;
         this.form.deductionUnit = data.deductionUnit;
-        this.form.deductionQuantity = data.deductionQuantity;
+        const quantity = data.deductionQuantity;
+        if (
+          data.deductionType === "固定折扣" &&
+          quantity !== null &&
+          quantity !== undefined
+        ) {
+          const numericQuantity = Number(quantity);
+          if (!isNaN(numericQuantity)) {
+            this.form.deductionQuantity = Number(
+              (numericQuantity * 10).toFixed(1)
+            );
+          } else {
+            this.form.deductionQuantity = quantity;
+          }
+        } else {
+          this.form.deductionQuantity = quantity;
+        }
         this.form.deductionSalePrice = data.deductionSalePrice;
         this.form.deductionTopAmount = data.deductionTopAmount;
         this.form.deductionValidDays = data.deductionValidDays;
         this.form.deductionThreshold = data.deductionThreshold;
         // 前端固定为单次、不允许叠加
-        this.form.deductionTimes = 1;
         this.form.deductionAllowOverlay = false;
         this.form.memo = data.memo;
         this.thresholdMode =
@@ -675,6 +712,13 @@ export default {
           this.form.deductionThreshold = null;
         }
         this.onTypeChange();
+        const times = data.deductionTimes;
+        this.form.deductionTimes = times;
+        if (data.deductionType === "全免抵扣") {
+          this.radioTimes = times == null || times === 0 ? "repeat" : "single";
+        } else {
+          this.radioTimes = "single";
+        }
       });
     },
     closeDialog() {
@@ -701,18 +745,39 @@ export default {
         }).then(() => {
           this.isShow = false;
           this.$emit("openLoading", {});
+          const quantity = this.form.deductionQuantity;
+          let serverQuantity = quantity;
+          if (
+            this.form.deductionType === "固定折扣" &&
+            quantity !== null &&
+            quantity !== undefined &&
+            quantity !== ""
+          ) {
+            const numericQuantity = Number(quantity);
+            if (!isNaN(numericQuantity)) {
+              serverQuantity = Number(
+                (numericQuantity / 10).toFixed(2)
+              );
+            }
+          }
+          let deductionTimes = this.form.deductionTimes;
+          if (this.form.deductionType === "全免抵扣") {
+            deductionTimes = this.radioTimes === "repeat" ? null : 1;
+          } else {
+            deductionTimes = 1;
+          }
           const para = {
             merchantDeductionRuleId: this.form.id,
             deductionName: this.form.deductionName,
             deductionType: this.form.deductionType,
             deductionMode: this.form.deductionMode,
             deductionUnit: this.form.deductionUnit,
-            deductionQuantity: this.form.deductionQuantity,
+            deductionQuantity: serverQuantity,
             deductionSalePrice: this.form.deductionSalePrice,
             deductionTopAmount: this.form.deductionTopAmount,
             deductionValidDays: this.form.deductionValidDays,
             deductionThreshold: this.form.deductionThreshold,
-            deductionTimes: this.form.deductionTimes,
+            deductionTimes: deductionTimes,
             deductionAllowOverlay: this.form.deductionAllowOverlay,
             memo: this.form.memo
           };
