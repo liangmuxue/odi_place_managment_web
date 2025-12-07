@@ -53,3 +53,57 @@ export function merchantBatchDelete(data) {
     data
   })
 }
+
+// 抵扣规则列表
+export function merchantDeductionRuleList(data) {
+  return request({
+    url: '/merchant/merchantDeductionRule/list',
+    method: 'post',
+    data
+  })
+}
+
+// 新增抵扣规则
+export function merchantDeductionRuleInsert(data) {
+  return request({
+    url: '/merchant/merchantDeductionRule/insert',
+    method: 'post',
+    data
+  })
+}
+
+// 修改抵扣规则
+export function merchantDeductionRuleUpdate(data) {
+  return request({
+    url: '/merchant/merchantDeductionRule/update',
+    method: 'post',
+    data
+  })
+}
+
+// 抵扣规则详情
+export function merchantDeductionRuleDetail(data) {
+  return request({
+    url: '/merchant/merchantDeductionRule/detail',
+    method: 'post',
+    data
+  })
+}
+
+// 抵扣券名称唯一性校验
+export function checkDeductionNameUnique(data) {
+  return request({
+    url: '/merchant/merchantDeductionRule/checkDeductionNameUnique',
+    method: 'post',
+    data
+  })
+}
+
+// 批量删除抵扣规则
+export function merchantDeductionRuleBatchDelete(data) {
+  return request({
+    url: '/merchant/merchantDeductionRule/deleteBatch',
+    method: 'post',
+    data
+  })
+}
