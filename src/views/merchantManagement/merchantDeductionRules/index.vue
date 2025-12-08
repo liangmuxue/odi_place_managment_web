@@ -109,9 +109,9 @@
           <template slot-scope="scope">
             <span class="content">
               {{
-                scope.row.deductionQuantity == null
+                scope.row.deductionValue == null
                   ? '全免'
-                  : formatDeductionQuantity(scope.row)
+                  : formatDeductionValue(scope.row)
               }}
             </span>
           </template>
@@ -328,8 +328,8 @@ export default {
         });
     },
 
-    formatDeductionQuantity(row) {
-      const quantity = row.deductionQuantity;
+    formatDeductionValue(row) {
+      const quantity = row.deductionValue;
       if (
         row.deductionType === "固定折扣" &&
         quantity !== null &&

@@ -79,13 +79,13 @@
             </span>
 
             <span class="base_dialog_condit" v-if="showQuantity">
-              <el-form-item label="抵扣数量" prop="deductionQuantity">
+              <el-form-item label="抵扣数量" prop="deductionValue">
                 <span class="base_dialog_condit_text" v-if="pageType === 3">
-                  {{ form.deductionQuantity }}
+                  {{ form.deductionValue }}
                 </span>
                 <el-input
                   v-else
-                  v-model="form.deductionQuantity"
+                  v-model="form.deductionValue"
                   :placeholder="quantityPlaceholder"
                   style="width: 90%"
                   size="small"
@@ -424,7 +424,7 @@ export default {
         deductionType: "",
         deductionMode: "",
         deductionUnit: "",
-        deductionQuantity: null,
+        deductionValue: null,
         deductionSalePrice: null,
         deductionTopAmount: null,
         deductionValidDays: null,
@@ -461,7 +461,7 @@ export default {
             trigger: "blur"
           }
         ],
-        deductionQuantity: [
+        deductionValue: [
           {
             required: true,
             validator: validateDeductionQuantity,
@@ -618,7 +618,7 @@ export default {
         this.form.deductionUnit = null;
       }
       if (!this.showQuantity) {
-        this.form.deductionQuantity = null;
+        this.form.deductionValue = null;
       }
       if (!this.showSalePrice) {
         this.form.deductionSalePrice = null;
@@ -652,7 +652,7 @@ export default {
           deductionType: "",
           deductionMode: "",
           deductionUnit: "",
-          deductionQuantity: null,
+          deductionValue: null,
           deductionSalePrice: null,
           deductionTopAmount: null,
           deductionValidDays: null,
@@ -679,7 +679,7 @@ export default {
         this.form.deductionType = data.deductionType;
         this.form.deductionMode = data.deductionMode;
         this.form.deductionUnit = data.deductionUnit;
-        const quantity = data.deductionQuantity;
+        const quantity = data.deductionValue;
         if (
           data.deductionType === "固定折扣" &&
           quantity !== null &&
@@ -687,14 +687,14 @@ export default {
         ) {
           const numericQuantity = Number(quantity);
           if (!isNaN(numericQuantity)) {
-            this.form.deductionQuantity = Number(
+            this.form.deductionValue = Number(
               (numericQuantity * 10).toFixed(1)
             );
           } else {
-            this.form.deductionQuantity = quantity;
+            this.form.deductionValue = quantity;
           }
         } else {
-          this.form.deductionQuantity = quantity;
+          this.form.deductionValue = quantity;
         }
         this.form.deductionSalePrice = data.deductionSalePrice;
         this.form.deductionTopAmount = data.deductionTopAmount;
@@ -745,7 +745,7 @@ export default {
         }).then(() => {
           this.isShow = false;
           this.$emit("openLoading", {});
-          const quantity = this.form.deductionQuantity;
+          const quantity = this.form.deductionValue;
           let serverQuantity = quantity;
           if (
             this.form.deductionType === "固定折扣" &&
@@ -772,7 +772,7 @@ export default {
             deductionType: this.form.deductionType,
             deductionMode: this.form.deductionMode,
             deductionUnit: this.form.deductionUnit,
-            deductionQuantity: serverQuantity,
+            deductionValue: serverQuantity,
             deductionSalePrice: this.form.deductionSalePrice,
             deductionTopAmount: this.form.deductionTopAmount,
             deductionValidDays: this.form.deductionValidDays,
@@ -840,7 +840,7 @@ export default {
     },
     validateBusinessRules() {
       const type = this.form.deductionType;
-      const quantity = this.form.deductionQuantity;
+      const quantity = this.form.deductionValue;
       const salePrice = this.form.deductionSalePrice;
       const topAmount = this.form.deductionTopAmount;
       // 根据使用门槛模式同步 threshold 数值

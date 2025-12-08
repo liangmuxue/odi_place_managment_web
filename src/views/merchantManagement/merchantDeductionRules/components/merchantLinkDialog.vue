@@ -101,7 +101,7 @@ export default {
             merchantId: m.merchant_id,
             merchantName: m.merchant_name,
             state: m.state,
-            timesBalance: m.timesBalance,
+            quantityBalance: m.quantityBalance,
             disabled: false,
             ...m
           };
@@ -113,7 +113,7 @@ export default {
             merchantId: m.merchant_id,
             merchantName: m.merchant_name,
             state: m.state,
-            timesBalance: m.timesBalance,
+            quantityBalance: m.quantityBalance,
             ...m
           };
           transferData.push({
@@ -130,11 +130,11 @@ export default {
       return this.selectedMerchantIds.includes(option.merchantId);
     },
     isRemovable(merchant) {
-      const timesBalance = merchant.timesBalance;
+      const quantityBalance = merchant.quantityBalance;
       const hasBalance =
-        timesBalance !== null &&
-        timesBalance !== undefined &&
-        timesBalance !== 0;
+        quantityBalance !== null &&
+        quantityBalance !== undefined &&
+        quantityBalance !== 0;
       return merchant.state !== true && !hasBalance;
     },
     filterMethod(query, item) {
@@ -299,8 +299,8 @@ export default {
 ::v-deep .el-transfer-panel__item .el-checkbox__label {
   overflow: visible !important;
   /* 强制 label 占据剩余空间，而不是包裹文字 */
-  display: inline-block; 
-  width: 100%; 
+  display: inline-block;
+  width: 100%;
   /* 让 .merchant_option 的 width:100% 生效 */
   box-sizing: border-box;
   vertical-align: middle;
