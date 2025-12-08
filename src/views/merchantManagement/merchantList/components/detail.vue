@@ -514,13 +514,14 @@ export default {
         .overdraft_tag {
           display: inline-block;
           margin-left: 8px;
-          padding: 2px 8px;
+          height: 28px;
+          padding: 0 10px;
           font-size: 12px;
           color: #e74c3c;
           border: 1px solid #e74c3c;
-          border-radius: 12px;
+          border-radius: 4px;
           background-color: #fff;
-          line-height: 1.4;
+          line-height: 26px;
         }
 
         .el-button {
