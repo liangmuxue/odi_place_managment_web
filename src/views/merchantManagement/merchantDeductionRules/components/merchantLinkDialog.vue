@@ -6,7 +6,7 @@
         <i class="el-icon-close"></i>
       </div>
     </div>
-    <div class="base_dialog_main">
+    <div class="base_dialog_main" :class="{ 'has-enabled-merchants': hasEnabledMerchants }">
       <div class="base_dialog_main_content">
         <el-transfer
           style="text-align: left; display: inline-block;"
@@ -248,6 +248,30 @@ export default {
   /* 与右侧列表宽度保持一致，视觉上贴在右侧选择框下方 */
   width: 400px;
   margin-left: 600px;
+}
+
+/* 有不可取消关联的商户时，禁止右侧面板头部“全选”勾选 */
+::v-deep .base_dialog_main.has-enabled-merchants
+  .el-transfer-panel:last-child
+  .el-transfer-panel__header
+  .el-checkbox {
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+::v-deep .base_dialog_main.has-enabled-merchants
+  .el-transfer-panel:last-child
+  .el-transfer-panel__header
+  .el-checkbox__inner {
+  background-color: #f5f7fa;
+  border-color: #ebeef5;
+}
+
+::v-deep .base_dialog_main.has-enabled-merchants
+  .el-transfer-panel:last-child
+  .el-transfer-panel__header
+  .el-checkbox__label {
+  color: #c0c4cc;
 }
 
 .base_dialog_main_btnBox {
