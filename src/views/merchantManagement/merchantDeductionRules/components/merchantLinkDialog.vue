@@ -285,11 +285,11 @@ export default {
   align-items: center;
 }
 
-.base_dialog_main {
-  ::v-deep .el-transfer-panel {
-    height: 545px !important;
-  }
-}
+// .base_dialog_main {
+//   ::v-deep .el-transfer-panel {
+//     height: 545px !important;
+//   }
+// }
 
 ::v-deep .el-transfer-panel:first-child .el-transfer-panel__list {
   position: relative;
