@@ -243,4 +243,28 @@ export default {
   display: flex;
   align-items: center;
 }
+
+/* 仅右侧面板列表的表头：商户名称 / 规则状态 */
+::v-deep .el-transfer-panel:last-child .el-transfer-panel__list {
+  position: relative;
+  padding-top: 26px;
+}
+
+::v-deep .el-transfer-panel:last-child .el-transfer-panel__list::before {
+  content: "商户名称";
+  position: absolute;
+  top: 6px;
+  left: 40px;
+  font-size: 12px;
+  color: #303133;
+}
+
+::v-deep .el-transfer-panel:last-child .el-transfer-panel__list::after {
+  content: "规则状态";
+  position: absolute;
+  top: 6px;
+  right: 20px;
+  font-size: 12px;
+  color: #303133;
+}
 </style>
