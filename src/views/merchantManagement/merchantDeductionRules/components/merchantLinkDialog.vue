@@ -214,7 +214,7 @@ export default {
 }
 
 .status_tag {
-  font-size: 12px;
+  font-size: 14px;
   padding: 0;
   border-radius: 0;
   margin-left: 5px;
@@ -241,7 +241,7 @@ export default {
 }
 
 .transfer_footer_tips {
-  margin-top: 10px;
+  margin-top: 5px;
   color: #909399;
   font-size: 12px;
   text-align: left;
@@ -285,6 +285,12 @@ export default {
   align-items: center;
 }
 
+.base_dialog_main {
+  ::v-deep .el-transfer-panel {
+    height: 545px !important;
+  }
+}
+
 ::v-deep .el-transfer-panel:first-child .el-transfer-panel__list {
   position: relative;
   padding-top: 26px;
@@ -295,7 +301,8 @@ export default {
   position: absolute;
   top: 6px;
   left: 20px;
-  font-size: 12px;
+  font-size: 14px;
+  font-weight: bold;
   color: #303133;
   z-index: 0;
 }
@@ -311,7 +318,8 @@ export default {
   position: absolute;
   top: 6px;
   left: 20px;
-  font-size: 12px;
+  font-size: 14px;
+  font-weight: bold;
   color: #303133;
   z-index: 0;
 }
@@ -320,10 +328,11 @@ export default {
   content: "规则状态";
   position: absolute;
   top: 6px;
-  left: 235px;
+  left: 232px;
   width: 80px;
   text-align: left;
-  font-size: 12px;
+  font-size: 14px;
+  font-weight: bold;
   color: #303133;
   z-index: 0;
 }
