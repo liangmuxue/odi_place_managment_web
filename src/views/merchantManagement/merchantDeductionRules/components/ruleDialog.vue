@@ -12,7 +12,7 @@
           <div class="base_dialog_main_left" style="padding:20px 20px 0px 20px;">
             <span class="base_dialog_condit">
               <el-form-item label="抵扣券名称" prop="deductionName">
-                <span class="base_dialog_condit_text" v-if="pageType === 3">
+                <span class="base_dialog_condit_text" v-if="pageType === 3 || (pageType === 2 && hasLinkedMerchants)">
                   {{ form.deductionName }}
                 </span>
                 <el-input
@@ -28,7 +28,7 @@
 
             <span class="base_dialog_condit">
               <el-form-item label="抵扣类型" prop="deductionType">
-                <span class="base_dialog_condit_text" v-if="pageType === 3">
+                <span class="base_dialog_condit_text" v-if="pageType === 3 || (pageType === 2 && hasLinkedMerchants)">
                   {{ form.deductionType }}
                 </span>
                 <el-select
@@ -256,6 +256,22 @@ export default {
         });
     };
 
+    const validateDeductionNameNotModified = (rule, value, callback) => {
+      // 编辑模式下，如果规则已关联商户，不允许修改抵扣券名称
+      if (this.pageType === 2 && this.hasLinkedMerchants && this.originalDeductionName && value !== this.originalDeductionName) {
+        return callback(new Error("该规则已关联商户，不允许修改抵扣券名称"));
+      }
+      callback();
+    };
+
+    const validateDeductionTypeNotModified = (rule, value, callback) => {
+      // 编辑模式下，如果规则已关联商户，不允许修改抵扣类型
+      if (this.pageType === 2 && this.hasLinkedMerchants && this.originalDeductionType && value !== this.originalDeductionType) {
+        return callback(new Error("该规则已关联商户，不允许修改抵扣类型"));
+      }
+      callback();
+    };
+
     const validateThreshold = (rule, value, callback) => {
       // 如果当前正在从“满”切换到“无门槛”，本次校验直接跳过，避免闪烁
       if (this.thresholdSwitchingToNone) {
@@ -440,6 +456,11 @@ export default {
       // 展示用单选：抵扣次数固定为单次，叠加使用固定为不允许
       radioTimes: "single",
       radioOverlay: "no",
+      // 是否已关联商户
+      hasLinkedMerchants: false,
+      // 原始的抵扣券名称和抵扣类型（用于编辑时验证）
+      originalDeductionName: "",
+      originalDeductionType: "",
       deductionTypeOptions: [
         { label: "固定时长", value: "固定时长" },
         { label: "固定金额", value: "固定金额" },
@@ -449,10 +470,12 @@ export default {
       rules: {
         deductionName: [
           { required: true, message: "请输入抵扣券名称", trigger: "blur" },
-          { validator: validateDeductionNameUnique, trigger: "blur" }
+          { validator: validateDeductionNameUnique, trigger: "blur" },
+          { validator: validateDeductionNameNotModified, trigger: "blur" }
         ],
         deductionType: [
-          { required: true, message: "请选择抵扣类型", trigger: "change" }
+          { required: true, message: "请选择抵扣类型", trigger: "change" },
+          { validator: validateDeductionTypeNotModified, trigger: "change" }
         ],
         deductionValidDays: [
           {
@@ -677,6 +700,11 @@ export default {
         this.form.id = data.merchantDeductionRuleId;
         this.form.deductionName = data.deductionName;
         this.form.deductionType = data.deductionType;
+        // 保存原始值用于验证
+        this.originalDeductionName = data.deductionName;
+        this.originalDeductionType = data.deductionType;
+        // 检查是否已关联商户
+        this.hasLinkedMerchants = data.hasLinkedMerchants || false;
         this.form.deductionMode = data.deductionMode;
         this.form.deductionUnit = data.deductionUnit;
         const quantity = data.deductionValue;
@@ -945,6 +973,13 @@ export default {
 
       if (this.form.memo && this.form.memo.length > 200) {
         throw new Error("备注不能多于200字");
+      }
+    },
+    onTimesModeChange() {
+      // 抵扣次数变化时的处理（如果需要的话）
+      // 目前只是用于触发表单验证
+      if (this.$refs["ruleForm"]) {
+        this.$refs["ruleForm"].validateField("deductionTimes");
       }
     },
     getScale(num) {
