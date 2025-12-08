@@ -104,8 +104,9 @@
             </el-table-column>
             <el-table-column label="状态" align="center" show-overflow-tooltip>
               <template slot-scope="scope">
-                <span :class="scope.row.state === 1 ? 'onLine' : 'offLine'">
-                  {{ scope.row.state === 1 ? '启用' : '停用' }}
+                <span class="status_badge" :class="scope.row.state === 1 ? 'status_enabled' : 'status_disabled'">
+                  <span class="status_dot"></span>
+                  <span class="status_text">{{ scope.row.state === 1 ? '启用' : '停用' }}</span>
                 </span>
               </template>
             </el-table-column>
@@ -493,11 +494,40 @@ export default {
   text-align: center;
 }
 
-.onLine {
-  color: #33ae73;
-}
+.status_badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 
-.offLine {
-  color: #828484;
+  .status_dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .status_text {
+    font-size: 13px;
+  }
+
+  &.status_enabled {
+    .status_dot {
+      background-color: #33ae73;
+    }
+
+    .status_text {
+      color: #33ae73;
+    }
+  }
+
+  &.status_disabled {
+    .status_dot {
+      background-color: #ccc;
+    }
+
+    .status_text {
+      color: #828484;
+    }
+  }
 }
 </style>
