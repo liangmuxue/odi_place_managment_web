@@ -38,8 +38,8 @@
             </span>
           </span>
         </el-transfer>
-        <div v-if="hasEnabledMerchants" class="transfer_footer_tips">
-          * 已启用或有余额的商户，不可取消关联
+        <div class="transfer_footer_tips">
+          * 已启用该规则或有余额的商户，不可取消关联
         </div>
       </div>
       <div class="base_dialog_main_btnBox">
@@ -173,6 +173,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.base_dialog_main_content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .merchant_option {
   display: flex;
   align-items: center;
@@ -236,8 +242,12 @@ export default {
 
 .transfer_footer_tips {
   margin-top: 10px;
-  color: #e6a23c;
+  color: #909399;
   font-size: 12px;
+  text-align: left;
+  /* 与右侧列表宽度保持一致，视觉上贴在右侧选择框下方 */
+  width: 400px;
+  margin-left: 600px;
 }
 
 .base_dialog_main_btnBox {
