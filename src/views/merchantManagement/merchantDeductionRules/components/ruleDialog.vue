@@ -995,9 +995,9 @@ export default {
 .a {
   padding-left: 160px;
 }
-.base_dialog .base_dialog_main .base_dialog_main_content {
-  height: 650px;
-}
+// .base_dialog .base_dialog_main .base_dialog_main_content {
+//   height: 650px;
+// }
 .base_dialog
   .base_dialog_main
   .base_dialog_main_content
