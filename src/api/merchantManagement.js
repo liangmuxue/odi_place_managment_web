@@ -152,3 +152,12 @@ export function getDeductionsByMerchantId(data) {
     data
   })
 }
+
+// 更新商户抵扣规则启用/停用状态
+export function updateMerchantDeductionState(data) {
+  return request({
+    url: '/merchant/merchantDeductionRule/updateState',
+    method: 'post',
+    data
+  })
+}

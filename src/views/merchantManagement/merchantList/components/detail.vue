@@ -104,9 +104,9 @@
             </el-table-column>
             <el-table-column label="状态" align="center" show-overflow-tooltip>
               <template slot-scope="scope">
-                <span class="status_badge" :class="scope.row.state === 1 ? 'status_enabled' : 'status_disabled'">
+                <span class="status_badge" :class="isRuleEnabled(scope.row) ? 'status_enabled' : 'status_disabled'">
                   <span class="status_dot"></span>
-                  <span class="status_text">{{ scope.row.state === 1 ? '启用' : '停用' }}</span>
+                  <span class="status_text">{{ isRuleEnabled(scope.row) ? '启用' : '停用' }}</span>
                 </span>
               </template>
             </el-table-column>
@@ -122,7 +122,7 @@
                   class="operation_button update_btn"
                   @click="handleToggleState(scope.row)"
                 >
-                  {{ scope.row.state === 1 ? '停用' : '启用' }}
+                  {{ isRuleEnabled(scope.row) ? '停用' : '启用' }}
                 </span>
                 <template v-if="scope.row.deductionMode === '次数'">
                   <span
@@ -162,7 +162,8 @@ import {
   merchantDetail,
   getDeductionsByMerchantId,
   updateMerchantOverdraftStatus,
-  updateMerchantRecycleStatus
+  updateMerchantRecycleStatus,
+  updateMerchantDeductionState
 } from "@/api/merchantManagement";
 
 export default {
@@ -225,6 +226,13 @@ export default {
         this.listQuery.total = response.total || 0;
       });
     },
+    // 判断抵扣规则是否启用（兼容 0/1 和 true/false）
+    isRuleEnabled(row) {
+      const v = row.state;
+      if (v === 1 || v === '1') return true;
+      if (v === 0 || v === '0') return false;
+      return !!v;
+    },
     // 获取充值剩余显示
     getBalanceDisplay(row) {
       if (row.deductionMode === "预充") {
@@ -277,13 +285,22 @@ export default {
     },
     // 启用/停用抵扣规则
     handleToggleState(row) {
-      const action = row.state === 1 ? "停用" : "启用";
+      const enabled = this.isRuleEnabled(row);
+      const action = enabled ? "停用" : "启用";
+      const newState = !enabled;
       this.$confirm(`确认${action}该抵扣规则吗?`, "提示", {
         type: "warning"
-      }).then(() => {
-        // TODO: 调用启用/停用接口
-        this.$message.info(`${action}功能待实现`);
-      });
+      })
+        .then(() => {
+          updateMerchantDeductionState({
+            id: row.id,
+            state: newState
+          }).then(() => {
+            this.$message.success(`${action}成功`);
+            this.getDeductionList();
+          });
+        })
+        .catch(() => {});
     },
     // 抵扣规则充值
     handleDeductionRecharge() {
