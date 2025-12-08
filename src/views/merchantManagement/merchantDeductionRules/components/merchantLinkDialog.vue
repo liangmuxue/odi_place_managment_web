@@ -14,13 +14,13 @@
           filterable
           :data="transferData"
           :props="transferProps"
-          :titles="['待选择', '已关联商户列表']"
+          :titles="['待选择', '已选择']"
           :format="{
             noChecked: '${total}',
             hasChecked: '${checked}/${total}'
           }"
           :filter-method="filterMethod"
-          filter-placeholder="输入搜索关键词"
+          filter-placeholder="请输入搜索内容"
         >
           <span slot-scope="{ option }" class="merchant_option">
             <span class="merchant_name">{{ option.merchantName }}</span>
@@ -202,14 +202,14 @@ export default {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  left: 163px;
+  left: 200px;
   z-index: 10 !important;
 }
 
 .status_dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  border-radius: 0;
   margin-right: 4px;
 }
 
@@ -217,7 +217,7 @@ export default {
   font-size: 12px;
   padding: 0;
   border-radius: 0;
-  margin-left: 0;
+  margin-left: 5px;
 }
 
 .status_tag.enabled {
@@ -247,7 +247,7 @@ export default {
   text-align: left;
   /* 与右侧列表宽度保持一致，视觉上贴在右侧选择框下方 */
   width: 400px;
-  margin-left: 600px;
+  margin-left: 700px;
 }
 
 /* 有不可取消关联的商户时，禁止右侧面板头部“全选”勾选 */
@@ -285,6 +285,21 @@ export default {
   align-items: center;
 }
 
+::v-deep .el-transfer-panel:first-child .el-transfer-panel__list {
+  position: relative;
+  padding-top: 26px;
+}
+
+::v-deep .el-transfer-panel:first-child .el-transfer-panel__list::before {
+  content: "商户名称";
+  position: absolute;
+  top: 6px;
+  left: 20px;
+  font-size: 12px;
+  color: #303133;
+  z-index: 0;
+}
+
 /* 仅右侧面板列表的表头：商户名称 / 规则状态 */
 ::v-deep .el-transfer-panel:last-child .el-transfer-panel__list {
   position: relative;
@@ -295,7 +310,7 @@ export default {
   content: "商户名称";
   position: absolute;
   top: 6px;
-  left: 40px;
+  left: 20px;
   font-size: 12px;
   color: #303133;
   z-index: 0;
@@ -305,7 +320,7 @@ export default {
   content: "规则状态";
   position: absolute;
   top: 6px;
-  left: 195px;
+  left: 235px;
   width: 80px;
   text-align: left;
   font-size: 12px;
