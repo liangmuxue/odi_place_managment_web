@@ -107,3 +107,21 @@ export function merchantDeductionRuleBatchDelete(data) {
     data
   })
 }
+
+// 获取规则关联的商户信息
+export function getMerchantsByRuleId(data) {
+  return request({
+    url: '/merchant/merchantDeductionRule/getMerchantsByRuleId',
+    method: 'post',
+    data
+  })
+}
+
+// 保存规则与商户的关联关系
+export function saveMerchantRuleRelation(data) {
+  return request({
+    url: '/merchant/merchantDeductionRule/saveMerchantRuleRelation',
+    method: 'post',
+    data
+  })
+}

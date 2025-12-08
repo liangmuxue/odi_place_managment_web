@@ -184,7 +184,7 @@
             <span
               class="operation_button update_btn"
               style="width:100px"
-              @click="toDetails(scope.row)"
+              @click="toMerchantLink(scope.row)"
               v-has="{ red: 'freeCodeManagementDetails', type: 1 }"
             >
               关联商户
@@ -204,16 +204,18 @@
       />
     </div>
     <Dialog ref="dialog" @getList="getList" @openLoading="openLoading"></Dialog>
+    <MerchantLinkDialog ref="merchantLinkDialog" @getList="getList"></MerchantLinkDialog>
   </div>
 </template>
 
 <script>
 import { merchantDeductionRuleList, merchantDeductionRuleBatchDelete } from "@/api/merchantManagement";
 import Dialog from "./components/ruleDialog";
+import MerchantLinkDialog from "./components/merchantLinkDialog";
 
 export default {
   name: "MerchantDeductionRules",
-  components: { Dialog },
+  components: { Dialog, MerchantLinkDialog },
   data() {
     return {
       listQuery: {
@@ -407,6 +409,11 @@ export default {
       let id = e.merchantDeductionRuleId;
       let pageType = 3;
       this.$refs.dialog.showDialog(id, pageType);
+    },
+    // 打开关联商户
+    toMerchantLink(e) {
+      let id = e.merchantDeductionRuleId;
+      this.$refs.merchantLinkDialog.showDialog(id);
     },
     // 切换页码方法
     handleSizeChange(val) {
