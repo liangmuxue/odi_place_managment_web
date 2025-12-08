@@ -24,7 +24,7 @@
         >
           <span slot-scope="{ option }" class="merchant_option">
             <span class="merchant_name">{{ option.merchantName }}</span>
-            <span v-if="isInRight(option)" class="status_wrap">
+            <span class="status_wrap">
               <span
                 class="status_dot"
                 :class="option.state === true ? 'enabled' : 'disabled'"
@@ -176,8 +176,10 @@ export default {
 .merchant_option {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   width: 100%;
+  position: relative;
+  /* 确保不被压缩 */
+  flex-shrink: 0;
 }
 
 .merchant_name {
@@ -190,7 +192,12 @@ export default {
   display: inline-flex;
   align-items: center;
   min-width: 80px;
-  justify-content: flex-end;
+  justify-content: flex-start;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 163px;
+  z-index: 10 !important;
 }
 
 .status_dot {
@@ -257,14 +264,45 @@ export default {
   left: 40px;
   font-size: 12px;
   color: #303133;
+  z-index: 0;
 }
 
 ::v-deep .el-transfer-panel:last-child .el-transfer-panel__list::after {
   content: "规则状态";
   position: absolute;
   top: 6px;
-  right: 20px;
+  left: 195px;
+  width: 80px;
+  text-align: left;
   font-size: 12px;
   color: #303133;
+  z-index: 0;
+}
+
+/* 左侧面板隐藏状态列，仅右侧展示 */
+::v-deep .el-transfer-panel:first-child .status_wrap {
+  display: none;
+}
+
+::v-deep .el-transfer-panel__item {
+  position: relative;
+  z-index: 1; /* 给每一行一个基础层级 */
+  overflow: visible !important; /* 防止行内的绝对定位元素被行本身切掉 */
+}
+
+/* 右侧面板每一行整体置于表头伪元素之上，避免第一行被遮挡 */
+::v-deep .el-transfer-panel:last-child .el-transfer-panel__item {
+  position: relative;
+  z-index: 1;
+}
+
+::v-deep .el-transfer-panel__item .el-checkbox__label {
+  overflow: visible !important;
+  /* 强制 label 占据剩余空间，而不是包裹文字 */
+  display: inline-block; 
+  width: 100%; 
+  /* 让 .merchant_option 的 width:100% 生效 */
+  box-sizing: border-box;
+  vertical-align: middle;
 }
 </style>
