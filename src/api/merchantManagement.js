@@ -54,6 +54,24 @@ export function merchantBatchDelete(data) {
   })
 }
 
+// 更新商户透支功能状态
+export function updateMerchantOverdraftStatus(data) {
+  return request({
+    url: '/merchant/merchant/updateOverdraftStatus',
+    method: 'post',
+    data
+  })
+}
+
+// 更新商户抵扣回收状态
+export function updateMerchantRecycleStatus(data) {
+  return request({
+    url: '/merchant/merchant/updateRecycleStatus',
+    method: 'post',
+    data
+  })
+}
+
 // 抵扣规则列表
 export function merchantDeductionRuleList(data) {
   return request({

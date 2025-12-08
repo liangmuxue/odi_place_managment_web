@@ -160,7 +160,9 @@
 <script>
 import {
   merchantDetail,
-  getDeductionsByMerchantId
+  getDeductionsByMerchantId,
+  updateMerchantOverdraftStatus,
+  updateMerchantRecycleStatus
 } from "@/api/merchantManagement";
 
 export default {
@@ -205,9 +207,9 @@ export default {
           contact: data.contact,
           tel: data.tel,
           parkingLotName: data.parkingLotName,
-          balance: data.balance || "0.00",
-          overdraftEnabled: data.overdraftEnabled || false,
-          deductionRecycleEnabled: data.deductionRecycleEnabled || false
+          balance: data.amountBalance != null ? data.amountBalance : "0.00",
+          overdraftEnabled: data.allowOverdraft === true || data.allowOverdraft === 1,
+          deductionRecycleEnabled: data.allowRecycle === true || data.allowRecycle === 1
         };
       });
     },
@@ -247,13 +249,31 @@ export default {
     },
     // 透支功能开关
     handleOverdraftChange(val) {
-      // TODO: 调用接口更新透支功能状态
-      this.$message.info(`透支功能${val ? '开启' : '关闭'}成功`);
+      const oldVal = !val;
+      updateMerchantOverdraftStatus({
+        merchantId: this.merchantId,
+        allowOverdraft: val
+      })
+        .then(() => {
+          this.$message.success(`透支功能${val ? '开启' : '关闭'}成功`);
+        })
+        .catch(() => {
+          this.merchantInfo.overdraftEnabled = oldVal;
+        });
     },
     // 抵扣回收开关
     handleDeductionRecycleChange(val) {
-      // TODO: 调用接口更新抵扣回收状态
-      this.$message.info(`抵扣回收${val ? '开启' : '关闭'}成功`);
+      const oldVal = !val;
+      updateMerchantRecycleStatus({
+        merchantId: this.merchantId,
+        allowRecycle: val
+      })
+        .then(() => {
+          this.$message.success(`抵扣回收${val ? '开启' : '关闭'}成功`);
+        })
+        .catch(() => {
+          this.merchantInfo.deductionRecycleEnabled = oldVal;
+        });
     },
     // 启用/停用抵扣规则
     handleToggleState(row) {
