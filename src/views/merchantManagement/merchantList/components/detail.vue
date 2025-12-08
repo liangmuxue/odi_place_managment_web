@@ -44,7 +44,7 @@
             <div class="merchant_detail_row">
               <span class="detail_item"><span class="label_text">商户编号：</span>{{ merchantInfo.merchantId }}</span>
               <span class="detail_item"><span class="label_text" style="margin-left: -30px;">联系人：</span>{{ merchantInfo.contact }}</span>
-              <span class="detail_item"><span class="label_text" style="margin-left: -40px;">联系电话：</span>{{ merchantInfo.tel }}</span>
+              <span class="detail_item"><span class="label_text" style="margin-left: -40px;">联系电话：</span>{{ formattedTel }}</span>
               <span class="detail_item parking_lot_item"><span class="label_text">停车场名称：</span>{{ merchantInfo.parkingLotName }}</span>
             </div>
           </div>
@@ -58,7 +58,8 @@
             <div class="balance_title">预充值</div>
             <div class="balance_row">
               <span class="balance_label"><span class="label_text">账户余额（元）：</span></span>
-              <span class="balance_value">{{ merchantInfo.balance || '0.00' }}</span>
+              <span class="balance_value" :class="{ negative_balance: isOverdraft }">{{ formattedBalance }}</span>
+              <span v-if="isOverdraft" class="overdraft_tag">已透支</span>
               <el-button type="primary" size="mini" @click="handleRecharge">充值</el-button>
               <el-button type="danger" size="mini" @click="handleRefund">退费</el-button>
             </div>
@@ -189,6 +190,36 @@ export default {
         total: 0
       }
     };
+  },
+  computed: {
+    isOverdraft() {
+      const v = this.merchantInfo.balance;
+      const n = typeof v === "number" ? v : parseFloat(v);
+      if (isNaN(n)) return false;
+      return n < 0;
+    },
+    formattedBalance() {
+      const v = this.merchantInfo.balance;
+      const n = typeof v === "number" ? v : parseFloat(v);
+      if (isNaN(n)) return "0.00";
+      const sign = n < 0 ? "-" : "";
+      const abs = Math.abs(n);
+      const fixed = abs.toFixed(2);
+      const parts = fixed.split(".");
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      return sign + parts.join(".");
+    },
+    formattedTel() {
+      const tel = this.merchantInfo.tel || "";
+      const digits = String(tel).replace(/\D/g, "");
+      if (digits.length !== 11) {
+        return tel;
+      }
+      const p1 = digits.slice(0, 3);
+      const p2 = digits.slice(3, 7);
+      const p3 = digits.slice(7);
+      return `${p1} ${p2} ${p3}`;
+    }
   },
   methods: {
     // 显示详情弹窗
@@ -474,6 +505,22 @@ export default {
           font-size: 20px;
           font-weight: bold;
           color: #333;
+        }
+
+        .negative_balance {
+          color: #e74c3c;
+        }
+
+        .overdraft_tag {
+          display: inline-block;
+          margin-left: 8px;
+          padding: 2px 8px;
+          font-size: 12px;
+          color: #e74c3c;
+          border: 1px solid #e74c3c;
+          border-radius: 12px;
+          background-color: #fff;
+          line-height: 1.4;
         }
 
         .el-button {
