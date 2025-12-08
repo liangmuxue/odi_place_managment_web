@@ -130,16 +130,18 @@
       />
     </div>
     <Dialog ref="dialog" @getList="getList" @openLoading="openLoading"></Dialog>
+    <Detail ref="detail" @getList="getList"></Detail>
   </div>
 </template>
 
 <script>
 import { merchantList, merchantBatchDelete } from "@/api/merchantManagement";
 import Dialog from "./components/dialog";
+import Detail from "./components/detail";
 
 export default {
   name: "MerchantList",
-  components: { Dialog },
+  components: { Dialog, Detail },
   data() {
     return {
       listQuery: {
@@ -287,8 +289,7 @@ export default {
     // 打开详情弹窗
     toDetails(e) {
       let id = e.merchantId;
-      let pageType = 3;
-      this.$refs.dialog.showDialog(id, pageType);
+      this.$refs.detail.showDialog(id);
     },
     // 切换每页条数
     handleSizeChange(val) {

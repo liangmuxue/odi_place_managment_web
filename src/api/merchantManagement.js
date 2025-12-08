@@ -125,3 +125,12 @@ export function saveMerchantRuleRelation(data) {
     data
   })
 }
+
+// 根据商户ID获取抵扣规则列表
+export function getDeductionsByMerchantId(data) {
+  return request({
+    url: '/merchant/merchantDeductionRule/getDeductionsByMerchantId',
+    method: 'post',
+    data
+  })
+}
