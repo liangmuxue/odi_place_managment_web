@@ -20,18 +20,18 @@
             hasChecked: '${checked}/${total}'
           }"
           :filter-method="filterMethod"
-          filter-placeholder="输入商户关键词"
+          filter-placeholder="输入搜索关键词"
         >
           <span slot-scope="{ option }" class="merchant_option">
             <span class="merchant_name">{{ option.merchantName }}</span>
             <span
-              v-if="option.state === true"
+              v-if="isInRight(option) && option.state === true"
               class="status_tag enabled"
             >
               启用
             </span>
             <span
-              v-else
+              v-else-if="isInRight(option)"
               class="status_tag disabled"
             >
               停用
@@ -126,6 +126,9 @@ export default {
         this.selectedMerchantIds = linked.map(m => m.merchant_id);
       });
     },
+    isInRight(option) {
+      return this.selectedMerchantIds.includes(option.merchantId);
+    },
     isRemovable(merchant) {
       const timesBalance = merchant.timesBalance;
       const hasBalance =
@@ -211,5 +214,11 @@ export default {
 .base_dialog_main_btnBox {
   text-align: center;
   padding-top: 10px;
+}
+
+/* 仅作用于当前弹窗的 el-transfer，保证复选框与文字垂直居中 */
+::v-deep .el-transfer-panel__item .el-checkbox {
+  display: flex;
+  align-items: center;
 }
 </style>
