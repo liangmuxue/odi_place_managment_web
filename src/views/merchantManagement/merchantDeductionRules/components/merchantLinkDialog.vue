@@ -24,17 +24,17 @@
         >
           <span slot-scope="{ option }" class="merchant_option">
             <span class="merchant_name">{{ option.merchantName }}</span>
-            <span
-              v-if="isInRight(option) && option.state === true"
-              class="status_tag enabled"
-            >
-              启用
-            </span>
-            <span
-              v-else-if="isInRight(option)"
-              class="status_tag disabled"
-            >
-              停用
+            <span v-if="isInRight(option)" class="status_wrap">
+              <span
+                class="status_dot"
+                :class="option.state === true ? 'enabled' : 'disabled'"
+              ></span>
+              <span
+                class="status_tag"
+                :class="option.state === true ? 'enabled' : 'disabled'"
+              >
+                {{ option.state === true ? '启用' : '停用' }}
+              </span>
             </span>
           </span>
         </el-transfer>
@@ -186,23 +186,45 @@ export default {
   white-space: nowrap;
 }
 
+.status_wrap {
+  display: inline-flex;
+  align-items: center;
+  min-width: 80px;
+  justify-content: flex-end;
+}
+
+.status_dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 4px;
+}
+
 .status_tag {
   font-size: 12px;
-  padding: 2px 8px;
-  border-radius: 3px;
-  margin-left: 8px;
+  padding: 0;
+  border-radius: 0;
+  margin-left: 0;
 }
 
 .status_tag.enabled {
   color: #67c23a;
-  background-color: #f0f9ff;
-  border: 1px solid #67c23a;
+  background-color: transparent;
+  border: none;
 }
 
 .status_tag.disabled {
   color: #909399;
-  background-color: #f4f4f5;
-  border: 1px solid #d3d4d6;
+  background-color: transparent;
+  border: none;
+}
+
+.status_dot.enabled {
+  background-color: #67c23a;
+}
+
+.status_dot.disabled {
+  background-color: #909399;
 }
 
 .transfer_footer_tips {
