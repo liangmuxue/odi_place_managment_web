@@ -197,3 +197,31 @@ export function deductionRefundTimes(data) {
     data
   })
 }
+
+// 商户充值记录分页
+export function merchantRechargeRecordList(data) {
+  return request({
+    url: '/merchant/merchant/rechargeRecord/list',
+    method: 'post',
+    data
+  })
+}
+
+// 商户充值记录详情
+export function merchantRechargeRecordDetail(data) {
+  return request({
+    url: '/merchant/merchant/rechargeRecord/detail',
+    method: 'post',
+    data
+  })
+}
+
+// 商户充值记录导出
+export function merchantRechargeRecordExport(data) {
+  return request({
+    url: '/merchant/merchant/rechargeRecord/export',
+    method: 'post',
+    data,
+    responseType: 'blob'
+  })
+}
