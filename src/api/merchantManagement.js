@@ -225,3 +225,31 @@ export function merchantRechargeRecordExport(data) {
     responseType: 'blob'
   })
 }
+
+// 商户退费记录分页
+export function merchantRefundRecordList(data) {
+  return request({
+    url: '/merchant/merchant/refundRecord/list',
+    method: 'post',
+    data
+  })
+}
+
+// 商户退费记录详情
+export function merchantRefundRecordDetail(data) {
+  return request({
+    url: '/merchant/merchant/refundRecord/detail',
+    method: 'post',
+    data
+  })
+}
+
+// 商户退费记录导出
+export function merchantRefundRecordExport(data) {
+  return request({
+    url: '/merchant/merchant/refundRecord/export',
+    method: 'post',
+    data,
+    responseType: 'blob'
+  })
+}
