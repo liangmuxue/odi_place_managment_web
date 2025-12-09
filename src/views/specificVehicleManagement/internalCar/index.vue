@@ -195,6 +195,7 @@
 <script>
 import {
   internalCarList, //内部临停车列表
+  internalCarTemplate, //内部临停车列表
   internalCarDelete //内部临停车删除
 } from "@/api/specificVehicleManagement";
 import Dialog from "./components/dialog";
@@ -306,19 +307,19 @@ export default {
     },
     //模板
     toDownLoad() {
-      // let claeeName;
-      // if (this.$store.getters.sidebar.opened) {
-      //   claeeName = "hasSidebar";
-      // } else {
-      //   claeeName = "noSidebar";
-      // }
-      // const loading = this.$loading({
-      //   lock: true,
-      //   text: "导出中...",
-      //   customClass: claeeName, // *这里设置他的class名称,这里最重要
-      //   spinner: "el-icon-loading",
-      //   background: "rgba(0, 0, 0, 0.7)"
-      // });
+      let claeeName;
+      if (this.$store.getters.sidebar.opened) {
+        claeeName = "hasSidebar";
+      } else {
+        claeeName = "noSidebar";
+      }
+      const loading = this.$loading({
+        lock: true,
+        text: "导出中...",
+        customClass: claeeName, // *这里设置他的class名称,这里最重要
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)"
+      });
       // let para = {
       //   currentPage: 1,
       //   pageSize: 1000,
@@ -333,22 +334,22 @@ export default {
       //   bookStatus: this.listQuery.bookStatus,
       //   source: this.listQuery.source
       // };
-      // exportExcel(para)
-      //   .then(res => {
-      //     var content = res.data;
-      //     var elink = document.createElement("a");
-      //     elink.download = "访客导出" + new Date().getTime() + ".xls";
-      //     elink.style.display = "none";
-      //     var blob = new Blob([content]);
-      //     elink.href = URL.createObjectURL(blob);
-      //     document.body.appendChild(elink);
-      //     elink.click();
-      //     document.body.removeChild(elink);
-      //     loading.close();
-      //   })
-      //   .catch(() => {
-      //     loading.close();
-      //   });
+      internalCarTemplate()
+        .then(res => {
+          var content = res.data;
+          var elink = document.createElement("a");
+          elink.download = "内部临停车导入模板" + new Date().getTime() + ".xls";
+          elink.style.display = "none";
+          var blob = new Blob([content]);
+          elink.href = URL.createObjectURL(blob);
+          document.body.appendChild(elink);
+          elink.click();
+          document.body.removeChild(elink);
+          loading.close();
+        })
+        .catch(() => {
+          loading.close();
+        });
     },
     //导入
     toImport(data) {
@@ -419,9 +420,9 @@ export default {
         this.selGateway.forEach(el => {
           arr.push(el.id);
         });
-        let text = "确认批量删除白名单吗?";
+        let text = "确认批量删除内部临停车吗?";
         if (this.selGateway.length == 1) {
-          text = "确认删除该白名单吗?";
+          text = "确认删除该内部临停车吗?";
         }
 
         this.$confirm(text, "提示", {
@@ -449,7 +450,7 @@ export default {
       } else {
         this.$message({
           type: "warning",
-          message: "请选择删除白名单"
+          message: "请选择删除内部临停车"
         });
       }
     },

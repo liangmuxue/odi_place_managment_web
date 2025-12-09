@@ -30,6 +30,7 @@
           />
         </el-select>
       </span>
+
       <span class="search_content" v-if="listQuery.verify > 0">
         <div class="search_content_title">状态</div>
         <el-select
@@ -47,8 +48,17 @@
           />
         </el-select>
       </span>
+      <span class="search_content" v-if="listQuery.verify == 1">
+        <div class="search_content_title">备注</div>
+        <el-input v-model="listQuery.remark" placeholder="请输入"> </el-input>
+      </span>
 
-      <span class="search_content2">
+      <span
+        class="search_content2"
+        :class="
+          listQuery.verify == 1 ? 'monthlyRentalCarManagement_content' : ''
+        "
+      >
         <div class="search_content_title" v-if="listQuery.verify > 0">
           长租时间
         </div>
@@ -208,7 +218,16 @@
         >
           <template slot-scope="scope">
             <div class="content" :key="scope.row.id">
-              <el-popover placement="top-start" width="500" trigger="click">
+              <el-image
+                v-if="scope.row.idcardPhoto"
+                style="width: 48px; height: 36px"
+                :src="scope.row.idcardPhoto"
+                :preview-src-list="getPhotoList2(scope.row.idcardPhoto)"
+                @error="handleImageError(scope.row.idcardPhoto)"
+              >
+              </el-image>
+
+              <!-- <el-popover placement="top-start" width="500" trigger="click">
                 <img
                   :src="
                     scope.row.idcardPhoto
@@ -227,14 +246,10 @@
                   width="48"
                   height="36"
                 />
-                <!-- :src="
-                    scope.row.drivingLicense +
-                      '?x-oss-process=image/resize,h_36,w_48'
-                  " -->
                 <span v-else>
                   <div min-width="48" height="36"></div>
                 </span>
-              </el-popover>
+              </el-popover> -->
             </div>
           </template>
         </el-table-column>
@@ -339,6 +354,7 @@
           label="备注"
           align="center"
           :key="121"
+          v-if="listQuery.verify == 1"
           show-overflow-tooltip
         >
           <template slot-scope="scope">
@@ -610,6 +626,7 @@ export default {
         parkName: "", //停车场
         vehicle: "", //车牌号
         name: "", //车主姓名
+        remark: "", //备注
         verify: 0, //0待审核,1审核通过，-1不通过
         status: null, //状态 0禁用 1使用中 -1过期  2未开始/已支付 3未开始封禁  4待支付 -2过期未支付
         userType: null, //用户类型 1普通  2企业
@@ -667,6 +684,11 @@ export default {
       list.forEach(el => {
         arr.push(el.drivingLicense);
       });
+      return arr;
+    },
+    getPhotoList2(url) {
+      let arr = [];
+      arr.push(url);
       return arr;
     },
     //判断是否可选
@@ -852,6 +874,7 @@ export default {
         parkName: "", //停车场
         vehicle: "", //车牌号
         name: "", //车主姓名
+        remark: "", //备注
         verify: val,
         status: null, //状态 0禁用 1使用中 -1过期  2未开始/已支付 3未开始封禁  4待支付 -2过期未支付
         startTime: "", //开始时间

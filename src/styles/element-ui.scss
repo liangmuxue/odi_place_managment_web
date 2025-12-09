@@ -633,6 +633,15 @@
   width: 390px !important;
 }
 
+.monthlyRentalCarManagement_content .el-range-editor--medium {
+  width: 320px !important;
+  padding-right: 0;
+
+  .el-range-input {
+    font-size: 12px !important;
+  }
+}
+
 //breadcrumb组件样式
 .app-breadcrumb.el-breadcrumb .no-redirect {
   color: $titleTextH;
@@ -678,4 +687,9 @@
 
 .carNoDialog .el-dialog__body {
   padding: 0 !important;
+}
+
+.el-image-viewer__wrapper {
+  position: fixed !important;
+  z-index: 12000 !important;
 }

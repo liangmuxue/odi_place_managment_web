@@ -58,7 +58,14 @@
             <span class="base_dialog_condit">
               <el-form-item label="身份证：" prop="idcard">
                 <span class="base_dialog_condit_text">
-                  <el-popover placement="top-start" width="500" trigger="click">
+                  <el-image
+                    style="width: 48px; height: 36px;margin-left:16px"
+                    :src="newList.idcardPhoto"
+                    :preview-src-list="getPhotoList2(newList.idcardPhoto)"
+                  >
+                  </el-image>
+
+                  <!-- <el-popover placement="top-start" width="500" trigger="click">
                     <img
                       :src="
                         newList.idcardPhoto
@@ -77,14 +84,10 @@
                       width="48"
                       height="36"
                     />
-                    <!-- :src="
-                        newList.drivingLicense +
-                          '?x-oss-process=image/resize,h_36,w_48'
-                      " -->
                     <span v-else>
                       <div min-width="48" height="36"></div>
                     </span>
-                  </el-popover>
+                  </el-popover> -->
                 </span>
               </el-form-item>
             </span>
@@ -96,7 +99,17 @@
                     :key="item.vehicle"
                     class="condit_text_box"
                   >
-                    <el-popover
+                    <el-image
+                      style="width: 48px; height: 36px;margin-left:16px"
+                      :src="item.drivingLicense"
+                      :preview-src-list="getPhotoList(newList.photos)"
+                    >
+                    </el-image>
+                    <div class="condit_text_box-t">
+                      {{ item.vehicle }}
+                    </div>
+
+                    <!-- <el-popover
                       placement="top-start"
                       width="500"
                       trigger="click"
@@ -119,17 +132,10 @@
                         width="48"
                         height="36"
                       />
-                      <!-- :src="
-                        item.drivingLicense +
-                          '?x-oss-process=image/resize,h_36,w_48'
-                      " -->
                       <span v-else>
                         <div min-width="48" height="36"></div>
                       </span>
-                    </el-popover>
-                    <span class="condit_text_box-t">
-                      {{ item.vehicle }}
-                    </span>
+                    </el-popover> -->
                   </span>
                 </span>
               </el-form-item>
@@ -446,6 +452,18 @@ export default {
       }
       this.getDetials(id);
     },
+    getPhotoList2(url) {
+      let arr = [];
+      arr.push(url);
+      return arr;
+    },
+    getPhotoList(list) {
+      let arr = [];
+      list.forEach(el => {
+        arr.push(el.drivingLicense);
+      });
+      return arr;
+    },
 
     //通过
     toPass() {
@@ -626,17 +644,20 @@ export default {
 .condit_text_box {
   width: 80px;
   height: 66px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: center;
+  // display: flex;
+  // flex-direction: column;
+  // justify-content: center;
+  // text-align: center;
   position: relative;
 }
 .condit_text_box-t {
   position: absolute;
+  display: inline-block;
   width: 80px;
-  height: 20px;
-  line-height: 20px;
+  height: 30px;
+  line-height: 30px;
+  font-size: 14px;
+  left: 0;
   bottom: 0;
   text-align: center;
 }

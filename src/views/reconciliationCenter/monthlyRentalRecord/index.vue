@@ -213,11 +213,11 @@ export default {
         pageSize: 10,
         total: 0,
         orderNum: "", //订单号
-        parkName: "", //停车场
+        phone: "", //手机号
         vehicle: "", //车牌号
+        parkName: "", //停车场
         startTime: "", //开始时间
         endTime: "", //结束时间
-        phone: "", //手机号
         invoice: null, //是否开票
         payType: null, //支付方式
         orderType: 2 //临停传1  长租传2
@@ -340,6 +340,7 @@ export default {
     toExport() {
       let para = {
         orderNum: this.listQuery.orderNum,
+        phone: this.listQuery.phone,
         parkName: this.listQuery.parkName,
         vehicle: this.listQuery.vehicle,
         startTime: this.listQuery.startTime,

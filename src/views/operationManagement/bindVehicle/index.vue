@@ -30,14 +30,14 @@
       <span class="search_content">
         <div class="search_content_title">是否认证</div>
         <el-select
-          v-model="listQuery.isAuth"
+          v-model="listQuery.used"
           placeholder="请选择"
           clearable
           class="filter-item"
           style="width: 72%"
         >
           <el-option
-            v-for="item in statusList"
+            v-for="item in usedList"
             :key="item.enumValue"
             :label="item.enumName"
             :value="item.enumValue"
@@ -150,9 +150,7 @@
         </el-table-column> -->
         <el-table-column label="是否认证" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{
-              scope.row.isAuth == 1 ? "是" : "否"
-            }}</span>
+            <span class="content">{{ scope.row.used == 1 ? "否" : "是" }}</span>
           </template>
         </el-table-column>
         <el-table-column label="无感停车" align="center" show-overflow-tooltip>
@@ -213,7 +211,8 @@ export default {
         total: 0,
         vehicleNumber: "", //车牌号
         phone: "", //手机
-        isAuth: null, //是否认证1通过 -1不通过
+        isAuth: null, //是否认证1通过 -1不通过(旧)
+        used: null, //是否认证1通过 -1不通过(新)
         licensePlateColor: null, //车牌颜色
         nonParking: null, //无感停车 0-未开通 1-已开通
         vehicleType: null //车辆类型 1-大型车 2-中型车 3-小型车
@@ -222,6 +221,10 @@ export default {
       statusList: [
         { enumName: "否", enumValue: -1 },
         { enumName: "是", enumValue: 1 }
+      ],
+      usedList: [
+        { enumName: "否", enumValue: 1 },
+        { enumName: "是", enumValue: 0 }
       ],
       nonParkings: [
         { enumName: "未开通", enumValue: 0 },

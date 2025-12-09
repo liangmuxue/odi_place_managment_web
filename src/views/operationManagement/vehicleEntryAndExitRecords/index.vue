@@ -206,7 +206,15 @@
         >
           <template slot-scope="scope">
             <div class="content" :key="scope.row.id">
-              <el-popover placement="top-start" width="500" trigger="click">
+              <el-image
+                v-if="scope.row.entryImg"
+                style="width: 48px; height: 36px"
+                :src="scope.row.entryImg"
+                :preview-src-list="getPhotoList2(scope.row.entryImg)"
+              >
+              </el-image>
+
+              <!-- <el-popover placement="top-start" width="500" trigger="click">
                 <img
                   :src="
                     scope.row.entryImg ? scope.row.entryImg : scope.row.entryImg
@@ -222,11 +230,10 @@
                   width="48"
                   height="36"
                 />
-                <!-- scope.row.entryImg + '?x-oss-process=image/resize,h_36,w_48' -->
                 <span v-else slot="reference">
                   <div min-width="48" height="36"></div>
                 </span>
-              </el-popover>
+              </el-popover> -->
             </div>
           </template>
         </el-table-column>
@@ -259,6 +266,15 @@
         <el-table-column label="出场图片" min-width="100px" align="center">
           <template slot-scope="scope">
             <div class="content" :key="scope.row.id">
+              <el-image
+                v-if="scope.row.leaveImg"
+                style="width: 48px; height: 36px"
+                :src="scope.row.leaveImg"
+                :preview-src-list="getPhotoList2(scope.row.leaveImg)"
+              >
+              </el-image>
+
+              <!-- 
               <el-popover placement="top-start" width="500" trigger="click">
                 <img
                   :src="
@@ -275,13 +291,10 @@
                   width="48"
                   height="36"
                 />
-                <!-- :src="
-                    scope.row.leaveImg + '?x-oss-process=image/resize,h_36,w_48'
-                  " -->
                 <span v-else>
                   <div min-width="48" height="36"></div>
                 </span>
-              </el-popover>
+              </el-popover> -->
             </div>
           </template>
         </el-table-column>
@@ -445,6 +458,13 @@ export default {
     this.getFieldTable();
   },
   methods: {
+    getPhotoList2(url) {
+      let arr = [];
+      arr.push(url);
+      return arr;
+    },
+    //判断是否可选
+
     //判断是否可选
     selectable(e) {
       if (!e.leaveTime || !e.entryTime) {

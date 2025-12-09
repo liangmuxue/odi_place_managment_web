@@ -128,7 +128,15 @@
         <el-table-column label="身份证" min-width="90px" align="center">
           <template slot-scope="scope">
             <div class="content" :key="scope.row.id">
-              <el-popover placement="top-start" width="500" trigger="click">
+              <el-image
+                v-if="scope.row.idcardPhoto"
+                style="width: 48px; height: 36px"
+                :src="scope.row.idcardPhoto"
+                :preview-src-list="getPhotoList2(scope.row.idcardPhoto)"
+              >
+              </el-image>
+
+              <!-- <el-popover placement="top-start" width="500" trigger="click">
                 <img
                   :src="
                     scope.row.idcardPhoto
@@ -147,14 +155,10 @@
                   width="48"
                   height="36"
                 />
-                <!-- :src="
-                    scope.row.idcardPhoto +
-                      '?x-oss-process=image/resize,h_36,w_48'
-                  " -->
                 <span v-else>
                   <div min-width="48" height="36"></div>
                 </span>
-              </el-popover>
+              </el-popover> -->
             </div>
           </template>
         </el-table-column>
@@ -162,7 +166,15 @@
         <el-table-column label="车辆行驶证" min-width="90px" align="center">
           <template slot-scope="scope">
             <div class="content" :key="scope.row.id">
-              <el-popover placement="top-start" width="500" trigger="click">
+              <el-image
+                v-if="scope.row.drivingLicense"
+                style="width: 48px; height: 36px"
+                :src="scope.row.drivingLicense"
+                :preview-src-list="getPhotoList2(scope.row.drivingLicense)"
+              >
+              </el-image>
+
+              <!-- <el-popover placement="top-start" width="500" trigger="click">
                 <img
                   :src="
                     scope.row.drivingLicense
@@ -181,20 +193,16 @@
                   width="48"
                   height="36"
                 />
-                <!-- :src="
-                    scope.row.drivingLicense +
-                      '?x-oss-process=image/resize,h_36,w_48'
-                  " -->
                 <span v-else>
                   <div min-width="48" height="36"></div>
                 </span>
-              </el-popover>
+              </el-popover> -->
             </div>
           </template>
         </el-table-column>
         <el-table-column label="状态" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ getStatusName(scope.row.status) }}</span>
+            <span class="content">{{ getStatusName(scope.row) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="审核类型" align="center" show-overflow-tooltip>
@@ -358,6 +366,12 @@ export default {
     // this.getFieldTable();
   },
   methods: {
+    getPhotoList2(url) {
+      let arr = [];
+      arr.push(url);
+      return arr;
+    },
+
     //判断车辆申诉不可选
     selectable(e) {
       if (e.auditType == 1 && e.status == 0) {
@@ -374,10 +388,14 @@ export default {
 
     //获取状态名称
     getStatusName(e) {
+      let status = e.status;
+      let used = e.used;
       let name;
-      if (e == 0) {
+      if (status == null && used == 1) {
+        name = "审核通过";
+      } else if (status == 0) {
         name = "待审核";
-      } else if (e == 1) {
+      } else if (status == 1) {
         name = "审核通过";
       } else {
         name = "不通过";
