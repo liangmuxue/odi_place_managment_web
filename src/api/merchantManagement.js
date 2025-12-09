@@ -161,3 +161,39 @@ export function updateMerchantDeductionState(data) {
     data
   })
 }
+
+// 商户充值
+export function merchantRecharge(data) {
+  return request({
+    url: '/merchant/merchant/recharge',
+    method: 'post',
+    data
+  })
+}
+
+// 商户退费
+export function merchantRefund(data) {
+  return request({
+    url: '/merchant/merchant/refund',
+    method: 'post',
+    data
+  })
+}
+
+// 抵扣规则充次数
+export function deductionRechargeTimes(data) {
+  return request({
+    url: '/merchant/merchantDeductionRule/rechargeTimes',
+    method: 'post',
+    data
+  })
+}
+
+// 抵扣规则退次数
+export function deductionRefundTimes(data) {
+  return request({
+    url: '/merchant/merchantDeductionRule/refundTimes',
+    method: 'post',
+    data
+  })
+}

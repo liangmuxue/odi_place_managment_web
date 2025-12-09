@@ -155,6 +155,12 @@
         </div>
       </div>
     </div>
+
+    <!-- 充值退费弹窗 -->
+    <RechargeDialog ref="rechargeDialog" @success="handleDialogSuccess" />
+    <RefundDialog ref="refundDialog" :balance="merchantInfo.balance" @success="handleDialogSuccess" />
+    <DeductionRechargeDialog ref="deductionRechargeDialog" @success="handleDialogSuccess" />
+    <DeductionRefundDialog ref="deductionRefundDialog" @success="handleDialogSuccess" />
   </div>
 </template>
 
@@ -166,9 +172,19 @@ import {
   updateMerchantRecycleStatus,
   updateMerchantDeductionState
 } from "@/api/merchantManagement";
+import RechargeDialog from "./rechargeDialog.vue";
+import RefundDialog from "./refundDialog.vue";
+import DeductionRechargeDialog from "./deductionRechargeDialog.vue";
+import DeductionRefundDialog from "./deductionRefundDialog.vue";
 
 export default {
   name: "MerchantDetail",
+  components: {
+    RechargeDialog,
+    RefundDialog,
+    DeductionRechargeDialog,
+    DeductionRefundDialog
+  },
   data() {
     return {
       isShow: false,
@@ -280,11 +296,11 @@ export default {
     },
     // 商户充值
     handleRecharge() {
-      this.$message.info("充值功能待实现");
+      this.$refs.rechargeDialog.showDialog(this.merchantId);
     },
     // 商户退费
     handleRefund() {
-      this.$message.info("退费功能待实现");
+      this.$refs.refundDialog.showDialog(this.merchantId);
     },
     // 透支功能开关
     handleOverdraftChange(val) {
@@ -334,12 +350,25 @@ export default {
         .catch(() => {});
     },
     // 抵扣规则充值
-    handleDeductionRecharge() {
-      this.$message.info("抵扣规则充值功能待实现");
+    handleDeductionRecharge(row) {
+      if (row.deductionMode !== "次数") {
+        this.$message.warning("仅次数类型的抵扣规则支持充值");
+        return;
+      }
+      this.$refs.deductionRechargeDialog.showDialog(row.id, row.deductionSalePrice);
     },
     // 抵扣规则退费
-    handleDeductionRefund() {
-      this.$message.info("抵扣规则退费功能待实现");
+    handleDeductionRefund(row) {
+      if (row.deductionMode !== "次数") {
+        this.$message.warning("仅次数类型的抵扣规则支持退费");
+        return;
+      }
+      const balance = row.quantityBalance || 0;
+      if (balance <= 0) {
+        this.$message.warning("充值剩余为0，无法退费");
+        return;
+      }
+      this.$refs.deductionRefundDialog.showDialog(row.id, row.deductionSalePrice, balance);
     },
     // 切换每页条数
     handleSizeChange(val) {
@@ -350,6 +379,11 @@ export default {
     // 切换页码
     handleCurrentChange(val) {
       this.listQuery.pageNum = val;
+      this.getDeductionList();
+    },
+    // 弹窗操作成功回调
+    handleDialogSuccess() {
+      this.getMerchantDetail();
       this.getDeductionList();
     }
   }
