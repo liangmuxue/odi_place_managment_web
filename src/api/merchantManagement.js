@@ -253,3 +253,21 @@ export function merchantRefundRecordExport(data) {
     responseType: 'blob'
   })
 }
+
+// 根据商户ID获取抵扣规则列表（不分页）
+export function getDeductionsByMerchantIdNoPage(data) {
+  return request({
+    url: '/merchant/merchantDeductionRule/getDeductionsByMerchantIdNoPage',
+    method: 'post',
+    data
+  })
+}
+
+// 人工发放抵扣券
+export function manualSaveDistribution(data) {
+  return request({
+    url: '/merchant/merchantDeductionDistribution/manualSave',
+    method: 'post',
+    data
+  })
+}

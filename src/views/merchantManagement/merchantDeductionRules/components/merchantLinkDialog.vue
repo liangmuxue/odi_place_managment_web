@@ -96,25 +96,38 @@ export default {
         const linked = data.linkedMerchants || [];
         const transferData = [];
 
+        const normalizeId = m => {
+          const rawId = m.merchantId != null ? m.merchantId : m.merchant_id;
+          return rawId != null ? String(rawId) : "";
+        };
+
+        const normalizeName = m => {
+          return m.merchantName != null ? m.merchantName : m.merchant_name;
+        };
+
         unlinked.forEach(m => {
+          const id = normalizeId(m);
           const item = {
-            merchantId: m.merchant_id,
-            merchantName: m.merchant_name,
+            ...m,
+            key: id,
+            merchantId: id,
+            merchantName: normalizeName(m),
             state: m.state,
             quantityBalance: m.quantityBalance,
-            disabled: false,
-            ...m
+            disabled: false
           };
           transferData.push(item);
         });
 
         linked.forEach(m => {
+          const id = normalizeId(m);
           const base = {
-            merchantId: m.merchant_id,
-            merchantName: m.merchant_name,
+            ...m,
+            key: id,
+            merchantId: id,
+            merchantName: normalizeName(m),
             state: m.state,
-            quantityBalance: m.quantityBalance,
-            ...m
+            quantityBalance: m.quantityBalance
           };
           transferData.push({
             ...base,
@@ -123,7 +136,7 @@ export default {
         });
 
         this.transferData = transferData;
-        this.selectedMerchantIds = linked.map(m => m.merchant_id);
+        this.selectedMerchantIds = linked.map(m => normalizeId(m));
       });
     },
     isInRight(option) {
