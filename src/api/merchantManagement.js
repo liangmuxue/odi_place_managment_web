@@ -271,3 +271,20 @@ export function manualSaveDistribution(data) {
     data
   })
 }
+
+// 二维码发放保存
+export function qrcodeSave(data) {
+  return request({
+    url: '/merchant/merchantDeductionDistribution/qrcodeSave',
+    method: 'post',
+    data
+  })
+}
+
+// 获取二维码
+export function getQrcode(id) {
+  return request({
+    url: `/merchant/merchantDeductionDistribution/qrcode/${id}`,
+    method: 'get'
+  })
+}
