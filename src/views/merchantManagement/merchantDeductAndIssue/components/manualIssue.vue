@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="merchantDeductAndIssue_main ">
-      <el-form :model="newList" :rules="rules" ref="licensePlateForm">
+      <el-form :model="newList" :rules="rules" ref="licensePlateForm" label-width="140px">
         <div class="base_dialog_main_content">
           <div class="base_dialog_main_left" style="padding:100px">
             <span class="base_dialog_condit">
@@ -20,6 +20,7 @@
                   style="width: 72%"
                   class="filter-item"
                   size="small"
+                  v-show="keyboardType == 1"
                 />
                 <div
                   class="inputBox"
@@ -29,9 +30,7 @@
                   <span v-if="newList.licensePlate">{{
                     newList.licensePlate
                   }}</span>
-                  <span v-else style="color:#ccc;font-size: 13px;"
-                    >输入车牌号</span
-                  >
+                  <span v-else class="inputBox-placeholder">输入车牌号</span>
                 </div>
               </el-form-item>
             </span>
@@ -64,9 +63,6 @@
                   size="small"
                   style="width: 150px"
                 />
-                <span class="quantity_balance" v-if="selectedDeduction && selectedDeduction.deductionMode === '次数'">
-                  {{ quantityBalance }}
-                </span>
               </el-form-item>
             </span>
             <span class="base_dialog_condit" v-if="showRepeatTime">
@@ -77,7 +73,6 @@
                   placeholder="请选择开始时间"
                   style="width: 72%"
                   size="small"
-                  value-format="yyyy-MM-dd HH:mm:ss"
                 />
               </el-form-item>
             </span>
@@ -89,30 +84,27 @@
                   placeholder="请选择结束时间"
                   style="width: 72%"
                   size="small"
-                  value-format="yyyy-MM-dd HH:mm:ss"
                 />
               </el-form-item>
             </span>
             <span class="base_dialog_condit">
               <el-form-item label="备注" prop="memo">
-                <div class="memo_wrapper">
-                  <el-input
-                    v-model="newList.memo"
-                    type="textarea"
-                    :rows="3"
-                    placeholder="请输入备注；输入内容不超过200字符"
-                    style="width: 72%"
-                    class="filter-item"
-                    maxlength="200"
-                    size="small"
-                  />
-                  <span class="memo_count">{{ memoLength }}/200</span>
-                </div>
+                <el-input
+                  v-model="newList.memo"
+                  type="textarea"
+                  :rows="2"
+                  placeholder="请输入备注"
+                  style="width: 72%"
+                  class="filter-item"
+                  maxlength="200"
+                  show-word-limit
+                  size="small"
+                />
               </el-form-item>
             </span>
-            <span class="base_dialog_condit btn_condit">
-              <el-button type="success" @click="submitForm">确认发券</el-button>
-            </span>
+            <div class="base_dialog_main_btnBox btn_condit">
+              <el-button type="info" @click="submitForm">确认发放</el-button>
+            </div>
           </div>
         </div>
       </el-form>
@@ -306,18 +298,10 @@ export default {
       });
     },
     resetForm() {
-      this.newList = {
-        licensePlate: "",
-        merchantDeductionRuleId: null,
-        quantity: 1,
-        validTimeStart: null,
-        validTimeEnd: null,
-        memo: ""
-      };
-      this.selectedDeduction = null;
       if (this.$refs.licensePlateForm) {
-        this.$refs.licensePlateForm.clearValidate();
+        this.$refs.licensePlateForm.resetFields();
       }
+      this.selectedDeduction = null;
     },
     confirm() {
       if (this.licensePlateUnit.length >= 7) {
@@ -335,19 +319,24 @@ export default {
   width: 800px;
   .base_dialog_condit {
     position: relative;
-    .inputBox {
-      position: absolute;
-      top: 4px;
-      left: 101px;
-      display: inline-block;
-      width: 71%;
-      height: 28px;
-      line-height: 30px;
-      padding: 0 15px;
-      font-size: 13px;
-      color: #606266;
-      background: #fff;
-      border-radius: 5px;
+    .el-form-item__content {
+      position: relative;
+      .inputBox {
+        display: inline-block;
+        width: 72%;
+        height: 32px;
+        line-height: 32px;
+        padding: 0 15px;
+        font-size: 13px;
+        color: #606266;
+        background: #fff;
+        border: 1px solid #dcdfe6;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+      .inputBox-placeholder {
+        color: #c0c4cc;
+      }
     }
     .quantity_balance {
       margin-left: 10px;
@@ -368,7 +357,7 @@ export default {
     }
   }
   .btn_condit {
-    padding-left: 100px;
+    padding-left: 140px;
     margin-top: 20px;
   }
 }
