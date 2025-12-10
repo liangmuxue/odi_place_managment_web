@@ -11,7 +11,7 @@
       <div class="merchant_header">
         <div class="merchant_header_left">
           <div class="merchant_avatar">
-            <img src="/merchant.png" alt="" />
+            <img :src="merchantImg" alt="" />
           </div>
           <div class="merchant_info">
             <div class="merchant_name_row">
@@ -52,7 +52,7 @@
         <div class="header_divider"></div>
         <div class="merchant_header_right">
           <div class="topup_icon">
-            <img src="/topup.png" alt="" />
+            <img :src="topupImg" alt="" />
           </div>
           <div class="merchant_balance_area">
             <div class="balance_title">预充值</div>
@@ -176,6 +176,8 @@ import RechargeDialog from "./rechargeDialog.vue";
 import RefundDialog from "./refundDialog.vue";
 import DeductionRechargeDialog from "./deductionRechargeDialog.vue";
 import DeductionRefundDialog from "./deductionRefundDialog.vue";
+import merchantImg from "@/assets/images/merchantManagement/merchant.png";
+import topupImg from "@/assets/images/merchantManagement/topup.png";
 
 export default {
   name: "MerchantDetail",
@@ -189,6 +191,8 @@ export default {
     return {
       isShow: false,
       merchantId: null,
+      merchantImg,
+      topupImg,
       merchantInfo: {
         merchantId: "",
         merchantName: "",

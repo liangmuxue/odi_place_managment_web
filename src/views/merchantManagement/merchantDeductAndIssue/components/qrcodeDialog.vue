@@ -39,6 +39,8 @@
 
 <script>
 import { getQrcode } from "@/api/merchantManagement";
+import dynamicCode from "@/assets/images/merchantManagement/dynamicCode.png";
+import staticCode from "@/assets/images/merchantManagement/staticCode.png";
 
 export default {
   name: "QrcodeDialog",
@@ -54,7 +56,7 @@ export default {
   },
   computed: {
     headerIcon() {
-      return this.isDynamic ? "/dynamicCode.png" : "/staticCode.png";
+      return this.isDynamic ? dynamicCode : staticCode;
     },
     actionText() {
       return this.isDynamic ? "刷新" : "下载";
