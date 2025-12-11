@@ -172,6 +172,13 @@ export default {
         if (!valid) {
           return;
         }
+        if (this.selectedDeduction && this.selectedDeduction.deductionMode === "次数") {
+          const balance = this.selectedDeduction.quantityBalance || 0;
+          if (balance <= 0) {
+            this.$message.warning("该抵扣券剩余次数为0，无法生成二维码");
+            return;
+          }
+        }
         const para = {
           merchantId: 1,
           merchantDeductionRuleId: this.formData.merchantDeductionRuleId,
