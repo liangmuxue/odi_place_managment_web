@@ -179,6 +179,13 @@ export default {
             return;
           }
         }
+        if (this.selectedDeduction && this.selectedDeduction.deductionMode === "预充") {
+          const balance = this.selectedDeduction.amountBalance || 0;
+          if (balance <= 0) {
+            this.$message.warning("该商户账户余额为0，无法生成预充二维码");
+            return;
+          }
+        }
         const para = {
           merchantId: 1,
           merchantDeductionRuleId: this.formData.merchantDeductionRuleId,

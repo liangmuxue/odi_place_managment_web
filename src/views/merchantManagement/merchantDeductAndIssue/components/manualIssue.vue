@@ -270,6 +270,13 @@ export default {
         if (!valid) {
           return;
         }
+        if (this.selectedDeduction && this.selectedDeduction.deductionMode === "预充") {
+          const balance = this.selectedDeduction.amountBalance || 0;
+          if (balance <= 0) {
+            this.$message.warning("该商户账户余额为0，无法发放预充抵扣券");
+            return;
+          }
+        }
         // 备注校验
         if (this.newList.memo && this.newList.memo.length > 200) {
           this.$message.warning("备注不能多于200字");
