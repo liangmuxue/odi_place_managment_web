@@ -180,10 +180,15 @@ export default {
           }
         }
         if (this.selectedDeduction && this.selectedDeduction.deductionMode === "预充") {
-          const balance = this.selectedDeduction.amountBalance || 0;
-          if (balance <= 0) {
-            this.$message.warning("该商户账户余额为0，无法生成预充二维码");
-            return;
+          const overdraftAllowed =
+            this.selectedDeduction.allowOverdraft === true ||
+            this.selectedDeduction.allowOverdraft === 1;
+          if (!overdraftAllowed) {
+            const balance = this.selectedDeduction.amountBalance || 0;
+            if (balance <= 0) {
+              this.$message.warning("该商户账户余额为0，无法生成预充二维码");
+              return;
+            }
           }
         }
         const para = {

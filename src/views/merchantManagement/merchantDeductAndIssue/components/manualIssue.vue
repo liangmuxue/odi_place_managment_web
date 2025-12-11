@@ -271,10 +271,15 @@ export default {
           return;
         }
         if (this.selectedDeduction && this.selectedDeduction.deductionMode === "预充") {
-          const balance = this.selectedDeduction.amountBalance || 0;
-          if (balance <= 0) {
-            this.$message.warning("该商户账户余额为0，无法发放预充抵扣券");
-            return;
+          const overdraftAllowed =
+            this.selectedDeduction.allowOverdraft === true ||
+            this.selectedDeduction.allowOverdraft === 1;
+          if (!overdraftAllowed) {
+            const balance = this.selectedDeduction.amountBalance || 0;
+            if (balance <= 0) {
+              this.$message.warning("该商户账户余额为0，无法发放预充抵扣券");
+              return;
+            }
           }
         }
         // 备注校验
