@@ -255,14 +255,14 @@ export default {
             trigger: "change",
             validator: validateTimes
           }
-        ],
-        releaseCarTypes: [
-          {
-            required: true,
-            trigger: "change",
-            validator: validateReleaseCarTypes
-          }
         ]
+        // releaseCarTypes: [
+        //   {
+        //     required: true,
+        //     trigger: "change",
+        //     validator: validateReleaseCarTypes
+        //   }
+        // ]
       }
     };
   },
