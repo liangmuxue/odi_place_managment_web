@@ -308,6 +308,25 @@ export function merchantDeductionDistributionExport(data) {
   })
 }
 
+// 抵扣记录分页
+export function merchantDeductionRecordList(data) {
+  return request({
+    url: '/merchant/merchantDeductionRecord/list',
+    method: 'post',
+    data
+  })
+}
+
+// 抵扣记录导出
+export function merchantDeductionRecordExport(data) {
+  return request({
+    url: '/merchant/merchantDeductionRecord/export',
+    method: 'post',
+    data,
+    responseType: 'blob'
+  })
+}
+
 // 获取当天提醒开关状态
 export function todayOnOff() {
   return request({
