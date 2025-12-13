@@ -211,7 +211,8 @@ export default {
       time: [],
       // Loading 实例
       listLoading: null,
-      list: []
+      list: [],
+      multipleSelection: []
     };
   },
   watch: {
@@ -344,6 +345,9 @@ export default {
         elink.click();
         document.body.removeChild(elink);
       });
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
     },
     // 切换页码方法
     handleSizeChange(val) {
