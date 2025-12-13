@@ -168,7 +168,7 @@ export default {
   methods: {
     checkNegativeBalance() {
       todayOnOff().then(response => {
-        if (!response.data) {
+        if (response.data) {
           negativeBalanceList({ pageNum: 1, pageSize: 100 }).then(res => {
             if (res.rows && res.rows.length > 0) {
               this.$refs.negativeBalanceDialog.showDialog(res.rows);
