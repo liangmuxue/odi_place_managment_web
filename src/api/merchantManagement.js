@@ -289,6 +289,25 @@ export function getQrcode(id) {
   })
 }
 
+// 抵扣券发放记录分页
+export function merchantDeductionDistributionList(data) {
+  return request({
+    url: '/merchant/merchantDeductionDistribution/list',
+    method: 'post',
+    data
+  })
+}
+
+// 抵扣券发放记录导出
+export function merchantDeductionDistributionExport(data) {
+  return request({
+    url: '/merchant/merchantDeductionDistribution/export',
+    method: 'post',
+    data,
+    responseType: 'blob'
+  })
+}
+
 // 获取当天提醒开关状态
 export function todayOnOff() {
   return request({
