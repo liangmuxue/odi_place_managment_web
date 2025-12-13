@@ -131,17 +131,19 @@
     </div>
     <Dialog ref="dialog" @getList="getList" @openLoading="openLoading"></Dialog>
     <Detail ref="detail" @getList="getList"></Detail>
+    <NegativeBalanceDialog ref="negativeBalanceDialog"></NegativeBalanceDialog>
   </div>
 </template>
 
 <script>
-import { merchantList, merchantBatchDelete } from "@/api/merchantManagement";
+import { merchantList, merchantBatchDelete, todayOnOff, negativeBalanceList } from "@/api/merchantManagement";
 import Dialog from "./components/dialog";
 import Detail from "./components/detail";
+import NegativeBalanceDialog from "./components/negativeBalanceDialog";
 
 export default {
   name: "MerchantList",
-  components: { Dialog, Detail },
+  components: { Dialog, Detail, NegativeBalanceDialog },
   data() {
     return {
       listQuery: {
@@ -161,8 +163,20 @@ export default {
 
   created() {
     this.toSearchList();
+    this.checkNegativeBalance();
   },
   methods: {
+    checkNegativeBalance() {
+      todayOnOff().then(response => {
+        if (!response.data) {
+          negativeBalanceList({ pageNum: 1, pageSize: 100 }).then(res => {
+            if (res.rows && res.rows.length > 0) {
+              this.$refs.negativeBalanceDialog.showDialog(res.rows);
+            }
+          });
+        }
+      });
+    },
     // 查询列表
     toSearchList() {
       this.listQuery.pageNum = 1;

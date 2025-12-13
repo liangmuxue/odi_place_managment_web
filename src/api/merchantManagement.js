@@ -288,3 +288,28 @@ export function getQrcode(id) {
     method: 'get'
   })
 }
+
+// 获取当天提醒开关状态
+export function todayOnOff() {
+  return request({
+    url: '/merchant/alert/todayOnOff',
+    method: 'post'
+  })
+}
+
+// 切换当天提醒开关状态
+export function toggleTodayOnOff() {
+  return request({
+    url: '/merchant/alert/toggleTodayOnOff',
+    method: 'post'
+  })
+}
+
+// 查询透支商户列表
+export function negativeBalanceList(data) {
+  return request({
+    url: '/merchant/merchant/negativeBalance/list',
+    method: 'post',
+    data
+  })
+}
