@@ -91,7 +91,7 @@ export const constantRoutes = [
   // equipmentManagement, //设备管理
   // statisticalAnalysis, //统计分析
   // systemSettings, //系统设置
-  merchantManagement, //商户管理
+  // merchantManagement, //商户管理
 ]
 
 /**
@@ -108,7 +108,7 @@ export const asyncRoutes = [
   equipmentManagement, //设备管理
   statisticalAnalysis, //统计分析
   systemSettings, //系统设置
-
+  merchantManagement, //商户管理
 
 
   /** when your routing map is too long, you can split it into small modules **/

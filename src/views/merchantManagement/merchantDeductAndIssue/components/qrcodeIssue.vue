@@ -146,7 +146,7 @@ export default {
   },
   methods: {
     loadDeductionList() {
-      const para = { merchantId: 1 };
+      const para = {};
       getDeductionsByMerchantIdNoPage(para).then(res => {
         this.deductionList = res.data || [];
       });
@@ -192,7 +192,6 @@ export default {
           }
         }
         const para = {
-          merchantId: 1,
           merchantDeductionRuleId: this.formData.merchantDeductionRuleId,
           quantity: 1,
           qrcodeExpireType: this.formData.qrcodeExpireType,

@@ -233,8 +233,7 @@ export default {
   },
   methods: {
     loadDeductionList() {
-      // 调试用，商户ID写死为1
-      const para = { merchantId: 1 };
+      const para = {};
       getDeductionsByMerchantIdNoPage(para).then(res => {
         this.deductionList = res.data || [];
       });
@@ -291,7 +290,6 @@ export default {
           type: "warning"
         }).then(() => {
           const para = {
-            merchantId: 1, // 调试用，写死为1
             merchantDeductionRuleId: this.newList.merchantDeductionRuleId,
             vehicleNumber: this.newList.licensePlate,
             quantity: this.newList.quantity,
