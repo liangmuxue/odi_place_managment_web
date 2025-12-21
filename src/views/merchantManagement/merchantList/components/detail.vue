@@ -21,26 +21,28 @@
                 <span class="switch_status" :class="merchantInfo.overdraftEnabled ? 'status_on' : 'status_off'">
                   {{ merchantInfo.overdraftEnabled ? '已开启' : '已关闭' }}
                 </span>
-                <el-switch
-                  v-model="merchantInfo.overdraftEnabled"
-                  active-color="#33ae73"
-                  inactive-color="#ccc"
-                  @change="handleOverdraftChange"
-                  v-has="{ red: 'merchantListDetailOverdraft', type: 2 }"
-                ></el-switch>
+                <span v-has="{ red: 'merchantListDetailOverdraft', type: 1 }">
+                  <el-switch
+                    v-model="merchantInfo.overdraftEnabled"
+                    active-color="#33ae73"
+                    inactive-color="#ccc"
+                    @change="handleOverdraftChange"
+                  ></el-switch>
+                </span>
               </span>
               <span class="switch_item">
                 <span class="switch_label">抵扣回收：</span>
                 <span class="switch_status" :class="merchantInfo.deductionRecycleEnabled ? 'status_on' : 'status_off'">
                   {{ merchantInfo.deductionRecycleEnabled ? '已开启' : '已关闭' }}
                 </span>
-                <el-switch
-                  v-model="merchantInfo.deductionRecycleEnabled"
-                  active-color="#33ae73"
-                  inactive-color="#ccc"
-                  @change="handleDeductionRecycleChange"
-                  v-has="{ red: 'merchantListDetailRecycle', type: 2 }"
-                ></el-switch>
+                <span v-has="{ red: 'merchantListDetailRecycle', type: 1 }">
+                  <el-switch
+                    v-model="merchantInfo.deductionRecycleEnabled"
+                    active-color="#33ae73"
+                    inactive-color="#ccc"
+                    @change="handleDeductionRecycleChange"
+                  ></el-switch>
+                </span>
               </span>
             </div>
             <div class="merchant_detail_row">
