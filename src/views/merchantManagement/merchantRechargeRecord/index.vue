@@ -56,7 +56,7 @@
         type="info"
         icon="el-icon-upload2"
         @click="toExport"
-        v-has="{ red: 'userRechargeExport', type: 1 }"
+        v-has="{ red: 'merchantRechargeRecordExport', type: 1 }"
         >导出</el-button
       >
     </div>
@@ -158,7 +158,7 @@
             <span
               class="operation_button update_btn"
               @click="toDetails(scope.row)"
-              v-has="{ red: 'freeCodeManagementDetails', type: 1 }"
+              v-has="{ red: 'merchantRechargeRecordDetails', type: 1 }"
             >
               详情
             </span>

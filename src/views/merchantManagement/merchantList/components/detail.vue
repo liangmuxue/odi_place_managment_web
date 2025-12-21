@@ -26,6 +26,7 @@
                   active-color="#33ae73"
                   inactive-color="#ccc"
                   @change="handleOverdraftChange"
+                  v-has="{ red: 'merchantListDetailOverdraft', type: 2 }"
                 ></el-switch>
               </span>
               <span class="switch_item">
@@ -38,6 +39,7 @@
                   active-color="#33ae73"
                   inactive-color="#ccc"
                   @change="handleDeductionRecycleChange"
+                  v-has="{ red: 'merchantListDetailRecycle', type: 2 }"
                 ></el-switch>
               </span>
             </div>
@@ -60,8 +62,8 @@
               <span class="balance_label"><span class="label_text">账户余额（元）：</span></span>
               <span class="balance_value" :class="{ negative_balance: isOverdraft }">{{ formattedBalance }}</span>
               <span v-if="isOverdraft" class="overdraft_tag">已透支</span>
-              <el-button type="primary" size="mini" @click="handleRecharge">充值</el-button>
-              <el-button type="danger" size="mini" @click="handleRefund">退费</el-button>
+              <el-button type="primary" size="mini" @click="handleRecharge" v-has="{ red: 'merchantListDetailRecharge', type: 1 }">充值</el-button>
+              <el-button type="danger" size="mini" @click="handleRefund" v-has="{ red: 'merchantListDetailRefund', type: 1 }">退费</el-button>
             </div>
           </div>
         </div>
@@ -122,6 +124,7 @@
                 <span
                   class="operation_button update_btn"
                   @click="handleToggleState(scope.row)"
+                  v-has="{ red: 'merchantListDetailDeductionToggle', type: 1 }"
                 >
                   {{ isRuleEnabled(scope.row) ? '停用' : '启用' }}
                 </span>
@@ -129,12 +132,14 @@
                   <span
                     class="operation_button update_btn"
                     @click="handleDeductionRecharge(scope.row)"
+                    v-has="{ red: 'merchantListDetailDeductionRecharge', type: 1 }"
                   >
                     充值
                   </span>
                   <span
                     class="operation_button update_btn"
                     @click="handleDeductionRefund(scope.row)"
+                    v-has="{ red: 'merchantListDetailDeductionRefund', type: 1 }"
                   >
                     退费
                   </span>

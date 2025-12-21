@@ -103,7 +103,7 @@
               </el-form-item>
             </span>
             <div class="base_dialog_main_btnBox btn_condit">
-              <el-button type="info" @click="submitForm">确认发放</el-button>
+              <el-button type="info" @click="submitForm" v-has="{ red: 'merchantDeductAndIssueManualSubmit', type: 1 }">确认发放</el-button>
             </div>
           </div>
         </div>

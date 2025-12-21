@@ -63,7 +63,7 @@
               </el-form-item>
             </span>
             <div class="base_dialog_main_btnBox btn_condit">
-              <el-button type="info" @click="generateQrcode">
+              <el-button type="info" @click="generateQrcode" v-has="{ red: 'merchantDeductAndIssueQrcodeGenerate', type: 1 }">
                 生成二维码
               </el-button>
             </div>

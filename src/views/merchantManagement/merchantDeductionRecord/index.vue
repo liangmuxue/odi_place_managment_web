@@ -59,7 +59,7 @@
         type="info"
         icon="el-icon-upload2"
         @click="toExport"
-        v-has="{ red: 'freeCodeManagementAdd', type: 1 }"
+        v-has="{ red: 'merchantDeductionRecordExport', type: 1 }"
         >导出</el-button
       >
     </div>

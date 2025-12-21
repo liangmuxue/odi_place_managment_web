@@ -53,14 +53,14 @@
         type="info"
         icon="el-icon-circle-plus-outline"
         @click="toAdd"
-        v-has="{ red: 'freeCodeManagementAdd', type: 1 }"
+        v-has="{ red: 'merchantDeductionRulesAdd', type: 1 }"
         >新增</el-button
       >
       <el-button
         type="danger"
         icon="el-icon-circle-close"
         @click="toDel"
-        v-has="{ red: 'freeCodeManagementDelete', type: 1 }"
+        v-has="{ red: 'merchantDeductionRulesDelete', type: 1 }"
         >删除</el-button
       >
     </div>
@@ -170,14 +170,14 @@
             <span
               class="operation_button update_btn"
               @click="toEdit(scope.row)"
-              v-has="{ red: 'freeCodeManagementEdit', type: 1 }"
+              v-has="{ red: 'merchantDeductionRulesEdit', type: 1 }"
             >
               编辑
             </span>
             <span
               class="operation_button update_btn"
               @click="toDetails(scope.row)"
-              v-has="{ red: 'freeCodeManagementDetails', type: 1 }"
+              v-has="{ red: 'merchantDeductionRulesDetails', type: 1 }"
             >
               详情
             </span>
@@ -185,7 +185,7 @@
               class="operation_button update_btn"
               style="width:100px"
               @click="toMerchantLink(scope.row)"
-              v-has="{ red: 'freeCodeManagementDetails', type: 1 }"
+              v-has="{ red: 'merchantDeductionRulesLink', type: 1 }"
             >
               关联商户
             </span>
