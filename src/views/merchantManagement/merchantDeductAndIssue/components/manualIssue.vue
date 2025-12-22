@@ -61,6 +61,7 @@
                   :min="1"
                   size="small"
                   style="width: 150px"
+                  @change="onQuantityChange"
                 />
               </el-form-item>
             </span>
@@ -188,7 +189,7 @@ export default {
           { required: true, message: "请选择抵扣券", trigger: "change" }
         ],
         quantity: [
-          { required: true, validator: validateQuantity, trigger: "blur" }
+          { required: true, validator: validateQuantity, trigger: ["blur", "change"] }
         ],
         validTimeStart: [
           { required: true, validator: validateValidTimeStart, trigger: "blur" }
@@ -247,6 +248,14 @@ export default {
       this.$nextTick(() => {
         if (this.$refs.licensePlateForm) {
           this.$refs.licensePlateForm.clearValidate(["quantity", "validTimeStart", "validTimeEnd"]);
+        }
+      });
+    },
+    onQuantityChange() {
+      // 当数量改变时手动触发验证
+      this.$nextTick(() => {
+        if (this.$refs.licensePlateForm) {
+          this.$refs.licensePlateForm.validateField("quantity");
         }
       });
     },
