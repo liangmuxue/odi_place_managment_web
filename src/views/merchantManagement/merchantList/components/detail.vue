@@ -185,6 +185,7 @@ import DeductionRechargeDialog from "./deductionRechargeDialog.vue";
 import DeductionRefundDialog from "./deductionRefundDialog.vue";
 import merchantImg from "@/assets/images/merchantManagement/merchant.png";
 import topupImg from "@/assets/images/merchantManagement/topup.png";
+import { formatAmount } from "../../util/amountUtil";
 
 export default {
   name: "MerchantDetail",
@@ -226,15 +227,7 @@ export default {
       return n < 0;
     },
     formattedBalance() {
-      const v = this.merchantInfo.balance;
-      const n = typeof v === "number" ? v : parseFloat(v);
-      if (isNaN(n)) return "0.00";
-      const sign = n < 0 ? "-" : "";
-      const abs = Math.abs(n);
-      const fixed = abs.toFixed(2);
-      const parts = fixed.split(".");
-      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      return sign + parts.join(".");
+      return formatAmount(this.merchantInfo.balance);
     },
     formattedTel() {
       const tel = this.merchantInfo.tel || "";

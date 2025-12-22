@@ -92,6 +92,11 @@
             <span class="content">{{ scope.row.parkingLotName }}</span>
           </template>
         </el-table-column>
+        <el-table-column label="账户余额(元)" align="center" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span class="content">{{ formatAmount(scope.row.amountBalance) }}</span>
+          </template>
+        </el-table-column>
 
         <el-table-column
           label="操作"
@@ -140,6 +145,7 @@ import { merchantList, merchantBatchDelete, todayOnOff, negativeBalanceList } fr
 import Dialog from "./components/dialog";
 import Detail from "./components/detail";
 import NegativeBalanceDialog from "./components/negativeBalanceDialog";
+import { formatAmount } from "../util/amountUtil";
 
 export default {
   name: "MerchantList",
@@ -166,6 +172,7 @@ export default {
     this.checkNegativeBalance();
   },
   methods: {
+    formatAmount,
     checkNegativeBalance() {
       todayOnOff().then(response => {
         if (response.data) {
