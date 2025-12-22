@@ -279,10 +279,10 @@ export default {
               this.openLoading();
               this.getList();
             } else {
-              // this.$message({
-              //   type: "error",
-              //   message: "删除失败"
-              // });
+              this.$message({
+                type: "error",
+                message: "删除失败"
+              });
             }
           });
         });
