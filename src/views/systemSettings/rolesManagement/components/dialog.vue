@@ -227,6 +227,7 @@ export default {
       }, //车位详情
       selected: [], //选中数据权限存储
       normalParkingLotsBackup: [], // 普通角色下的数据权限备份
+      merchantAutoSelected: false,
       defaultProps: {
         value: "resourceId", // id
         label: "resCanme", // 名
@@ -365,6 +366,7 @@ export default {
               if (allKeys && allKeys.length) {
                 this.$refs.tree.setCheckedKeys(allKeys);
                 this.newList.resourceIdList = allKeys.toString();
+                this.merchantAutoSelected = true;
               }
             }
           });
@@ -447,6 +449,7 @@ export default {
             if (allKeys && allKeys.length) {
               this.$refs.tree.setCheckedKeys(allKeys);
               this.newList.resourceIdList = allKeys.toString();
+              this.merchantAutoSelected = true;
             }
           }
           // 当从商户切回普通角色（rightType === 1）时，恢复表格中的勾选状态
@@ -456,6 +459,16 @@ export default {
               this.newList.parkingLots = this.normalParkingLotsBackup.slice();
             }
             this.selectChange();
+          }
+          if (
+            this.newList &&
+            this.newList.rightType === 1 &&
+            this.merchantAutoSelected &&
+            this.$refs.tree
+          ) {
+            this.$refs.tree.setCheckedKeys([]);
+            this.newList.resourceIdList = "";
+            this.merchantAutoSelected = false;
           }
         });
       });
@@ -516,6 +529,7 @@ export default {
       if (this.$refs["roleForm"]) {
         this.$refs["roleForm"].resetFields();
       }
+      this.merchantAutoSelected = false;
 
       if (pageType == 2) {
         this.title = "编辑";
@@ -582,6 +596,7 @@ export default {
         }
         // 初始化普通角色数据权限备份
         this.normalParkingLotsBackup = (this.newList.parkingLots || []).slice();
+        this.merchantAutoSelected = false;
         this.editroleName = response.data.roleName;
         // 根据角色类型重新加载功能权限树，并设置选中项
         this.getFieldTable().then(() => {
