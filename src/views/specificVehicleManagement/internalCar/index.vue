@@ -334,7 +334,8 @@ export default {
       //   bookStatus: this.listQuery.bookStatus,
       //   source: this.listQuery.source
       // };
-      internalCarTemplate()
+      let para = { code: 0 };
+      internalCarTemplate(para)
         .then(res => {
           var content = res.data;
           var elink = document.createElement("a");

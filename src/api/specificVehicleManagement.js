@@ -171,7 +171,7 @@ export function internalCarList(data) {
 //内部临停车模板下载
 export function internalCarTemplate() {
   return request({
-    url: 'system/internalCar/template',
+    url: 'system/internalCar/downloadTemp',
     method: 'get',
     responseType: 'blob' // 表明返回服务器返回的数据类型
   })

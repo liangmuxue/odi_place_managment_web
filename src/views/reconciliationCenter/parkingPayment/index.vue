@@ -204,6 +204,9 @@
             <span class="content" v-else-if="scope.row.discountType == 2">{{
               scope.row.discountMoney + "分钟(充电券)"
             }}</span>
+            <span class="content" v-else-if="scope.row.discountType == 5">{{
+              scope.row.discountMoney + "分钟(生活券)"
+            }}</span>
             <span class="content" v-else-if="scope.row.discountType == 1">{{
               scope.row.discountMoney + "元"
             }}</span>
