@@ -289,6 +289,52 @@ export default {
         this.parkingList = response.data;
       });
     },
+    // 商户角色下的权限树过滤：
+    // 1. 始终保留 rightType 为 2 或 3 的节点；
+    // 2. 对于 rightType 为 1 的节点：
+    //    - 若祖先链中存在 rightType 为 2/3，则保留（但稍后在树上被禁用勾选）；
+    //    - 否则剔除，不在商户角色的权限树中展示。
+    filterRoleListForMerchant(nodes) {
+      const dfs = (list, hasAncestorType23) => {
+        if (!list) return [];
+        const result = [];
+        list.forEach(item => {
+          const currentRightType = item.rightType;
+          const nextHasAncestorType23 =
+            hasAncestorType23 || currentRightType === 2 || currentRightType === 3;
+
+          // 先递归处理子节点
+          let children = [];
+          if (item.children && item.children.length) {
+            children = dfs(item.children, nextHasAncestorType23);
+          }
+
+          // 始终保留 rightType 为 2 或 3 的节点（即使 children 为空）
+          if (currentRightType === 2 || currentRightType === 3) {
+            const clone = { ...item, children };
+            result.push(clone);
+            return;
+          }
+
+          // rightType 为 1 的节点
+          if (currentRightType === 1) {
+            // 若祖先链中已经有 2/3，则保留该节点（之后在树上通过 disabled 规则禁用勾选）
+            if (hasAncestorType23) {
+              const clone = { ...item, children };
+              result.push(clone);
+            }
+            // 若祖先链中没有 2/3，则丢弃当前节点（即不加入 result）
+            return;
+          }
+
+          // 其他情况（防御性分支），直接保留
+          const clone = { ...item, children };
+          result.push(clone);
+        });
+        return result;
+      };
+      return dfs(nodes || [], false);
+    },
 
     getFieldTable() {
       let para = {};
@@ -297,7 +343,15 @@ export default {
       }
       return resourceTree(para)
         .then(response => {
-          this.roleList = response.data;
+          let list = response.data || [];
+          // 商户角色下，前端再做一层过滤：
+          // - 去掉所有本身为 rightType=1 且整条祖先链中都没有 rightType 为 2 或 3 的节点；
+          // - 保留 rightType 为 2/3 的节点及其子树；
+          // - 对于位于 2/3 子树下的 rightType=1 节点，仅禁用不隐藏（由 getResourceDisabledFn 控制）。
+          if (this.newList && this.newList.rightType === 2) {
+            list = this.filterRoleListForMerchant(list);
+          }
+          this.roleList = list;
           // 新增商户角色时，功能权限树默认全部选中
           this.$nextTick(() => {
             if (
@@ -307,7 +361,7 @@ export default {
               this.newList.rightType === 2 &&
               (!this.newList.resourceIdList || this.newList.resourceIdList.length === 0)
             ) {
-              const allKeys = this.getAllResourceIds(this.roleList);
+              const allKeys = this.getAllResourceIds(this.roleList, true);
               if (allKeys && allKeys.length) {
                 this.$refs.tree.setCheckedKeys(allKeys);
                 this.newList.resourceIdList = allKeys.toString();
@@ -343,20 +397,35 @@ export default {
       }
     },
     // 获取整棵功能权限树下的所有资源ID（用于商户角色默认全选）
-    getAllResourceIds(nodes) {
+    getAllResourceIds(nodes, skipDisabledForMerchant) {
       const ids = [];
-      const dfs = list => {
+      const dfs = (list, hasAncestorType23) => {
         if (!list) return;
         list.forEach(item => {
-          if (item.resourceId) {
+          let disabledForMerchant = false;
+          const currentRightType = item.rightType;
+          const nextHasAncestorType23 =
+            hasAncestorType23 || currentRightType === 2 || currentRightType === 3;
+
+          if (
+            skipDisabledForMerchant &&
+            this.newList &&
+            this.newList.rightType === 2 &&
+            currentRightType === 1 &&
+            hasAncestorType23
+          ) {
+            disabledForMerchant = true;
+          }
+
+          if (item.resourceId && !disabledForMerchant) {
             ids.push(item.resourceId);
           }
           if (item.children && item.children.length) {
-            dfs(item.children);
+            dfs(item.children, nextHasAncestorType23);
           }
         });
       };
-      dfs(nodes || []);
+      dfs(nodes || [], false);
       return ids;
     },
     // 角色类型变更时处理：重新加载功能权限树；
@@ -374,7 +443,7 @@ export default {
             this.$refs.tree &&
             (!this.newList.resourceIdList || this.newList.resourceIdList.length === 0)
           ) {
-            const allKeys = this.getAllResourceIds(this.roleList);
+            const allKeys = this.getAllResourceIds(this.roleList, true);
             if (allKeys && allKeys.length) {
               this.$refs.tree.setCheckedKeys(allKeys);
               this.newList.resourceIdList = allKeys.toString();
@@ -390,6 +459,30 @@ export default {
           }
         });
       });
+    },
+    // 功能权限树节点禁用规则：
+    // 商户角色类型下，若某节点祖先中存在 rightType 为 2 或 3 的节点，
+    // 则该节点为 rightType = 1 时不可选择（只显示，不可勾选）。
+    getResourceDisabledFn() {
+      return (data, node) => {
+        if (this.pageType === 3) {
+          return true;
+        }
+        if (!this.newList || this.newList.rightType !== 2) {
+          return false;
+        }
+        let parent = node && node.parent;
+        let hasAncestorType23 = false;
+        while (parent && parent.data) {
+          const rt = parent.data.rightType;
+          if (rt === 2 || rt === 3) {
+            hasAncestorType23 = true;
+            break;
+          }
+          parent = parent.parent;
+        }
+        return hasAncestorType23 && data.rightType === 1;
+      };
     },
     checkSelectable() {
       let res = true;
@@ -431,9 +524,7 @@ export default {
           value: "resourceId", // id
           label: "resCanme", // 名
           children: "children", // 子节点字段名
-          disabled: () => {
-            return false;
-          }
+          disabled: this.getResourceDisabledFn()
         };
       } else if (pageType == 3) {
         this.title = "详情";
@@ -464,9 +555,7 @@ export default {
           value: "resourceId", // id
           label: "resCanme", // 名
           children: "children", // 子节点字段名
-          disabled: () => {
-            return false;
-          }
+          disabled: this.getResourceDisabledFn()
         };
 
         if (this.$refs["roleForm"]) {
