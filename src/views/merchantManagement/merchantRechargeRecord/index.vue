@@ -93,7 +93,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="充值数量"
+          label="充值数量(次)"
           align="center"
           show-overflow-tooltip
         >

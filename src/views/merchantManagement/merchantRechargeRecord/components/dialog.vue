@@ -21,7 +21,7 @@
             </el-form-item>
           </span>
           <span class="base_dialog_condit">
-            <el-form-item label="充值数量：">
+            <el-form-item label="充值数量(次)：">
               <span class="base_dialog_condit_text">{{ detail.quantity }}</span>
             </el-form-item>
           </span>
@@ -38,6 +38,11 @@
           <span class="base_dialog_condit">
             <el-form-item label="实收金额(元)：">
               <span class="base_dialog_condit_text">{{ detail.amountActuality | getMoney }}</span>
+            </el-form-item>
+          </span>
+          <span class="base_dialog_condit" v-if="detail.memo">
+            <el-form-item label="备注：">
+              <span class="base_dialog_condit_text">{{ detail.memo }}</span>
             </el-form-item>
           </span>
           <span class="base_dialog_condit">
@@ -57,11 +62,6 @@
           <span class="base_dialog_condit">
             <el-form-item label="操作人：">
               <span class="base_dialog_condit_text">{{ detail.operator }}</span>
-            </el-form-item>
-          </span>
-          <span class="base_dialog_condit" v-if="detail.memo">
-            <el-form-item label="备注：">
-              <span class="base_dialog_condit_text">{{ detail.memo }}</span>
             </el-form-item>
           </span>
           </div>
