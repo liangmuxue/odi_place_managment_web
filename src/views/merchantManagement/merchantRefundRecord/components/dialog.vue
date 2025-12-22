@@ -9,7 +9,7 @@
     <div class="base_dialog_main">
       <el-form :model="detail">
         <div class="base_dialog_main_content">
-          <div class="base_dialog_main_left" style="padding:100px">
+          <div class="base_dialog_main_left" style="padding: 40px 80px">
             <span class="base_dialog_condit">
               <el-form-item label="商户名称">
                 <span class="base_dialog_condit_text">
@@ -25,7 +25,7 @@
               </el-form-item>
             </span>
             <span class="base_dialog_condit">
-              <el-form-item label="退款数量">
+              <el-form-item label="退款数量(次)">
                 <span class="base_dialog_condit_text">
                   {{ detail.quantity }}
                 </span>
@@ -52,6 +52,13 @@
                 </span>
               </el-form-item>
             </span>
+            <span class="base_dialog_condit" v-if="detail.memo">
+              <el-form-item label="备注">
+                <span class="base_dialog_condit_text">
+                  {{ detail.memo }}
+                </span>
+              </el-form-item>
+            </span>
             <span class="base_dialog_condit">
               <el-form-item label="退款类型">
                 <span class="base_dialog_condit_text">
@@ -70,13 +77,6 @@
               <el-form-item label="操作人">
                 <span class="base_dialog_condit_text">
                   {{ detail.operator }}
-                </span>
-              </el-form-item>
-            </span>
-            <span class="base_dialog_condit" v-if="detail.memo">
-              <el-form-item label="备注">
-                <span class="base_dialog_condit_text">
-                  {{ detail.memo }}
                 </span>
               </el-form-item>
             </span>
