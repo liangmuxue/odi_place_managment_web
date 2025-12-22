@@ -59,7 +59,6 @@
                 <el-input-number
                   v-model="newList.quantity"
                   :min="1"
-                  :max="maxQuantity"
                   size="small"
                   style="width: 150px"
                 />
@@ -103,7 +102,7 @@
               </el-form-item>
             </span>
             <div class="base_dialog_main_btnBox btn_condit">
-              <el-button type="info" @click="submitForm" v-has="{ red: 'merchantDeductAndIssueManualSubmit', type: 1 }">确认发放</el-button>
+              <el-button type="info" @click="submitForm" v-has="{ red: 'merchantDeductAndIssueManualSubmit', type: 1 }">确认发券</el-button>
             </div>
           </div>
         </div>
@@ -135,12 +134,12 @@ export default {
       if (this.selectedDeduction && this.selectedDeduction.deductionMode === "次数") {
         const balance = this.selectedDeduction.quantityBalance || 0;
         if (value > balance) {
-          return callback(new Error("发放数量需小于等于充值剩余"));
+          return callback(new Error(`发放次数超过剩余次数${balance}，无法发放`));
         }
       }
       if (this.selectedDeduction && this.selectedDeduction.deductionMode === "预充") {
         if (value > 999) {
-          return callback(new Error("预充方式发放数量需小于等于999"));
+          return callback(new Error("预充方式，发放数量不能超过999"));
         }
       }
       callback();
@@ -210,16 +209,11 @@ export default {
       return this.selectedDeduction && this.selectedDeduction.deductionTimes === null;
     },
     maxQuantity() {
-      if (this.selectedDeduction && this.selectedDeduction.deductionMode === "次数") {
-        return this.selectedDeduction.quantityBalance || 1;
-      }
-      if (this.selectedDeduction && this.selectedDeduction.deductionMode === "预充") {
-        return 999;
-      }
+      // 移除自动限制机制，改为验证提示
       return 9999;
     },
     quantityBalance() {
-      if (this.selectedDeduction && this.selectedDeduction.quantityBalance !== undefined) {
+      if (this.selectedDeduction && this.selectedDeduction.deductionMode === "次数" && this.selectedDeduction.quantityBalance !== undefined) {
         return this.selectedDeduction.quantityBalance;
       }
       return "";
@@ -276,7 +270,7 @@ export default {
           if (!overdraftAllowed) {
             const balance = this.selectedDeduction.amountBalance || 0;
             if (balance <= 0) {
-              this.$message.warning("该商户账户余额为0，无法发放预充抵扣券");
+              this.$message.warning("该商户账户余额不足，无法发放预充抵扣券");
               return;
             }
           }
