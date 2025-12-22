@@ -53,7 +53,7 @@
 
             <span class="base_dialog_condit">
               <el-form-item label="扣款方式">
-                <span class="base_dialog_condit_text" style="margin-left: 10px;">
+                <span class="base_dialog_condit_text">
                   {{ form.deductionMode }}
                 </span>
               </el-form-item>
@@ -629,13 +629,24 @@ export default {
     onTypeChange() {
       if (this.form.deductionType === "固定时长") {
         this.form.deductionMode = "次数";
-        this.form.deductionUnit = "分钟";
+        const options = ["分钟", "小时"]; // 固定时长的合法单位
+        // 如果当前单位不在合法选项中（如从其他类型切换而来），则设置默认值“分钟”；
+        // 如果是编辑场景且后端已返回“分钟”或“小时”，则保留原值不覆盖。
+        if (!options.includes(this.form.deductionUnit)) {
+          this.form.deductionUnit = "分钟";
+        }
       } else if (this.form.deductionType === "固定金额") {
         this.form.deductionMode = "次数";
-        this.form.deductionUnit = "元";
+        const options = ["元"]; // 固定金额的合法单位
+        if (!options.includes(this.form.deductionUnit)) {
+          this.form.deductionUnit = "元";
+        }
       } else if (this.form.deductionType === "固定折扣") {
         this.form.deductionMode = "预充";
-        this.form.deductionUnit = "折";
+        const options = ["折"]; // 固定折扣的合法单位
+        if (!options.includes(this.form.deductionUnit)) {
+          this.form.deductionUnit = "折";
+        }
       } else if (this.form.deductionType === "全免抵扣") {
         this.form.deductionMode = "预充";
         this.form.deductionUnit = null;
