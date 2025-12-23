@@ -135,7 +135,7 @@ export default {
       if (this.selectedDeduction && this.selectedDeduction.deductionMode === "次数") {
         const balance = this.selectedDeduction.quantityBalance || 0;
         if (value > balance) {
-          return callback(new Error(`发放次数超过剩余次数${balance}，无法发放`));
+          return callback(new Error(`发放次数超过剩余次数，无法发放`));
         }
       }
       if (this.selectedDeduction && this.selectedDeduction.deductionMode === "预充") {
@@ -279,7 +279,7 @@ export default {
           if (!overdraftAllowed) {
             const balance = this.selectedDeduction.amountBalance || 0;
             if (balance <= 0) {
-              this.$message.warning("该商户账户余额不足，无法发放预充抵扣券");
+              this.$message.warning("余额不足，无法发放");
               return;
             }
           }
