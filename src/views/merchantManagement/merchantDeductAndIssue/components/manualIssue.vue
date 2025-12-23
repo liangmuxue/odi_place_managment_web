@@ -132,6 +132,18 @@ export default {
       if (value < 1) {
         return callback(new Error("发放数量必须为大于等于1的整数"));
       }
+      // 检查余额
+      if (this.selectedDeduction && this.selectedDeduction.deductionMode === "预充") {
+        const overdraftAllowed =
+          this.selectedDeduction.allowOverdraft === true ||
+          this.selectedDeduction.allowOverdraft === 1;
+        if (!overdraftAllowed) {
+          const balance = this.selectedDeduction.amountBalance || 0;
+          if (balance <= 0) {
+            return callback(new Error("余额不足，无法发放"));
+          }
+        }
+      }
       if (this.selectedDeduction && this.selectedDeduction.deductionMode === "次数") {
         const balance = this.selectedDeduction.quantityBalance || 0;
         if (value > balance) {
@@ -142,6 +154,13 @@ export default {
         if (value > 999) {
           return callback(new Error("预充方式，发放数量不能超过999"));
         }
+      }
+      callback();
+    };
+
+    const validateMemo = (rule, value, callback) => {
+      if (value && value.length > 200) {
+        return callback(new Error("备注不能多于200字"));
       }
       callback();
     };
@@ -197,7 +216,9 @@ export default {
         validTimeEnd: [
           { required: true, validator: validateValidTimeEnd, trigger: "blur" }
         ],
-        memo: []
+        memo: [
+          { validator: validateMemo, trigger: "blur" }
+        ]
       }
     };
   },
@@ -270,23 +291,6 @@ export default {
     submitForm() {
       this.$refs["licensePlateForm"].validate(valid => {
         if (!valid) {
-          return;
-        }
-        if (this.selectedDeduction && this.selectedDeduction.deductionMode === "预充") {
-          const overdraftAllowed =
-            this.selectedDeduction.allowOverdraft === true ||
-            this.selectedDeduction.allowOverdraft === 1;
-          if (!overdraftAllowed) {
-            const balance = this.selectedDeduction.amountBalance || 0;
-            if (balance <= 0) {
-              this.$message.warning("余额不足，无法发放");
-              return;
-            }
-          }
-        }
-        // 备注校验
-        if (this.newList.memo && this.newList.memo.length > 200) {
-          this.$message.warning("备注不能多于200字");
           return;
         }
         this.$confirm("确认发放抵扣券吗?", "提示", {

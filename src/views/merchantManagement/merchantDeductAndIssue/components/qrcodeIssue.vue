@@ -175,7 +175,7 @@ export default {
         if (this.selectedDeduction && this.selectedDeduction.deductionMode === "次数") {
           const balance = this.selectedDeduction.quantityBalance || 0;
           if (balance <= 0) {
-            this.$message.warning("该抵扣券剩余次数为0，无法生成二维码");
+            this.$message.warning("发放次数超过剩余次数，无法发放");
             return;
           }
         }
@@ -186,7 +186,7 @@ export default {
           if (!overdraftAllowed) {
             const balance = this.selectedDeduction.amountBalance || 0;
             if (balance <= 0) {
-              this.$message.warning("该商户账户余额为0，无法生成预充二维码");
+              this.$message.warning("余额不足，无法发放");
               return;
             }
           }
