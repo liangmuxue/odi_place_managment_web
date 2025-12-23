@@ -3,53 +3,42 @@
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">订单号</div>
-        <el-input v-model="listQuery.licensePlate" placeholder="请输入">
+        <el-input v-model="listQuery.orderNum" placeholder="请输入">
         </el-input>
       </span>
       <span class="search_content">
         <div class="search_content_title2">车牌号</div>
-        <el-input v-model="listQuery.parkingLotName" placeholder="请输入">
+        <el-input v-model="listQuery.vehicleNumber" placeholder="请输入">
         </el-input>
       </span>
       <span class="search_content">
         <div class="search_content_title">停车场</div>
-        <el-input v-model="listQuery.licensePlate" placeholder="请输入">
+        <el-input v-model="listQuery.parkName" placeholder="请输入">
         </el-input>
       </span>
       <span class="search_content">
         <div class="search_content_title2">商户名称</div>
-        <el-input v-model="listQuery.parkingLotName" placeholder="请输入">
+        <el-input v-model="listQuery.merchantName" placeholder="请输入">
         </el-input>
       </span>
       <span class="search_content">
         <div class="search_content_title2">抵扣券名称</div>
-        <el-input v-model="listQuery.parkingLotName" placeholder="请输入">
+        <el-input v-model="listQuery.deductionName" placeholder="请输入">
         </el-input>
       </span>
     </div>
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">抵扣类型</div>
-        <el-select
-          v-model="listQuery.status"
-          placeholder="请选择"
-          clearable
-          class="filter-item"
-          style="width: 72%"
-        >
-          <el-option
-            v-for="item in statusList"
-            :key="item.enumValue"
-            :label="item.enumName"
-            :value="item.enumValue"
-          />
-        </el-select>
+        <el-input v-model="listQuery.deductionType" placeholder="请输入">
+        </el-input>
       </span>
       <span class="search_content2">
         <div class="search_content_title">抵扣时间</div>
         <el-date-picker
           style="width: 72%"
           v-model="time"
+          value-format="yyyy-MM-dd HH:mm:ss"
           type="datetimerange"
           range-separator="-"
           start-placeholder="请选择时间"
@@ -70,7 +59,7 @@
         type="info"
         icon="el-icon-upload2"
         @click="toExport"
-        v-has="{ red: 'freeCodeManagementAdd', type: 1 }"
+        v-has="{ red: 'merchantDeductionRecordExport', type: 1 }"
         >导出</el-button
       >
     </div>
@@ -82,10 +71,8 @@
         size="mini"
         stripe
         height="calc(100vh - 360px)"
-        @selection-change="handleSelectionChange"
         align="left"
       >
-        <el-table-column type="selection" width="34"></el-table-column>
         <el-table-column
           label="序号"
           type="index"
@@ -94,24 +81,22 @@
         ></el-table-column>
         <el-table-column label="订单号" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.licensePlate }}</span>
+            <span class="content">{{ scope.row.orderNum }}</span>
           </template>
         </el-table-column>
         <el-table-column label="订单类型" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.phone }}</span>
+            <span class="content">{{ scope.row.orderType }}</span>
           </template>
         </el-table-column>
         <el-table-column label="手机" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.masterName }}</span>
+            <span class="content">{{ scope.row.phone }}</span>
           </template>
         </el-table-column>
         <el-table-column label="车牌号" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{
-              getNames(scope.row.vehicleWaiverParkingLots)
-            }}</span>
+            <span class="content">{{ scope.row.vehicleNumber }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -120,14 +105,12 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{
-              getNames(scope.row.vehicleWaiverParkingLots)
-            }}</span>
+            <span class="content">{{ scope.row.parkName }}</span>
           </template>
         </el-table-column>
         <el-table-column label="商户名称" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.masterName }}</span>
+            <span class="content">{{ scope.row.merchantName }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -136,12 +119,12 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.masterName }}</span>
+            <span class="content">{{ scope.row.deductionName }}</span>
           </template>
         </el-table-column>
         <el-table-column label="抵扣类型" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.masterName }}</span>
+            <span class="content">{{ scope.row.deductionType }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -150,7 +133,7 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.masterName }}</span>
+            <span class="content">{{ scope.row.deductionQuantity }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -159,7 +142,7 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.masterName }}</span>
+            <span class="content">{{ scope.row.deductionMoney | getMoney }}</span>
           </template>
         </el-table-column>
 
@@ -171,7 +154,7 @@
         >
           <template slot-scope="scope">
             <span class="content">{{
-              scope.row.createTime | parseTime("{y}-{m}-{d} {h}:{i}:{s}")
+              scope.row.deductionTime | parseTime("{y}-{m}-{d} {h}:{i}:{s}")
             }}</span>
           </template>
         </el-table-column>
@@ -192,16 +175,12 @@
 
 <script>
 import {
-  vehicleWaiverList //限免车列表
-} from "@/api/specificVehicleManagement";
-import {
-  discountRecordExport // 优惠记录导出
-} from "@/api/reconciliationCenter";
-
-import { fieldTable } from "@/api/common";
+  merchantDeductionRecordList,
+  merchantDeductionRecordExport
+} from "@/api/merchantManagement";
 
 export default {
-  name: "freeCodeManagement",
+  name: "merchantDeductionRecord",
   components: {},
   data() {
     return {
@@ -209,33 +188,26 @@ export default {
         pageNum: 1,
         pageSize: 10,
         total: 0,
-        licensePlate: "", //车牌号
-        parkingLotName: "", //停车场名
-        expirationStartTime: "", //开始时间
-        expirationEndTime: "", //结束时间
-        status: null //使用状态
+        orderNum: "",
+        vehicleNumber: "",
+        parkName: "",
+        merchantName: "",
+        deductionName: "",
+        deductionType: "",
+        beginTime: "",
+        endTime: ""
       },
-      selGateway: null,
-      statusList: [
-        { enumName: "到期", enumValue: 1 },
-        { enumName: "正常", enumValue: 0 }
-      ],
-      totalMoney: null, //收款统计
-      Dictionaries: {
-        enumTypes: "RULE_VEHICLE_TYPE,RULE_PARKING_DIRECTION"
-      },
-      enumsData: {}, //字典表返回数据
       time: [],
-      listLoading: false, //加载
-      list: [] //信息
+      listLoading: null,
+      list: []
     };
   },
   watch: {
     time(value) {
-      if (value === null) {
-        this.time = ["", ""];
-      } else if (value.length === 0) {
-        this.time = ["", ""];
+      if (!value || value.length === 0) {
+        this.listQuery.beginTime = "";
+        this.listQuery.endTime = "";
+        return;
       }
       this.changeTime();
     }
@@ -243,26 +215,16 @@ export default {
 
   created() {
     this.toSearchList();
-    this.getFieldTable();
   },
   methods: {
-    getFieldTable() {
-      fieldTable(this.Dictionaries).then(response => {
-        this.enumsData = response.data;
-      });
-    },
-    getNames(arr) {
-      let names = [];
-      arr.forEach(el => {
-        if (el.parkingLot) {
-          names.push(el.parkingLot.name);
-        }
-      });
-      return names.toString();
-    },
     changeTime() {
-      this.listQuery.expirationStartTime = this.time[0].getTime();
-      this.listQuery.expirationEndTime = this.time[1].getTime();
+      if (this.time[0] && this.time[1]) {
+        this.listQuery.beginTime = this.time[0];
+        this.listQuery.endTime = this.time[1];
+      } else {
+        this.listQuery.beginTime = "";
+        this.listQuery.endTime = "";
+      }
     },
 
     //查询泊位列表
@@ -277,34 +239,18 @@ export default {
         pageNum: 1,
         pageSize: 10,
         total: 0,
-        licensePlate: "", //车牌号
-        parkingLotName: "", //停车场名
-        expirationStartTime: "", //开始时间
-        expirationEndTime: "", //结束时间
-        status: null //使用状态
+        orderNum: "",
+        vehicleNumber: "",
+        parkName: "",
+        merchantName: "",
+        deductionName: "",
+        deductionType: "",
+        beginTime: "",
+        endTime: ""
       };
       this.time = [];
       this.openLoading();
       this.getList();
-    },
-    //显示溢出隐藏
-    showTips(obj, row) {
-      /*obj为鼠标移入时的事件对象*/
-      /*currentWidth 为文本在页面中所占的宽度，创建标签，加入到页面，获取currentWidth ,最后在移除*/
-      let TemporaryTag = document.createElement("span");
-      TemporaryTag.innerText = row.note;
-      TemporaryTag.className = "getTextWidth";
-      document.querySelector("body").appendChild(TemporaryTag);
-      let currentWidth = document.querySelector(".getTextWidth").offsetWidth;
-      document.querySelector(".getTextWidth").remove();
-
-      /*cellWidth为表格容器的宽度*/
-      const cellWidth = obj.target.offsetWidth;
-
-      /*当文本宽度小于||等于容器宽度两倍时，代表文本显示未超过两行*/
-      currentWidth <= 2 * cellWidth
-        ? (row.showTooltip = false)
-        : (row.showTooltip = true);
     },
     openLoading() {
       let claeeName;
@@ -312,6 +258,9 @@ export default {
         claeeName = "hasSidebar";
       } else {
         claeeName = "noSidebar";
+      }
+      if (this.listLoading && this.listLoading.close) {
+        this.listLoading.close();
       }
       this.listLoading = this.$loading({
         lock: true,
@@ -324,58 +273,50 @@ export default {
 
     //获取数据列表
     getList() {
-      let para = this.listQuery;
-      vehicleWaiverList(para)
+      const para = { ...this.listQuery };
+      merchantDeductionRecordList(para)
         .then(response => {
-          this.list = response.rows;
+          this.list = response.rows || [];
           if (response.total > 0) {
-            this.listQuery.total = response.total; // 数据总条数
+            this.listQuery.total = response.total;
           } else {
-            this.listQuery.pageSize = 40; //每页数量
-            this.listQuery.total = 0; // 数据总条数
-            this.listQuery.pageNum = 1; // 当前页
+            this.listQuery.total = 0;
+            this.listQuery.pageNum = 1;
           }
-          this.total = response.total;
-
-          // Just to simulate the time of the request
-          setTimeout(() => {
-            this.listLoading.close();
-          }, 300);
         })
-        .catch(() => {
+        .finally(() => {
           setTimeout(() => {
-            this.listLoading.close();
+            if (this.listLoading && this.listLoading.close) {
+              this.listLoading.close();
+            }
+            this.listLoading = null;
           }, 300);
         });
     },
 
-    //选择复选框
-    handleSelectionChange(val) {
-      this.selGateway = val;
-    },
     //导出
     toExport() {
-      let para = {
+      const para = {
         orderNum: this.listQuery.orderNum,
-        refundNum: this.listQuery.refundNum,
-        vehicle: this.listQuery.vehicle,
-        phone: this.listQuery.refundNum,
-        startTime: this.listQuery.phone,
-        endTime: this.listQuery.endTime,
-        parkName: this.listQuery.parkName
+        vehicleNumber: this.listQuery.vehicleNumber,
+        parkName: this.listQuery.parkName,
+        merchantName: this.listQuery.merchantName,
+        deductionName: this.listQuery.deductionName,
+        deductionType: this.listQuery.deductionType,
+        beginTime: this.listQuery.beginTime,
+        endTime: this.listQuery.endTime
       };
-      discountRecordExport(para).then(res => {
-        var content = res.data;
-        var elink = document.createElement("a");
-        elink.download = "优惠记录" + new Date().getTime() + ".xls";
+      merchantDeductionRecordExport(para).then(res => {
+        const content = res.data;
+        const elink = document.createElement("a");
+        elink.download = "抵扣记录" + new Date().getTime() + ".xls";
         elink.style.display = "none";
 
-        var blob = new Blob([content]);
+        const blob = new Blob([content]);
         elink.href = URL.createObjectURL(blob);
 
         document.body.appendChild(elink);
         elink.click();
-
         document.body.removeChild(elink);
       });
     },

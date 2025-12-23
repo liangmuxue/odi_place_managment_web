@@ -3,34 +3,34 @@
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">商户名称</div>
-        <el-input v-model="listQuery.licensePlate" placeholder="请输入">
+        <el-input v-model="listQuery.merchantName" placeholder="请输入">
         </el-input>
       </span>
       <span class="search_content">
         <div class="search_content_title2">抵扣券名称</div>
-        <el-input v-model="listQuery.parkingLotName" placeholder="请输入">
+        <el-input v-model="listQuery.deductionName" placeholder="请输入">
         </el-input>
       </span>
       <span class="search_content">
         <div class="search_content_title">发放方式</div>
         <el-select
-          v-model="listQuery.status"
+          v-model="listQuery.distrbuteMode"
           placeholder="请选择选择"
           clearable
           class="filter-item"
           style="width: 72%"
         >
           <el-option
-            v-for="item in statusList"
-            :key="item.enumValue"
-            :label="item.enumName"
-            :value="item.enumValue"
+            v-for="item in distrbuteModeList"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
           />
         </el-select>
       </span>
       <span class="search_content">
         <div class="search_content_title2">车牌号</div>
-        <el-input v-model="listQuery.parkingLotName" placeholder="请输入">
+        <el-input v-model="listQuery.vehicleNumber" placeholder="请输入">
         </el-input>
       </span>
 
@@ -45,8 +45,8 @@
       <el-button
         type="info"
         icon="el-icon-upload2"
-        @click="toAdd"
-        v-has="{ red: 'freeCodeManagementAdd', type: 1 }"
+        @click="toExport"
+        v-has="{ red: 'merchantDistributionRecordExport', type: 1 }"
         >导出</el-button
       >
     </div>
@@ -58,10 +58,8 @@
         size="mini"
         stripe
         height="calc(100vh - 340px)"
-        @selection-change="handleSelectionChange"
         align="left"
       >
-        <el-table-column type="selection" width="34"></el-table-column>
         <el-table-column
           label="序号"
           type="index"
@@ -70,7 +68,7 @@
         ></el-table-column>
         <el-table-column label="商户名称" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.licensePlate }}</span>
+            <span class="content">{{ scope.row.merchantName }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -79,19 +77,17 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.phone }}</span>
+            <span class="content">{{ scope.row.deductionName }}</span>
           </template>
         </el-table-column>
         <el-table-column label="发放方式" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.masterName }}</span>
+            <span class="content">{{ scope.row.distrbuteMode }}</span>
           </template>
         </el-table-column>
         <el-table-column label="车牌号" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{
-              getNames(scope.row.vehicleWaiverParkingLots)
-            }}</span>
+            <span class="content">{{ scope.row.vehicleNumber }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -100,9 +96,7 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{
-              getNames(scope.row.vehicleWaiverParkingLots)
-            }}</span>
+            <span class="content">{{ scope.row.quantity }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -113,7 +107,7 @@
         >
           <template slot-scope="scope">
             <span class="content">{{
-              scope.row.createTime | parseTime("{y}-{m}-{d} {h}:{i}:{s}")
+              scope.row.operateTime | parseTime("{y}-{m}-{d} {h}:{i}:{s}")
             }}</span>
           </template>
         </el-table-column>
@@ -125,7 +119,7 @@
         >
           <template slot-scope="scope">
             <span class="content">{{
-              scope.row.createTime | parseTime("{y}-{m}-{d} {h}:{i}:{s}")
+              scope.row.validTimeStart | parseTime("{y}-{m}-{d} {h}:{i}:{s}")
             }}</span>
           </template>
         </el-table-column>
@@ -137,13 +131,13 @@
         >
           <template slot-scope="scope">
             <span class="content">{{
-              scope.row.createTime | parseTime("{y}-{m}-{d} {h}:{i}:{s}")
+              scope.row.validTimeEnd | parseTime("{y}-{m}-{d} {h}:{i}:{s}")
             }}</span>
           </template>
         </el-table-column>
         <el-table-column label="备注" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.createrName }}</span>
+            <span class="content">{{ scope.row.memo }}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -158,83 +152,41 @@
         @current-change="handleCurrentChange"
       />
     </div>
-    <Dialog ref="dialog" @getList="getList" @openLoading="openLoading"></Dialog>
   </div>
 </template>
 
 <script>
 import {
-  vehicleWaiverList, //限免车列表
-  vehicleWaiverBatchDelete //限免车批量删除
-} from "@/api/specificVehicleManagement";
-import Dialog from "./components/dialog";
-import { fieldTable } from "@/api/common";
+  merchantDeductionDistributionList,
+  merchantDeductionDistributionExport
+} from "@/api/merchantManagement";
 
 export default {
-  name: "freeCodeManagement",
-  components: { Dialog },
+  name: "merchantDistributionRecord",
+  components: {},
   data() {
     return {
       listQuery: {
         pageNum: 1,
         pageSize: 10,
         total: 0,
-        licensePlate: "", //车牌号
-        parkingLotName: "", //停车场名
-        expirationStartTime: "", //开始时间
-        expirationEndTime: "", //结束时间
-        status: null //使用状态
+        merchantName: "",
+        deductionName: "",
+        distrbuteMode: "",
+        vehicleNumber: ""
       },
-      selGateway: null,
-      statusList: [
-        { enumName: "到期", enumValue: 1 },
-        { enumName: "正常", enumValue: 0 }
+      distrbuteModeList: [
+        { label: "人工", value: "人工" },
+        { label: "二维码", value: "二维码" }
       ],
-      totalMoney: null, //收款统计
-      Dictionaries: {
-        enumTypes: "RULE_VEHICLE_TYPE,RULE_PARKING_DIRECTION"
-      },
-      enumsData: {}, //字典表返回数据
-      time: [],
-      listLoading: false, //加载
-      list: [] //信息
+      listLoading: null,
+      list: []
     };
   },
-  watch: {
-    time(value) {
-      if (value === null) {
-        this.time = ["", ""];
-      } else if (value.length === 0) {
-        this.time = ["", ""];
-      }
-      this.changeTime();
-    }
-  },
-
   created() {
     this.toSearchList();
-    this.getFieldTable();
   },
   methods: {
-    getFieldTable() {
-      fieldTable(this.Dictionaries).then(response => {
-        this.enumsData = response.data;
-      });
-    },
-    getNames(arr) {
-      let names = [];
-      arr.forEach(el => {
-        if (el.parkingLot) {
-          names.push(el.parkingLot.name);
-        }
-      });
-      return names.toString();
-    },
-    changeTime() {
-      this.listQuery.expirationStartTime = this.time[0].getTime();
-      this.listQuery.expirationEndTime = this.time[1].getTime();
-    },
-
     //查询泊位列表
     toSearchList() {
       this.listQuery.pageNum = 1;
@@ -247,34 +199,13 @@ export default {
         pageNum: 1,
         pageSize: 10,
         total: 0,
-        licensePlate: "", //车牌号
-        parkingLotName: "", //停车场名
-        expirationStartTime: "", //开始时间
-        expirationEndTime: "", //结束时间
-        status: null //使用状态
+        merchantName: "",
+        deductionName: "",
+        distrbuteMode: "",
+        vehicleNumber: ""
       };
-      this.time = [];
       this.openLoading();
       this.getList();
-    },
-    //显示溢出隐藏
-    showTips(obj, row) {
-      /*obj为鼠标移入时的事件对象*/
-      /*currentWidth 为文本在页面中所占的宽度，创建标签，加入到页面，获取currentWidth ,最后在移除*/
-      let TemporaryTag = document.createElement("span");
-      TemporaryTag.innerText = row.note;
-      TemporaryTag.className = "getTextWidth";
-      document.querySelector("body").appendChild(TemporaryTag);
-      let currentWidth = document.querySelector(".getTextWidth").offsetWidth;
-      document.querySelector(".getTextWidth").remove();
-
-      /*cellWidth为表格容器的宽度*/
-      const cellWidth = obj.target.offsetWidth;
-
-      /*当文本宽度小于||等于容器宽度两倍时，代表文本显示未超过两行*/
-      currentWidth <= 2 * cellWidth
-        ? (row.showTooltip = false)
-        : (row.showTooltip = true);
     },
     openLoading() {
       let claeeName;
@@ -282,6 +213,9 @@ export default {
         claeeName = "hasSidebar";
       } else {
         claeeName = "noSidebar";
+      }
+      if (this.listLoading && this.listLoading.close) {
+        this.listLoading.close();
       }
       this.listLoading = this.$loading({
         lock: true,
@@ -294,96 +228,46 @@ export default {
 
     //获取数据列表
     getList() {
-      let para = this.listQuery;
-      vehicleWaiverList(para)
+      const para = { ...this.listQuery };
+      merchantDeductionDistributionList(para)
         .then(response => {
-          this.list = response.rows;
+          this.list = response.rows || [];
           if (response.total > 0) {
-            this.listQuery.total = response.total; // 数据总条数
+            this.listQuery.total = response.total;
           } else {
-            this.listQuery.pageSize = 40; //每页数量
-            this.listQuery.total = 0; // 数据总条数
-            this.listQuery.pageNum = 1; // 当前页
+            this.listQuery.total = 0;
+            this.listQuery.pageNum = 1;
           }
-          this.total = response.total;
-
-          // Just to simulate the time of the request
-          setTimeout(() => {
-            this.listLoading.close();
-          }, 300);
         })
-        .catch(() => {
+        .finally(() => {
           setTimeout(() => {
-            this.listLoading.close();
+            if (this.listLoading && this.listLoading.close) {
+              this.listLoading.close();
+            }
+            this.listLoading = null;
           }, 300);
         });
     },
 
-    //打开添加长租规则
-    toAdd() {
-      let id = null;
-      let pageType = 1;
-      this.$refs.dialog.showDialog(id, pageType);
-    },
-
-    //选择复选框
-    handleSelectionChange(val) {
-      this.selGateway = val;
-    },
-
-    //批量删除
-    toDel() {
-      if (this.selGateway.length > 0) {
-        let arr = [];
-        this.selGateway.forEach(el => {
-          arr.push(el.id);
-        });
-        let text = "确认批量删除限免车吗?";
-        if (this.selGateway.length == 1) {
-          text = "确认删除该限免车吗?";
-        }
-
-        this.$confirm(text, "提示", {
-          type: "warning"
-        }).then(() => {
-          let para = {
-            ids: arr.toString()
-          };
-          vehicleWaiverBatchDelete(para).then(response => {
-            if (response.code == "200") {
-              this.$message({
-                type: "success",
-                message: "删除成功"
-              });
-              this.openLoading();
-              this.getList();
-            } else {
-              // this.$message({
-              //   type: "error",
-              //   message: "删除失败"
-              // });
-            }
-          });
-        });
-      } else {
-        this.$message({
-          type: "warning",
-          message: "请选择删除限免车"
-        });
-      }
-    },
-
-    //打开编辑长租规则
-    toEdit(e) {
-      let id = e.id;
-      let pageType = 2;
-      this.$refs.dialog.showDialog(id, pageType);
-    },
-    //打开长租规则详情
-    toDetails(e) {
-      let id = e.id;
-      let pageType = 3;
-      this.$refs.dialog.showDialog(id, pageType);
+    // 导出
+    toExport() {
+      const para = {
+        merchantName: this.listQuery.merchantName,
+        deductionName: this.listQuery.deductionName,
+        distrbuteMode: this.listQuery.distrbuteMode,
+        vehicleNumber: this.listQuery.vehicleNumber
+      };
+      merchantDeductionDistributionExport(para).then(res => {
+        const content = res.data;
+        const blob = new Blob([content]);
+        const elink = document.createElement("a");
+        elink.download = "抵扣券发放明细" + new Date().getTime() + ".xls";
+        elink.style.display = "none";
+        elink.href = URL.createObjectURL(blob);
+        document.body.appendChild(elink);
+        elink.click();
+        document.body.removeChild(elink);
+      });
     },
     // 切换页码方法
     handleSizeChange(val) {

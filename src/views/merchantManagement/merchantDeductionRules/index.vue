@@ -3,40 +3,40 @@
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">抵扣券名称</div>
-        <el-input v-model="listQuery.licensePlate" placeholder="请输入">
+        <el-input v-model="listQuery.deductionName" placeholder="请输入">
         </el-input>
       </span>
       <span class="search_content">
         <div class="search_content_title">抵扣类型</div>
         <el-select
-          v-model="listQuery.status"
+          v-model="listQuery.deductionType"
           placeholder="选择抵扣类型"
           clearable
           class="filter-item"
           style="width: 72%"
         >
           <el-option
-            v-for="item in statusList"
-            :key="item.enumValue"
-            :label="item.enumName"
-            :value="item.enumValue"
+            v-for="item in deductionTypeOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
           />
         </el-select>
       </span>
       <span class="search_content">
         <div class="search_content_title">抵扣次数</div>
         <el-select
-          v-model="listQuery.status"
+          v-model="listQuery.deductionTimesType"
           placeholder="选择抵扣次数"
           clearable
           class="filter-item"
           style="width: 72%"
         >
           <el-option
-            v-for="item in statusList"
-            :key="item.enumValue"
-            :label="item.enumName"
-            :value="item.enumValue"
+            v-for="item in deductionTimesOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
           />
         </el-select>
       </span>
@@ -53,14 +53,14 @@
         type="info"
         icon="el-icon-circle-plus-outline"
         @click="toAdd"
-        v-has="{ red: 'freeCodeManagementAdd', type: 1 }"
+        v-has="{ red: 'merchantDeductionRulesAdd', type: 1 }"
         >新增</el-button
       >
       <el-button
         type="danger"
         icon="el-icon-circle-close"
         @click="toDel"
-        v-has="{ red: 'freeCodeManagementDelete', type: 1 }"
+        v-has="{ red: 'merchantDeductionRulesDelete', type: 1 }"
         >删除</el-button
       >
     </div>
@@ -88,26 +88,32 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.licensePlate }}</span>
+            <span class="content">{{ scope.row.deductionName }}</span>
           </template>
         </el-table-column>
         <el-table-column label="抵扣类型" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.phone }}</span>
+            <span class="content">{{ scope.row.deductionType }}</span>
           </template>
         </el-table-column>
         <el-table-column label="扣款方式" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.masterName }}</span>
+            <span class="content">{{ scope.row.deductionMode }}</span>
           </template>
         </el-table-column>
         <el-table-column
-          label="抵扣数据(单位)"
+          label="抵扣数量(单位)"
           align="center"
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.masterName }}</span>
+            <span class="content">
+              {{
+                scope.row.deductionValue == null
+                  ? '全免'
+                  : formatDeductionValue(scope.row)
+              }}
+            </span>
           </template>
         </el-table-column>
         <el-table-column
@@ -117,19 +123,27 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.masterName }}</span>
+            <span class="content">{{ scope.row.deductionValidDays }}</span>
           </template>
         </el-table-column>
         <el-table-column label="使用门槛" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.freeTime }}</span>
+            <span class="content">
+              {{
+                !scope.row.deductionThreshold || scope.row.deductionThreshold == 0
+                  ? '无门槛'
+                  : scope.row.deductionType === '固定时长'
+                    ? '满' + scope.row.deductionThreshold + '分钟可用'
+                    : '满' + scope.row.deductionThreshold + '元可用'
+              }}
+            </span>
           </template>
         </el-table-column>
         <el-table-column label="抵扣次数" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{
-              scope.row.vehicleWaiverParkingLots
-            }}</span>
+            <span class="content">
+              {{ scope.row.deductionTimes == 1 ? '单次' : '有效期内重复使用' }}
+            </span>
           </template>
         </el-table-column>
         <el-table-column
@@ -140,7 +154,7 @@
         >
           <template slot-scope="scope">
             <span class="content">{{
-              scope.row.createTime | parseTime("{y}-{m}-{d} {h}:{i}:{s}")
+              scope.row.operateTime | parseTime("{y}-{m}-{d} {h}:{i}:{s}")
             }}</span>
           </template>
         </el-table-column>
@@ -148,7 +162,7 @@
         <el-table-column
           label="操作"
           align="center"
-          min-width="120px"
+          min-width="140px"
           header-align="center"
           class-name="small-padding fixed-width"
         >
@@ -156,22 +170,22 @@
             <span
               class="operation_button update_btn"
               @click="toEdit(scope.row)"
-              v-has="{ red: 'freeCodeManagementEdit', type: 1 }"
+              v-has="{ red: 'merchantDeductionRulesEdit', type: 1 }"
             >
               编辑
             </span>
             <span
               class="operation_button update_btn"
               @click="toDetails(scope.row)"
-              v-has="{ red: 'freeCodeManagementDetails', type: 1 }"
+              v-has="{ red: 'merchantDeductionRulesDetails', type: 1 }"
             >
               详情
             </span>
             <span
               class="operation_button update_btn"
               style="width:100px"
-              @click="toDetails(scope.row)"
-              v-has="{ red: 'freeCodeManagementDetails', type: 1 }"
+              @click="toMerchantLink(scope.row)"
+              v-has="{ red: 'merchantDeductionRulesLink', type: 1 }"
             >
               关联商户
             </span>
@@ -190,100 +204,65 @@
       />
     </div>
     <Dialog ref="dialog" @getList="getList" @openLoading="openLoading"></Dialog>
+    <MerchantLinkDialog ref="merchantLinkDialog" @getList="getList"></MerchantLinkDialog>
   </div>
 </template>
 
 <script>
-import {
-  vehicleWaiverList, //限免车列表
-  vehicleWaiverBatchDelete //限免车批量删除
-} from "@/api/specificVehicleManagement";
-import Dialog from "./components/dialog";
-import { fieldTable } from "@/api/common";
+import { merchantDeductionRuleList, merchantDeductionRuleBatchDelete } from "@/api/merchantManagement";
+import Dialog from "./components/ruleDialog";
+import MerchantLinkDialog from "./components/merchantLinkDialog";
 
 export default {
-  name: "freeCodeManagement",
-  components: { Dialog },
+  name: "MerchantDeductionRules",
+  components: { Dialog, MerchantLinkDialog },
   data() {
     return {
       listQuery: {
         pageNum: 1,
         pageSize: 10,
         total: 0,
-        licensePlate: "", //车牌号
-        parkingLotName: "", //停车场名
-        expirationStartTime: "", //开始时间
-        expirationEndTime: "", //结束时间
-        status: null //使用状态
+        deductionName: "",
+        deductionType: "",
+        deductionTimesType: null
       },
-      selGateway: null,
-      statusList: [
-        { enumName: "到期", enumValue: 1 },
-        { enumName: "正常", enumValue: 0 }
+      selGateway: [],
+      deductionTypeOptions: [
+        { label: "固定时长", value: "固定时长" },
+        { label: "固定金额", value: "固定金额" },
+        { label: "固定折扣", value: "固定折扣" },
+        { label: "全免抵扣", value: "全免抵扣" }
       ],
-      Dictionaries: {
-        enumTypes: "RULE_VEHICLE_TYPE,RULE_PARKING_DIRECTION"
-      },
-      enumsData: {}, //字典表返回数据
-      time: [],
+      deductionTimesOptions: [
+        { label: "单次", value: 1 },
+        { label: "有效期内重复使用", value: -1 }
+      ],
       listLoading: false, //加载
       list: [] //信息
     };
   },
-  watch: {
-    time(value) {
-      if (value === null) {
-        this.time = ["", ""];
-      } else if (value.length === 0) {
-        this.time = ["", ""];
-      }
-      this.changeTime();
-    }
-  },
+  watch: {},
 
   created() {
     this.toSearchList();
-    this.getFieldTable();
   },
   methods: {
-    getFieldTable() {
-      fieldTable(this.Dictionaries).then(response => {
-        this.enumsData = response.data;
-      });
-    },
-    getNames(arr) {
-      let names = [];
-      arr.forEach(el => {
-        if (el.parkingLot) {
-          names.push(el.parkingLot.name);
-        }
-      });
-      return names.toString();
-    },
-    changeTime() {
-      this.listQuery.expirationStartTime = this.time[0].getTime();
-      this.listQuery.expirationEndTime = this.time[1].getTime();
-    },
-
-    //查询泊位列表
+    // 查询规则列表
     toSearchList() {
       this.listQuery.pageNum = 1;
       this.openLoading();
       this.getList();
     },
-    //重置查询条件
+    // 重置查询条件
     resetList() {
       this.listQuery = {
         pageNum: 1,
         pageSize: 10,
         total: 0,
-        licensePlate: "", //车牌号
-        parkingLotName: "", //停车场名
-        expirationStartTime: "", //开始时间
-        expirationEndTime: "", //结束时间
-        status: null //使用状态
+        deductionName: "",
+        deductionType: "",
+        deductionTimesType: null
       };
-      this.time = [];
       this.openLoading();
       this.getList();
     },
@@ -322,10 +301,10 @@ export default {
       });
     },
 
-    //获取数据列表
+    // 获取数据列表
     getList() {
       let para = this.listQuery;
-      vehicleWaiverList(para)
+      merchantDeductionRuleList(para)
         .then(response => {
           this.list = response.rows;
           if (response.total > 0) {
@@ -349,28 +328,44 @@ export default {
         });
     },
 
-    //打开添加长租规则
+    formatDeductionValue(row) {
+      const quantity = row.deductionValue;
+      if (
+        row.deductionType === "固定折扣" &&
+        quantity !== null &&
+        quantity !== undefined
+      ) {
+        const numeric = Number(quantity);
+        if (!isNaN(numeric)) {
+          const displayQuantity = Number((numeric * 10).toFixed(1));
+          return displayQuantity + (row.deductionUnit || "");
+        }
+      }
+      return quantity + (row.deductionUnit || "");
+    },
+
+    // 打开新增规则
     toAdd() {
       let id = null;
       let pageType = 1;
       this.$refs.dialog.showDialog(id, pageType);
     },
 
-    //选择复选框
+    // 选择复选框
     handleSelectionChange(val) {
       this.selGateway = val;
     },
 
-    //批量删除
+    // 批量删除
     toDel() {
       if (this.selGateway.length > 0) {
         let arr = [];
         this.selGateway.forEach(el => {
-          arr.push(el.id);
+          arr.push(el.merchantDeductionRuleId);
         });
-        let text = "确认批量删除限免车吗?";
+        let text = "确认批量删除抵扣规则吗?";
         if (this.selGateway.length == 1) {
-          text = "确认删除该限免车吗?";
+          text = "确认删除该抵扣规则吗?";
         }
 
         this.$confirm(text, "提示", {
@@ -379,7 +374,7 @@ export default {
           let para = {
             ids: arr.toString()
           };
-          vehicleWaiverBatchDelete(para).then(response => {
+          merchantDeductionRuleBatchDelete(para).then(response => {
             if (response.code == "200") {
               this.$message({
                 type: "success",
@@ -398,22 +393,27 @@ export default {
       } else {
         this.$message({
           type: "warning",
-          message: "请选择删除限免车"
+          message: "请选择要删除的抵扣规则"
         });
       }
     },
 
-    //打开编辑长租规则
+    // 打开编辑规则
     toEdit(e) {
-      let id = e.id;
+      let id = e.merchantDeductionRuleId;
       let pageType = 2;
       this.$refs.dialog.showDialog(id, pageType);
     },
-    //打开长租规则详情
+    // 打开规则详情
     toDetails(e) {
-      let id = e.id;
+      let id = e.merchantDeductionRuleId;
       let pageType = 3;
       this.$refs.dialog.showDialog(id, pageType);
+    },
+    // 打开关联商户
+    toMerchantLink(e) {
+      let id = e.merchantDeductionRuleId;
+      this.$refs.merchantLinkDialog.showDialog(id);
     },
     // 切换页码方法
     handleSizeChange(val) {
@@ -435,6 +435,10 @@ export default {
 <style lang="scss" scoped>
 .commit_page {
   position: relative;
+}
+.search_content_title {
+  padding: 0 4px;
+  white-space: nowrap;
 }
 .content_box {
   .content_row {
