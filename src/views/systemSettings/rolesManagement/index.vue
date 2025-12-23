@@ -61,6 +61,24 @@
           </template>
         </el-table-column>
         <el-table-column
+          label="角色类型"
+          align="center"
+          min-width="120"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">
+              {{
+                scope.row.rightType === 2
+                  ? "商户角色"
+                  : scope.row.rightType === 1
+                  ? "普通角色"
+                  : ""
+              }}
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column
           label="状态"
           align="center"
           min-width="100"
@@ -146,7 +164,6 @@ import {
   roleDeleteRole //删除用户
 } from "@/api/systemset";
 import Dialog from "./components/dialog";
-import { fieldTable } from "@/api/common";
 
 export default {
   name: "RolesManagement",
