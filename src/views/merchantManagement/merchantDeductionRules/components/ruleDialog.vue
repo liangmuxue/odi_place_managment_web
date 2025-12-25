@@ -12,7 +12,7 @@
           <div class="base_dialog_main_left" style="padding:20px 20px 0px 20px;">
             <span class="base_dialog_condit">
               <el-form-item label="抵扣券名称" prop="deductionName">
-                <span class="base_dialog_condit_text" v-if="pageType === 3 || (pageType === 2 && hasLinkedMerchants)">
+                <span class="base_dialog_condit_text" v-if="pageType === 3 || pageType === 2">
                   {{ form.deductionName }}
                 </span>
                 <el-input
@@ -28,7 +28,7 @@
 
             <span class="base_dialog_condit">
               <el-form-item label="抵扣类型" prop="deductionType">
-                <span class="base_dialog_condit_text" v-if="pageType === 3 || (pageType === 2 && hasLinkedMerchants)">
+                <span class="base_dialog_condit_text" v-if="pageType === 3 || pageType === 2">
                   {{ form.deductionType }}
                 </span>
                 <el-select
@@ -257,17 +257,17 @@ export default {
     };
 
     const validateDeductionNameNotModified = (rule, value, callback) => {
-      // 编辑模式下，如果规则已关联商户，不允许修改抵扣券名称
-      if (this.pageType === 2 && this.hasLinkedMerchants && this.originalDeductionName && value !== this.originalDeductionName) {
-        return callback(new Error("该规则已关联商户，不允许修改抵扣券名称"));
+      // 编辑模式下，不允许修改抵扣券名称
+      if (this.pageType === 2 && this.originalDeductionName && value !== this.originalDeductionName) {
+        return callback(new Error("编辑模式下不允许修改抵扣券名称"));
       }
       callback();
     };
 
     const validateDeductionTypeNotModified = (rule, value, callback) => {
-      // 编辑模式下，如果规则已关联商户，不允许修改抵扣类型
-      if (this.pageType === 2 && this.hasLinkedMerchants && this.originalDeductionType && value !== this.originalDeductionType) {
-        return callback(new Error("该规则已关联商户，不允许修改抵扣类型"));
+      // 编辑模式下，不允许修改抵扣类型
+      if (this.pageType === 2 && this.originalDeductionType && value !== this.originalDeductionType) {
+        return callback(new Error("编辑模式下不允许修改抵扣类型"));
       }
       callback();
     };
