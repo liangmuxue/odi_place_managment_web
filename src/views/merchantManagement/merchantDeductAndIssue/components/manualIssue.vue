@@ -59,9 +59,9 @@
                 <el-input-number
                   v-model="newList.quantity"
                   :min="1"
-                  :max="maxQuantity"
                   size="small"
                   style="width: 150px"
+                  @change="onQuantityChange"
                 />
               </el-form-item>
             </span>
@@ -103,7 +103,7 @@
               </el-form-item>
             </span>
             <div class="base_dialog_main_btnBox btn_condit">
-              <el-button type="info" @click="submitForm" v-has="{ red: 'merchantDeductAndIssueManualSubmit', type: 1 }">确认发放</el-button>
+              <el-button type="info" @click="submitForm" v-has="{ red: 'merchantDeductAndIssueManualSubmit', type: 1 }">确认发券</el-button>
             </div>
           </div>
         </div>
@@ -132,16 +132,35 @@ export default {
       if (value < 1) {
         return callback(new Error("发放数量必须为大于等于1的整数"));
       }
+      // 检查余额
+      if (this.selectedDeduction && this.selectedDeduction.deductionMode === "预充") {
+        const overdraftAllowed =
+          this.selectedDeduction.allowOverdraft === true ||
+          this.selectedDeduction.allowOverdraft === 1;
+        if (!overdraftAllowed) {
+          const balance = this.selectedDeduction.amountBalance || 0;
+          if (balance <= 0) {
+            return callback(new Error("余额不足，无法发放"));
+          }
+        }
+      }
       if (this.selectedDeduction && this.selectedDeduction.deductionMode === "次数") {
         const balance = this.selectedDeduction.quantityBalance || 0;
         if (value > balance) {
-          return callback(new Error("发放数量需小于等于充值剩余"));
+          return callback(new Error(`发放次数超过剩余次数，无法发放`));
         }
       }
       if (this.selectedDeduction && this.selectedDeduction.deductionMode === "预充") {
         if (value > 999) {
-          return callback(new Error("预充方式发放数量需小于等于999"));
+          return callback(new Error("预充方式，发放数量不能超过999"));
         }
+      }
+      callback();
+    };
+
+    const validateMemo = (rule, value, callback) => {
+      if (value && value.length > 200) {
+        return callback(new Error("备注不能多于200字"));
       }
       callback();
     };
@@ -189,7 +208,7 @@ export default {
           { required: true, message: "请选择抵扣券", trigger: "change" }
         ],
         quantity: [
-          { required: true, validator: validateQuantity, trigger: "blur" }
+          { required: true, validator: validateQuantity, trigger: ["blur", "change"] }
         ],
         validTimeStart: [
           { required: true, validator: validateValidTimeStart, trigger: "blur" }
@@ -197,7 +216,9 @@ export default {
         validTimeEnd: [
           { required: true, validator: validateValidTimeEnd, trigger: "blur" }
         ],
-        memo: []
+        memo: [
+          { validator: validateMemo, trigger: "blur" }
+        ]
       }
     };
   },
@@ -210,16 +231,11 @@ export default {
       return this.selectedDeduction && this.selectedDeduction.deductionTimes === null;
     },
     maxQuantity() {
-      if (this.selectedDeduction && this.selectedDeduction.deductionMode === "次数") {
-        return this.selectedDeduction.quantityBalance || 1;
-      }
-      if (this.selectedDeduction && this.selectedDeduction.deductionMode === "预充") {
-        return 999;
-      }
+      // 移除自动限制机制，改为验证提示
       return 9999;
     },
     quantityBalance() {
-      if (this.selectedDeduction && this.selectedDeduction.quantityBalance !== undefined) {
+      if (this.selectedDeduction && this.selectedDeduction.deductionMode === "次数" && this.selectedDeduction.quantityBalance !== undefined) {
         return this.selectedDeduction.quantityBalance;
       }
       return "";
@@ -256,6 +272,14 @@ export default {
         }
       });
     },
+    onQuantityChange() {
+      // 当数量改变时手动触发验证
+      this.$nextTick(() => {
+        if (this.$refs.licensePlateForm) {
+          this.$refs.licensePlateForm.validateField("quantity");
+        }
+      });
+    },
     clickInput() {
       let licensePlate = this.newList.licensePlate;
       this.$refs.dialog.openDialog(licensePlate);
@@ -267,23 +291,6 @@ export default {
     submitForm() {
       this.$refs["licensePlateForm"].validate(valid => {
         if (!valid) {
-          return;
-        }
-        if (this.selectedDeduction && this.selectedDeduction.deductionMode === "预充") {
-          const overdraftAllowed =
-            this.selectedDeduction.allowOverdraft === true ||
-            this.selectedDeduction.allowOverdraft === 1;
-          if (!overdraftAllowed) {
-            const balance = this.selectedDeduction.amountBalance || 0;
-            if (balance <= 0) {
-              this.$message.warning("该商户账户余额为0，无法发放预充抵扣券");
-              return;
-            }
-          }
-        }
-        // 备注校验
-        if (this.newList.memo && this.newList.memo.length > 200) {
-          this.$message.warning("备注不能多于200字");
           return;
         }
         this.$confirm("确认发放抵扣券吗?", "提示", {
