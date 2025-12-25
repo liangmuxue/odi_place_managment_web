@@ -91,7 +91,7 @@ export const constantRoutes = [
   // equipmentManagement, //设备管理
   // statisticalAnalysis, //统计分析
   // systemSettings, //系统设置
-  merchantManagement, //商户管理
+  // merchantManagement, //商户管理
 ]
 
 /**
@@ -124,6 +124,7 @@ const createRouter = () => new Router({
     y: 0
   }),
   routes: constantRoutes
+
 })
 
 
