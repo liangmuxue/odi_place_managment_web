@@ -107,6 +107,11 @@
             <span class="content">{{ scope.row.vehicleNumber }}</span>
           </template>
         </el-table-column>
+        <el-table-column label="用户电话" align="center" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span class="content">{{ scope.row.purePhoneNumber }}</span>
+          </template>
+        </el-table-column>
         <el-table-column
           label="发放数量(张)"
           align="center"
