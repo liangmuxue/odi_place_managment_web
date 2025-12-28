@@ -96,7 +96,7 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.quantity }}</span>
+            <span class="content">{{ scope.row.distributionQuantity }}</span>
           </template>
         </el-table-column>
         <el-table-column
