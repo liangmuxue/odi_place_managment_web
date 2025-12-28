@@ -112,6 +112,15 @@
           </template>
         </el-table-column>
         <el-table-column
+          label="有效期(天)"
+          align="center"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">{{ scope.row.deductionValidDays }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
           label="重复使用开始时间"
           min-width="130px"
           align="center"
@@ -138,6 +147,36 @@
         <el-table-column label="备注" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="content">{{ scope.row.memo }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="剩余数量"
+          align="center"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">{{ scope.row.quantity }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="允许回收"
+          align="center"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">{{ scope.row.allowRecycle ? '是' : '否' }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="回收时间"
+          min-width="130px"
+          align="center"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">{{
+              scope.row.recycleTime | parseTime("{y}-{m}-{d} {h}:{i}:{s}")
+            }}</span>
           </template>
         </el-table-column>
       </el-table>
