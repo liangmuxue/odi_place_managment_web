@@ -7,11 +7,6 @@
         </el-input>
       </span>
       <span class="search_content">
-        <div class="search_content_title2">停车场名称</div>
-        <el-input v-model="listQuery.parkingLotName" placeholder="请输入">
-        </el-input>
-      </span>
-      <span class="search_content">
         <div class="search_content_title2">抵扣券名称</div>
         <el-input v-model="listQuery.deductionName" placeholder="请输入">
         </el-input>
@@ -43,10 +38,8 @@
         <el-input v-model="listQuery.purePhoneNumber" placeholder="请输入">
         </el-input>
       </span>
-    </div>
-    <div class="search_box">
-      <span class="search_content">
-        <div class="search_content_title">未使用券是否失效</div>
+      <span class="search_content2">
+        <div class="search_content_title2">未使用券是否失效</div>
         <el-select
           v-model="listQuery.isExpired"
           placeholder="请选择"
@@ -62,8 +55,10 @@
           />
         </el-select>
       </span>
+    </div>
+    <div class="search_box">
       <span class="search_content">
-        <div class="search_content_title">未使用失效是否可回收</div>
+        <div class="search_content_title2" style="width: 260px;">未使用失效是否可回收</div>
         <el-select
           v-model="listQuery.allowRecycle"
           placeholder="请选择"
@@ -92,26 +87,11 @@
           :default-time="['00:00:00', '23:59:59']"
         ></el-date-picker>
       </span>
-    </div>
-    <div class="search_box">
       <span class="search_content2">
         <div class="search_content_title">到期时间</div>
         <el-date-picker
           style="width: 72%"
           v-model="expireTime"
-          value-format="yyyy-MM-dd HH:mm:ss"
-          type="datetimerange"
-          range-separator="-"
-          start-placeholder="请选择时间"
-          end-placeholder
-          :default-time="['00:00:00', '23:59:59']"
-        ></el-date-picker>
-      </span>
-      <span class="search_content2">
-        <div class="search_content_title">回收时间</div>
-        <el-date-picker
-          style="width: 72%"
-          v-model="recycleTime"
           value-format="yyyy-MM-dd HH:mm:ss"
           type="datetimerange"
           range-separator="-"
@@ -331,7 +311,6 @@ export default {
         pageSize: 10,
         total: 0,
         merchantName: "",
-        parkingLotName: "",
         deductionName: "",
         distrbuteMode: "",
         vehicleNumber: "",
@@ -341,9 +320,7 @@ export default {
         operateTimeStart: "",
         operateTimeEnd: "",
         expireTimeStart: "",
-        expireTimeEnd: "",
-        recycleTimeStart: "",
-        recycleTimeEnd: ""
+        expireTimeEnd: ""
       },
       distrbuteModeList: [
         { label: "人工发放", value: "人工" },
@@ -360,7 +337,6 @@ export default {
       ],
       operateTime: [],
       expireTime: [],
-      recycleTime: [],
       listLoading: null,
       list: []
     };
@@ -388,14 +364,6 @@ export default {
         this.listQuery.expireTimeStart = "";
         this.listQuery.expireTimeEnd = "";
       }
-      // 处理回收时间范围
-      if (this.recycleTime && this.recycleTime.length === 2) {
-        this.listQuery.recycleTimeStart = this.recycleTime[0];
-        this.listQuery.recycleTimeEnd = this.recycleTime[1];
-      } else {
-        this.listQuery.recycleTimeStart = "";
-        this.listQuery.recycleTimeEnd = "";
-      }
       this.openLoading();
       this.getList();
     },
@@ -406,7 +374,6 @@ export default {
         pageSize: 10,
         total: 0,
         merchantName: "",
-        parkingLotName: "",
         deductionName: "",
         distrbuteMode: "",
         vehicleNumber: "",
@@ -416,13 +383,10 @@ export default {
         operateTimeStart: "",
         operateTimeEnd: "",
         expireTimeStart: "",
-        expireTimeEnd: "",
-        recycleTimeStart: "",
-        recycleTimeEnd: ""
+        expireTimeEnd: ""
       };
       this.operateTime = [];
       this.expireTime = [];
-      this.recycleTime = [];
       this.openLoading();
       this.getList();
     },
@@ -472,7 +436,6 @@ export default {
     toExport() {
       const para = {
         merchantName: this.listQuery.merchantName,
-        parkingLotName: this.listQuery.parkingLotName,
         deductionName: this.listQuery.deductionName,
         distrbuteMode: this.listQuery.distrbuteMode,
         vehicleNumber: this.listQuery.vehicleNumber,
@@ -482,9 +445,7 @@ export default {
         operateTimeStart: this.listQuery.operateTimeStart,
         operateTimeEnd: this.listQuery.operateTimeEnd,
         expireTimeStart: this.listQuery.expireTimeStart,
-        expireTimeEnd: this.listQuery.expireTimeEnd,
-        recycleTimeStart: this.listQuery.recycleTimeStart,
-        recycleTimeEnd: this.listQuery.recycleTimeEnd
+        expireTimeEnd: this.listQuery.expireTimeEnd
       };
       merchantDeductionDistributionExport(para).then(res => {
         const content = res.data;
