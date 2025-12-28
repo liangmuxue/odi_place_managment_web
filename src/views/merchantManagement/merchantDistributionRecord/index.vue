@@ -15,7 +15,7 @@
         <div class="search_content_title">发放方式</div>
         <el-select
           v-model="listQuery.distrbuteMode"
-          placeholder="请选择选择"
+          placeholder="请选择"
           clearable
           class="filter-item"
           style="width: 72%"
@@ -32,6 +32,23 @@
         <div class="search_content_title2">车牌号</div>
         <el-input v-model="listQuery.vehicleNumber" placeholder="请输入">
         </el-input>
+      </span>
+      <span class="search_content">
+        <div class="search_content_title">允许回收</div>
+        <el-select
+          v-model="listQuery.allowRecycle"
+          placeholder="请选择"
+          clearable
+          class="filter-item"
+          style="width: 72%"
+        >
+          <el-option
+            v-for="item in allowRecycleList"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
       </span>
 
       <el-button icon="el-icon-refresh-right" @click="resetList"
@@ -212,11 +229,16 @@ export default {
         merchantName: "",
         deductionName: "",
         distrbuteMode: "",
-        vehicleNumber: ""
+        vehicleNumber: "",
+        allowRecycle: ""
       },
       distrbuteModeList: [
         { label: "人工", value: "人工" },
         { label: "二维码", value: "二维码" }
+      ],
+      allowRecycleList: [
+        { label: "是", value: true },
+        { label: "否", value: false }
       ],
       listLoading: null,
       list: []
@@ -241,7 +263,8 @@ export default {
         merchantName: "",
         deductionName: "",
         distrbuteMode: "",
-        vehicleNumber: ""
+        vehicleNumber: "",
+        allowRecycle: ""
       };
       this.openLoading();
       this.getList();
@@ -294,7 +317,8 @@ export default {
         merchantName: this.listQuery.merchantName,
         deductionName: this.listQuery.deductionName,
         distrbuteMode: this.listQuery.distrbuteMode,
-        vehicleNumber: this.listQuery.vehicleNumber
+        vehicleNumber: this.listQuery.vehicleNumber,
+        allowRecycle: this.listQuery.allowRecycle
       };
       merchantDeductionDistributionExport(para).then(res => {
         const content = res.data;
