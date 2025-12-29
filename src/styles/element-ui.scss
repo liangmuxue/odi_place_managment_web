@@ -633,6 +633,15 @@
   width: 390px !important;
 }
 
+.monthlyRentalCarManagement_content .el-range-editor--medium {
+  width: 320px !important;
+  padding-right: 0;
+
+  .el-range-input {
+    font-size: 12px !important;
+  }
+}
+
 //breadcrumb组件样式
 .app-breadcrumb.el-breadcrumb .no-redirect {
   color: $titleTextH;
@@ -650,9 +659,12 @@
     .el-tree-node__children {
       display: flex;
       flex-direction: row;
+      flex-wrap: wrap;
+      padding: 0 20px;
 
       // white-space: wrap;
       .el-tree-node .el-tree-node__content {
+        width: 100px !important;
         padding-left: 10px !important;
       }
 
@@ -678,4 +690,9 @@
 
 .carNoDialog .el-dialog__body {
   padding: 0 !important;
+}
+
+.el-image-viewer__wrapper {
+  position: fixed !important;
+  z-index: 12000 !important;
 }

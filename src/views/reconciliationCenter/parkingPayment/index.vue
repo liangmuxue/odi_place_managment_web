@@ -11,7 +11,7 @@
       <span class="search_content">
         <div class="search_content_title">停车场</div>
         <el-select
-          v-model="listQuery.parkNameEq"
+          v-model="listQuery.parkName"
           placeholder="选择停车场"
           clearable
           class="filter-item"
@@ -30,7 +30,7 @@
         <div class="search_content_title">车牌号</div>
         <el-input v-model="listQuery.vehicle" placeholder="请输入"> </el-input>
       </span>
-      <span class="search_content">
+      <!-- <span class="search_content">
         <div class="search_content_title">是否开票</div>
         <el-select
           v-model="listQuery.invoice"
@@ -41,6 +41,23 @@
         >
           <el-option
             v-for="item in invoiceList"
+            :key="item.enumValue"
+            :label="item.enumName"
+            :value="item.enumValue"
+          />
+        </el-select>
+      </span> -->
+      <span class="search_content">
+        <div class="search_content_title">是否退款</div>
+        <el-select
+          v-model="listQuery.finalRefundStatus"
+          placeholder="请选择"
+          clearable
+          class="filter-item"
+          style="width: 72%"
+        >
+          <el-option
+            v-for="item in finalRefundStatusList"
             :key="item.enumValue"
             :label="item.enumName"
             :value="item.enumValue"
@@ -187,6 +204,9 @@
             <span class="content" v-else-if="scope.row.discountType == 2">{{
               scope.row.discountMoney + "分钟(充电券)"
             }}</span>
+            <span class="content" v-else-if="scope.row.discountType == 5">{{
+              scope.row.discountMoney + "分钟(生活券)"
+            }}</span>
             <span class="content" v-else-if="scope.row.discountType == 1">{{
               scope.row.discountMoney + "元"
             }}</span>
@@ -214,7 +234,7 @@
             }}</span>
           </template>
         </el-table-column>
-        <el-table-column
+        <!-- <el-table-column
           label="是否已开票"
           align="center"
           show-overflow-tooltip
@@ -224,14 +244,28 @@
               scope.row.invoice == 1 ? "是" : "否"
             }}</span>
           </template>
-        </el-table-column>
-        <!-- <el-table-column label="是否退款" align="center" show-overflow-tooltip>
-          <template slot-scope="scope">
-            <span class="content" v-if="scope.row.status == 2"> 否</span>
-            <span class="content-g" v-if="scope.row.status == 1"> 待退款</span>
-            <span class="content" v-if="scope.row.status == -1"> 已退款</span>
-          </template>
         </el-table-column> -->
+        <el-table-column label="是否退款" align="center" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span class="content" v-if="scope.row.finalRefundStatus == '否'">
+              否</span
+            >
+            <span
+              class="content"
+              style="color:#5ac00a"
+              v-if="scope.row.finalRefundStatus == '待退款'"
+            >
+              待退款</span
+            >
+            <span
+              class="content"
+              style="color:#ccc"
+              v-if="scope.row.finalRefundStatus == '已退款'"
+            >
+              已退款</span
+            >
+          </template>
+        </el-table-column>
         <el-table-column
           label="操作"
           align="center"
@@ -241,18 +275,18 @@
           <template slot-scope="scope">
             <span
               class="operation_button update_btn"
-              v-if="scope.row.status == 2 || scope.row.status == 1"
-              @click="openRefund(scope.row.id)"
+              v-if="scope.row.finalRefundStatus !== '已退款'"
+              @click="openRefund(scope.row.orderId)"
               v-has="{ red: 'parkingPaymentRefund', type: 1 }"
             >
               退款
             </span>
-            <span
+            <!-- <span
               class="operation_button update_btn2"
               v-if="scope.row.status == -1"
             >
               已退款
-            </span>
+            </span> -->
             <!-- v-has="{ red: 'editBox', type: 1 }" -->
           </template>
         </el-table-column>
@@ -308,8 +342,8 @@
 
 <script>
 import {
-  orderPageList, //停车缴费分页
-  orderExport, // 停车缴费导出
+  pageRecordList, //停车缴费分页
+  export4RecordList, // 停车缴费导出
   orderRefund // 停车缴费退款
 } from "@/api/reconciliationCenter";
 import { fieldTable } from "@/api/common";
@@ -328,16 +362,17 @@ export default {
         total: 0,
         orderNum: "", //订单号
         parkName: "", //停车场
-        parkNameEq: "", //停车场名称全
-        park: "", //停车场id
+        // parkNameEq: "", //停车场名称全
+        // park: "", //停车场id
         vehicle: "", //车牌号
-        startTime: "", //开始时间
-        endTime: "", //结束时间
-        invoice: null, //是否开票
+        payTimeStart: "", //开始时间
+        payTimeEnd: "", //结束时间
+        // invoice: null, //是否开票
         payType: null, //支付方式
-        orderType: 1 //临停传1  长租传2
+        finalRefundStatus: null
+        // orderType: 1 //临停传1  长租传2
       },
-      newList: { id: null, refundReason: "" },
+      newList: { orderId: null, refundReason: "" },
       rules: {
         refundReason: [
           { required: true, message: "请输入退款原因", trigger: "blur" }
@@ -350,11 +385,13 @@ export default {
         { enumName: "钱包余额", enumValue: 2 }
       ],
       invoiceList: [
-        // { enumName: "已退款", enumValue: -1 },
-        // { enumName: "待退款", enumValue: 1 },
-        // { enumName: "否", enumValue: 2 }
         { enumName: "是", enumValue: 1 },
         { enumName: "否", enumValue: 0 }
+      ],
+      finalRefundStatusList: [
+        { enumName: "已退款", enumValue: "已退款" },
+        { enumName: "待退款", enumValue: "待退款" },
+        { enumName: "否", enumValue: "否" }
       ],
       selGateway: null,
       time: [],
@@ -384,8 +421,8 @@ export default {
   methods: {
     changeTime() {
       console.log(111, this.time);
-      this.listQuery.startTime = this.time[0];
-      this.listQuery.endTime = this.time[1];
+      this.listQuery.payTimeStart = this.time[0];
+      this.listQuery.payTimeEnd = this.time[1];
     },
     getFieldTable() {
       fieldTable(this.Dictionaries).then(response => {
@@ -413,14 +450,15 @@ export default {
         total: 0,
         orderNum: "", //订单号
         parkName: "", //停车场
-        parkNameEq: "", //停车场名称全
-        park: "", //停车场id
+        // parkNameEq: "", //停车场名称全
+        // park: "", //停车场id
         vehicle: "", //车牌号
-        startTime: "", //开始时间
-        endTime: "", //结束时间
-        invoice: null, //是否开票
+        payTimeStart: "", //开始时间
+        payTimeEnd: "", //结束时间
+        // invoice: null, //是否开票
         payType: null, //支付方式
-        orderType: 1 //临停传1  长租传2
+        finalRefundStatus: null
+        // orderType: 1 //临停传1  长租传2
       };
       this.time = [];
       this.openLoading();
@@ -449,10 +487,10 @@ export default {
     //获取数据列表
     getList() {
       let para = this.listQuery;
-      orderPageList(para)
+      pageRecordList(para)
         .then(response => {
-          this.list = response.data.list;
-          this.totalMoney = response.data.totalMoney;
+          this.list = response.data.rows;
+          this.totalMoney = response.totalPayMoney;
           if (response.data.total > 0) {
             this.listQuery.total = response.data.total; // 数据总条数
           } else {
@@ -483,16 +521,17 @@ export default {
       let para = {
         orderNum: this.listQuery.orderNum,
         parkName: this.listQuery.parkName,
-        parkNameEq: this.listQuery.parkNameEq,
-        park: this.listQuery.park,
+        // parkNameEq: this.listQuery.parkNameEq,
+        // park: this.listQuery.park,
         vehicle: this.listQuery.vehicle,
-        startTime: this.listQuery.startTime,
-        endTime: this.listQuery.endTime,
-        invoice: this.listQuery.invoice,
-        payType: this.listQuery.payType,
-        orderType: 1
+        payTimeStart: this.listQuery.payTimeStart,
+        payTimeEnd: this.listQuery.payTimeEnd,
+        // invoice: this.listQuery.invoice,
+        payType: this.listQuery.payType, //支付方式
+        finalRefundStatus: this.listQuery.finalRefundStatus
+        // orderType: 1
       };
-      orderExport(para).then(res => {
+      export4RecordList(para).then(res => {
         var content = res.data;
         var elink = document.createElement("a");
         elink.download = "停车缴费" + new Date().getTime() + ".xls";
@@ -508,9 +547,10 @@ export default {
       });
     },
     //开启退款弹窗
-    openRefund(id) {
+    openRefund(orderId) {
       this.dialogFormVisible = true;
-      this.newList.id = id;
+      this.newList.orderId = orderId;
+      this.newList.refundReason = "";
     },
     //退款
     toRefund() {

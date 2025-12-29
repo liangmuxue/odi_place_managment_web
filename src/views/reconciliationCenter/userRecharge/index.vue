@@ -261,11 +261,11 @@ export default {
     //导出
     toExport() {
       let para = {
-        name: this.listQuery.name,
-        parkName: this.listQuery.parkName,
+        openid: this.listQuery.openid,
+        phone: this.listQuery.phone,
         startTime: this.listQuery.startTime,
         endTime: this.listQuery.endTime,
-        type: this.listQuery.type
+        payType: this.listQuery.payType
       };
       rechargeExpor(para).then(res => {
         var content = res.data;

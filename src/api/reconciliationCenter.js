@@ -28,10 +28,29 @@ export function orderPageList(data) {
 
   })
 }
+//停车缴费分页(新)
+export function pageRecordList(data) {
+  return request({
+    url: 'system/order/pageRecordList',
+    method: 'get',
+    params: data
+
+  })
+}
 //停车缴费导出
 export function orderExport(data) {
   return request({
     url: '/system/order/export',
+    method: 'get',
+    params: data,
+    responseType: 'blob' // 表明返回服务器返回的数据类型
+
+  })
+}
+//停车缴费：导出excel
+export function export4RecordList(data) {
+  return request({
+    url: '/system/order/export4RecordList',
     method: 'get',
     params: data,
     responseType: 'blob' // 表明返回服务器返回的数据类型

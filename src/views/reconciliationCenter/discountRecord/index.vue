@@ -193,7 +193,7 @@ export default {
         pageSize: 10,
         total: 0,
         orderNum: "", //订单号
-        refundNum: "", //退款编号
+        orderType: "", //订单类型
         vehicle: "", //车牌号
         phone: "", //车主手机
         startTime: "", //开始时间
@@ -254,7 +254,7 @@ export default {
         pageSize: 10,
         total: 0,
         orderNum: "", //订单号
-        refundNum: "", //退款编号
+        orderType: "", //订单类型
         vehicle: "", //车牌号
         phone: "", //车主手机
         startTime: "", //开始时间
@@ -318,7 +318,7 @@ export default {
     toExport() {
       let para = {
         orderNum: this.listQuery.orderNum,
-        refundNum: this.listQuery.refundNum,
+        orderType: this.listQuery.orderType,
         vehicle: this.listQuery.vehicle,
         phone: this.listQuery.refundNum,
         startTime: this.listQuery.phone,

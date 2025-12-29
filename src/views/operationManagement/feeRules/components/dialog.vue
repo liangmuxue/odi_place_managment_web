@@ -73,11 +73,26 @@
                   </el-select>
                 </el-form-item>
               </span>
-              <span class="base_dialog_condit" v-if="pageType == 3">
+              <span class="base_dialog_condit_feelRules" v-if="pageType == 3">
                 <el-form-item label="在用车场" prop="parkNames">
-                  <span class="base_dialog_condit_text">
+                  <div class="base_dialog_condit_feelRules_box">
+                    <div
+                      class="base_dialog_condit_feelRules_con"
+                      v-if="parkingLots && parkingLots.length"
+                    >
+                      <div v-for="(item, i) in parkingLots" :key="i">
+                        {{ item }}
+                      </div>
+                    </div>
+                    <div class="base_dialog_condit_feelRules_con">
+                      <div v-for="(item, i) in internalParkingLots" :key="i">
+                        {{ item }}
+                      </div>
+                    </div>
+                  </div>
+                  <!-- <span class="base_dialog_condit_text">
                     {{ parkingLots }}
-                  </span>
+                  </span> -->
                 </el-form-item>
               </span>
             </div>
@@ -1173,7 +1188,8 @@ export default {
       title: "新增",
       isShow: false,
       editRuleName: null, //编辑规则名
-      parkingLots: "", //使用中的停车场
+      parkingLots: [], //使用中的外来停车场
+      internalParkingLots: [], //使用中的内部停车场
       hasNight: 0,
       newList: {
         ruleName: "", //规则名称
@@ -1211,7 +1227,8 @@ export default {
             beyondBigCarPay: null
           }
         ], //收费信息
-        parkingLots: [] //车场信息
+        parkingLots: [], //外来车场信息
+        internalParkingLots: [] //内部车场信息
       }, //车位详情
       tollsList: [], //收费信息
       isList: [
@@ -1516,7 +1533,8 @@ export default {
               beyondBigCarPay: null
             }
           ], //收费信息
-          parkingLots: [] //车场信息
+          parkingLots: [], //外来车场信息
+          internalParkingLots: [] //内部车场信息
         };
         this.editRuleName = null;
         if (this.$refs["parkingForm"]) {
@@ -1552,10 +1570,32 @@ export default {
         let list = response.data.parkingLots;
         if (response.data.parkingLots && response.data.parkingLots.length) {
           list.forEach(el => {
-            arr.push(el.name);
+            arr.push(el.name + "(外来临停车规则)");
           });
         }
-        this.parkingLots = arr.toString();
+        this.parkingLots = arr;
+        let arr2 = [];
+        let list2 = response.data.internalParkingLots;
+        if (
+          response.data.internalParkingLots &&
+          response.data.internalParkingLots.length
+        ) {
+          list2.forEach(el => {
+            arr2.push(el.name + "(内部临停车规则)");
+          });
+        }
+        this.internalParkingLots = arr2;
+
+        // this.parkingLots = [
+        //   "高新园区科海街东侧地上停车场123456(外来临停车规则)",
+        //   "芝麻街全新功能测试车场1128(外来临停车规则)",
+        //   "芝麻街全新功能测试车场1128(外来临停车规则)"
+        // ];
+        // this.internalParkingLots = [
+        //   "高新园区科海街东侧地上停车场123456(内部临停车规则)",
+        //   "芝麻街全新功能测试车场1128(内部临停车规则)",
+        //   "芝麻街全新功能测试车场1128(内部临停车规则)"
+        // ];
       });
     },
     getSort(a, b) {
@@ -1794,6 +1834,12 @@ export default {
   .small_text2 {
     width: 10%;
     text-align: center;
+  }
+}
+.base_dialog_condit_feelRules_box {
+  display: flex;
+  .base_dialog_condit_feelRules_con {
+    flex: 1;
   }
 }
 </style>

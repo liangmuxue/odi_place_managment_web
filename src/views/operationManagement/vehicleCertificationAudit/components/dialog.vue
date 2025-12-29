@@ -50,7 +50,15 @@
             </span>
             <span class="base_dialog_condit">
               <el-form-item label="身份证：" prop="idcardPhoto">
-                <el-popover
+                <el-image
+                  v-if="newList.idcardPhoto"
+                  style="width: 48px; height: 36px"
+                  :src="newList.idcardPhoto"
+                  :preview-src-list="getPhotoList2(newList.idcardPhoto)"
+                >
+                </el-image>
+
+                <!-- <el-popover
                   placement="top-start"
                   width="500"
                   trigger="click"
@@ -73,19 +81,23 @@
                     width="48"
                     height="36"
                   />
-                  <!-- :src="
-                      newList.idcardPhoto +
-                        '?x-oss-process=image/resize,h_36,w_48'
-                    " -->
                   <span v-else>
                     <div min-width="48" height="36"></div>
                   </span>
-                </el-popover>
+                </el-popover> -->
               </el-form-item>
             </span>
             <span class="base_dialog_condit">
               <el-form-item label="行驶证：" prop="drivingLicense">
-                <el-popover
+                <el-image
+                  v-if="newList.drivingLicense"
+                  style="width: 48px; height: 36px"
+                  :src="newList.drivingLicense"
+                  :preview-src-list="getPhotoList2(newList.drivingLicense)"
+                >
+                </el-image>
+
+                <!-- <el-popover
                   placement="top-start"
                   width="500"
                   trigger="click"
@@ -109,14 +121,10 @@
                     width="48"
                     height="36"
                   />
-                  <!-- :src="
-                      newList.drivingLicense +
-                        '?x-oss-process=image/resize,h_36,w_48'
-                    " -->
                   <span v-else>
                     <div min-width="48" height="36"></div>
                   </span>
-                </el-popover>
+                </el-popover> -->
               </el-form-item>
             </span>
             <span class="base_dialog_condit">
@@ -129,7 +137,21 @@
             <span class="base_dialog_condit" v-if="pageType != 2">
               <el-form-item label="状态：" prop="auditType">
                 <span class="base_dialog_condit_text">
-                  {{ getStatusName(newList.status) }}
+                  {{ getStatusName(newList) }}
+                </span>
+              </el-form-item>
+            </span>
+            <span class="base_dialog_condit">
+              <el-form-item label="申请时间：" prop="auditType">
+                <span class="base_dialog_condit_text">
+                  {{ newList.createTime }}
+                </span>
+              </el-form-item>
+            </span>
+            <span class="base_dialog_condit" v-if="newList.status == -1">
+              <el-form-item label="不通过原因：" prop="auditType">
+                <span class="base_dialog_condit_text">
+                  {{ newList.reason }}
                 </span>
               </el-form-item>
             </span>
@@ -216,6 +238,12 @@ export default {
   },
   created() {},
   methods: {
+    getPhotoList2(url) {
+      let arr = [];
+      arr.push(url);
+      return arr;
+    },
+
     //打开弹窗
     showDialog(id, type) {
       this.isShow = true;
@@ -266,10 +294,14 @@ export default {
     },
     //获取状态名称
     getStatusName(e) {
+      let status = e.status;
+      let used = e.used;
       let name;
-      if (e == 0) {
+      if (status == null && used == 1) {
+        name = "审核通过";
+      } else if (status == 0) {
         name = "待审核";
-      } else if (e == 1) {
+      } else if (status == 1) {
         name = "审核通过";
       } else {
         name = "不通过";

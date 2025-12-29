@@ -255,14 +255,14 @@ export default {
             trigger: "change",
             validator: validateTimes
           }
-        ],
-        releaseCarTypes: [
-          {
-            required: true,
-            trigger: "change",
-            validator: validateReleaseCarTypes
-          }
         ]
+        // releaseCarTypes: [
+        //   {
+        //     required: true,
+        //     trigger: "change",
+        //     validator: validateReleaseCarTypes
+        //   }
+        // ]
       }
     };
   },
@@ -280,6 +280,10 @@ export default {
       barrierRuleBarrier(para).then(response => {
         this.newList = { data: response.data };
         this.newList.data.forEach(el => {
+          if (el.releaseCarTypes === null) {
+            el.releaseCarTypes = [];
+          }
+
           if (el.releaseType == 2) {
             if (el.timeList) {
               el.timeList.forEach(e => {
@@ -389,6 +393,9 @@ export default {
             let para = [];
             this.newList.data.forEach((el, i) => {
               let newTimeList = [];
+              if (!el.timeList) {
+                el.timeList = [];
+              }
               el.timeList.forEach((e, j) => {
                 newTimeList.push({
                   startTime: e.startTime,

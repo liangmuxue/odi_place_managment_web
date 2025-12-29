@@ -305,11 +305,13 @@ export default {
     //导出
     toExport() {
       let para = {
-        name: this.listQuery.name,
+        orderNum: this.listQuery.orderNum,
+        refundNum: this.listQuery.refundNum,
+        vehicle: this.listQuery.vehicle,
+        phone: this.listQuery.phone,
         parkName: this.listQuery.parkName,
         startTime: this.listQuery.startTime,
-        endTime: this.listQuery.endTime,
-        type: this.listQuery.type
+        endTime: this.listQuery.endTime
       };
       refundRecordExport(para).then(res => {
         var content = res.data;

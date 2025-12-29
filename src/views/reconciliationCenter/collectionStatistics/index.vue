@@ -395,11 +395,9 @@ export default {
     //导出
     toExport() {
       let para = {
-        name: this.listQuery.name,
         parkName: this.listQuery.parkName,
         startTime: this.listQuery.startTime,
-        endTime: this.listQuery.endTime,
-        type: this.listQuery.type
+        endTime: this.listQuery.endTime
       };
       collectionStatisticsExport(para).then(res => {
         var content = res.data;

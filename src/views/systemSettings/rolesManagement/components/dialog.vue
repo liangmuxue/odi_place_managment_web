@@ -80,10 +80,7 @@
                 </span>
               </el-form-item>
             </span>
-            <span
-              class="base_dialog_condit"
-              v-show="newList.rightType !== 2"
-            >
+            <span class="base_dialog_condit" v-show="newList.rightType !== 2">
               <el-form-item label="数据权限" prop="parkingLots">
                 <span style="display: inline-block;width: 72%">
                   <el-input
@@ -302,7 +299,9 @@ export default {
         list.forEach(item => {
           const currentRightType = item.rightType;
           const nextHasAncestorType23 =
-            hasAncestorType23 || currentRightType === 2 || currentRightType === 3;
+            hasAncestorType23 ||
+            currentRightType === 2 ||
+            currentRightType === 3;
 
           // 先递归处理子节点
           let children = [];
@@ -360,7 +359,8 @@ export default {
               this.pageType === 1 &&
               this.newList &&
               this.newList.rightType === 2 &&
-              (!this.newList.resourceIdList || this.newList.resourceIdList.length === 0)
+              (!this.newList.resourceIdList ||
+                this.newList.resourceIdList.length === 0)
             ) {
               const allKeys = this.getAllResourceIds(this.roleList, true);
               if (allKeys && allKeys.length) {
@@ -407,7 +407,9 @@ export default {
           let disabledForMerchant = false;
           const currentRightType = item.rightType;
           const nextHasAncestorType23 =
-            hasAncestorType23 || currentRightType === 2 || currentRightType === 3;
+            hasAncestorType23 ||
+            currentRightType === 2 ||
+            currentRightType === 3;
 
           if (
             skipDisabledForMerchant &&
@@ -443,7 +445,8 @@ export default {
             this.newList &&
             this.newList.rightType === 2 &&
             this.$refs.tree &&
-            (!this.newList.resourceIdList || this.newList.resourceIdList.length === 0)
+            (!this.newList.resourceIdList ||
+              this.newList.resourceIdList.length === 0)
           ) {
             const allKeys = this.getAllResourceIds(this.roleList, true);
             if (allKeys && allKeys.length) {
@@ -453,7 +456,11 @@ export default {
             }
           }
           // 当从商户切回普通角色（rightType === 1）时，恢复表格中的勾选状态
-          if (this.newList && this.newList.rightType === 1 && this.$refs.reloTable) {
+          if (
+            this.newList &&
+            this.newList.rightType === 1 &&
+            this.$refs.reloTable
+          ) {
             // 使用备份的数据权限恢复 newList.parkingLots，再根据 id 重新勾选
             if (this.normalParkingLotsBackup) {
               this.newList.parkingLots = this.normalParkingLotsBackup.slice();

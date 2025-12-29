@@ -12,10 +12,13 @@
           > 基础信息
         </div>
         <div :class="step == 2 ? 'step2' : 'step'" @click="toStep(2)">
-          > 临停规则
+          > 外来临停车规则
         </div>
         <div :class="step == 3 ? 'step2' : 'step'" @click="toStep(3)">
-          > 长租规则
+          > 内部临停车规则
+        </div>
+        <div :class="step == 4 ? 'step2' : 'step'" @click="toStep(4)">
+          > 长租车规则
         </div>
       </div>
       <el-form
@@ -263,14 +266,22 @@
               </el-form-item>
             </span>
             <span class="base_dialog_condit" v-if="pageType == 3">
-              <el-form-item label="临停规则" prop="feeRules">
+              <el-form-item label="外来临停车规则" prop="feeRules">
                 <span class="base_dialog_condit_text">
                   {{ feeRuleNames }}
                 </span>
               </el-form-item>
             </span>
             <span class="base_dialog_condit" v-if="pageType == 3">
-              <el-form-item label="长租规则" prop="feeRules">
+              <el-form-item label="内部临停车规则" prop="internalFeeRules">
+                <span class="base_dialog_condit_text">
+                  {{ internalFeeRuleNames }}
+                </span>
+              </el-form-item>
+            </span>
+
+            <span class="base_dialog_condit" v-if="pageType == 3">
+              <el-form-item label="长租车规则" prop="feeRules">
                 <span class="base_dialog_condit_text">
                   {{
                     newList.ruleParkingLeases.length > 0 &&
@@ -394,7 +405,7 @@
                 />%
               </el-form-item>
             </span> -->
-            <span class="base_dialog_condit">
+            <!-- <span class="base_dialog_condit">
               <el-form-item label="放行规则" prop="accessType">
                 <el-radio-group
                   v-model="newList.accessType"
@@ -413,7 +424,7 @@
               >
                 首次配置后不可修改，如需修改，需由技术人员配合调试相关硬件参数
               </div>
-            </span>
+            </span> -->
 
             <span class="base_dialog_condit">
               <el-form-item label="停车场区域地址" prop="addressId">
@@ -474,6 +485,26 @@
         </el-transfer>
       </div>
       <div class="base_dialog_main_content" v-show="step == 3">
+        <el-transfer
+          style="text-align: left; display: inline-block;"
+          v-model="internalFeeRules"
+          filterable
+          :props="{
+            key: 'id',
+            label: 'ruleName'
+          }"
+          :titles="['待选择', '已选择']"
+          :format="{
+            noChecked: '${total}',
+            hasChecked: '${checked}/${total}'
+          }"
+          @left-check-change="leftRules"
+          @change="getRules2"
+          :data="ruleList"
+        >
+        </el-transfer>
+      </div>
+      <div class="base_dialog_main_content" v-show="step == 4">
         <el-transfer
           style="text-align: left; display: inline-block;"
           v-model="newList.ruleParkingLeasesIds"
@@ -623,14 +654,17 @@ export default {
         address: "", //停车场区域地址
         addressId: "", //停车场区域地址id
         coordinate: "", //地图坐标
-        feeRules: null, //临停收费规则
+        feeRules: null, //外来临停收费规则
+        internalFeeRules: null, //内部临停收费规则
         ruleParkingLeasesIds: [] //长租收费规则
       }, //车场详情
       timeList: ["00:00:00", "23:59:59"], //营业时间
       photos: [], //图片列表
-      feeRules: [], //收费规则id
+      feeRules: [], //外来收费规则id
+      internalFeeRules: [], //内部收费规则id
 
-      feeRuleNames: "", //收费规则名称
+      feeRuleNames: "", //外来临停收费规则名称
+      internalFeeRuleNames: "", //内部临停收费规则名称
       ruleList: [],
       ruleListLong: [],
       operators: [
@@ -849,12 +883,19 @@ export default {
       }
     },
 
-    //临停规则选择
+    //外来临停规则选择
     getRules(data) {
       if (data.length > 1) {
         data.splice(0, 1);
       }
       this.newList.feeRules = data.toString();
+    },
+    //内部临停规则选择
+    getRules2(data) {
+      if (data.length > 1) {
+        data.splice(0, 1);
+      }
+      this.newList.internalFeeRules = data.toString();
     },
     leftRulesLong(data) {
       if (data.length > 1) {
@@ -891,6 +932,7 @@ export default {
         this.timeList = ["00:00:00", "23:59:59"]; //营业时间
         this.photos = [];
         this.feeRules = [];
+        this.internalFeeRules = [];
         // this.ruleList = [];
         // this.ruleListLong = [];
 
@@ -917,7 +959,8 @@ export default {
           address: "", //停车场区域地址
           addressId: "", //停车场区域地址id
           coordinate: "", //地图坐标
-          feeRules: null, //临停收费规则
+          feeRules: null, //外来临停收费规则
+          internalFeeRules: null, //内部临停收费规则
           ruleParkingLeasesIds: [] //长租收费规则
         };
         this.editName = null;
@@ -971,11 +1014,23 @@ export default {
         this.timeList = [response.data.startTime, response.data.endTime];
         if (response.data.feeRules) {
           this.feeRules = this.getFeeRuleNames(
-            response.data.feeRules.split(",")
+            response.data.feeRules.split(","),
+            1
           );
           this.feeRules = response.data.feeRules.split(",").map(Number);
         } else {
           this.feeRules = [];
+        }
+        if (response.data.internalFeeRules) {
+          this.internalFeeRules = this.getFeeRuleNames(
+            response.data.internalFeeRules.split(","),
+            2
+          );
+          this.internalFeeRules = response.data.internalFeeRules
+            .split(",")
+            .map(Number);
+        } else {
+          this.internalFeeRules = [];
         }
         let coordinate = response.data.coordinate.split(",");
         this.$nextTick(() => {
@@ -989,7 +1044,7 @@ export default {
       });
     },
     //获取收费规则名称
-    getFeeRuleNames(feeRules) {
+    getFeeRuleNames(feeRules, n) {
       let arr = [];
       // if (feeRules.length == 1 && feeRules[0] === "全") {
       //   this.ruleList.forEach(el => {
@@ -1003,8 +1058,11 @@ export default {
         }
       });
       // }
-
-      this.feeRuleNames = arr.toString();
+      if (n == 1) {
+        this.feeRuleNames = arr.toString();
+      } else {
+        this.internalFeeRuleNames = arr.toString();
+      }
     },
     //关闭新增/编辑弹窗
     closeDialog() {
@@ -1063,7 +1121,7 @@ export default {
           this.$confirm("确认提交编辑的停车场信息吗?", "提示", {
             type: "warning"
           }).then(() => {
-            if (this.step == 2 || this.step == 3) {
+            if (this.step == 2 || this.step == 3 || this.step == 4) {
               this.isShow = false;
               this.$emit("openLoading", {});
             }
@@ -1087,7 +1145,7 @@ export default {
                   //   message: "提交失败"
                   // });
                 }
-                if (this.step == 3 || this.step == 2) {
+                if (this.step == 4 || this.step == 3 || this.step == 2) {
                   setTimeout(() => {
                     this.$emit("getList", {});
                   }, 300);
