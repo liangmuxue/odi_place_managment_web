@@ -65,22 +65,22 @@
         ></el-table-column>
         <el-table-column label="商户名称" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.merchantName }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.merchantName) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="商户编号" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.merchantId }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.merchantId) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="联系人" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.contact }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.contact) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="联系电话" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.tel }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.tel) }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -89,7 +89,7 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.parkingLotName }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.parkingLotName) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="账户余额(元)" align="center" show-overflow-tooltip>
@@ -145,7 +145,7 @@ import { merchantList, merchantBatchDelete, todayOnOff, negativeBalanceList } fr
 import Dialog from "./components/dialog";
 import Detail from "./components/detail";
 import NegativeBalanceDialog from "./components/negativeBalanceDialog";
-import { formatAmount } from "../util/amountUtil";
+import { formatAmount, formatEmptyValue } from "../util/amountUtil";
 
 export default {
   name: "MerchantList",
@@ -173,6 +173,7 @@ export default {
   },
   methods: {
     formatAmount,
+    formatEmptyValue,
     checkNegativeBalance() {
       todayOnOff().then(response => {
         if (response.data) {

@@ -80,7 +80,7 @@
         ></el-table-column>
         <el-table-column label="商户名称" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.merchantName }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.merchantName) }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -89,7 +89,7 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.deductionName }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.deductionName) }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -98,7 +98,7 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.quantity }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.quantity) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="售价(元)" align="center" show-overflow-tooltip>
@@ -126,7 +126,7 @@
         </el-table-column>
         <el-table-column label="退款类型" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.refundType }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.refundType) }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -143,7 +143,7 @@
         </el-table-column>
         <el-table-column label="操作人" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.operator }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.operator) }}</span>
           </template>
         </el-table-column>
 
@@ -186,6 +186,7 @@ import {
   merchantRefundRecordExport
 } from "@/api/merchantManagement";
 import Dialog from "./components/dialog";
+import { formatEmptyValue } from "../util/amountUtil";
 
 export default {
   name: "merchantRefundRecord",
@@ -229,6 +230,7 @@ export default {
     this.toSearchList();
   },
   methods: {
+    formatEmptyValue,
     changeTime() {
       if (this.time[0] && this.time[1]) {
         const pad = n => (n < 10 ? "0" + n : n);

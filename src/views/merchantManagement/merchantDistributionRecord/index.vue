@@ -135,12 +135,12 @@
         ></el-table-column>
         <el-table-column label="商户名称" align="center" show-overflow-tooltip min-width="150px">
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.merchantName }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.merchantName) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="停车场名称" align="center" show-overflow-tooltip min-width="150px">
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.parkingLotName }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.parkingLotName) }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -150,27 +150,27 @@
           min-width="150px"
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.deductionName }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.deductionName) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="发放方式" align="center" show-overflow-tooltip min-width="150px">
           <template slot-scope="scope">
-            <span class="content">{{ formatDistributeMode(scope.row) }}</span>
+            <span class="content">{{ formatEmptyValue(formatDistributeMode(scope.row)) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="是否限在场领取" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.needVehicle ? '是' : '-' }}</span>
+            <span class="content">{{ scope.row.needVehicle ? '是' : '--' }}</span>
           </template>
         </el-table-column>
         <el-table-column label="手机" align="center" show-overflow-tooltip min-width="150px">
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.purePhoneNumber }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.purePhoneNumber) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="车牌号" align="center" show-overflow-tooltip min-width="200px">
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.vehicleNumber }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.vehicleNumber) }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -179,7 +179,7 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.distributionQuantity }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.distributionQuantity) }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -188,7 +188,7 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.usedQuantity }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.usedQuantity) }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -197,7 +197,7 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.quantity }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.quantity) }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -277,7 +277,7 @@
         </el-table-column>
         <el-table-column label="备注" align="center" show-overflow-tooltip min-width="200px">
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.memo }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.memo, true) }}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -300,6 +300,7 @@ import {
   merchantDeductionDistributionList,
   merchantDeductionDistributionExport
 } from "@/api/merchantManagement";
+import { formatEmptyValue } from "../util/amountUtil";
 
 export default {
   name: "merchantDistributionRecord",
@@ -345,6 +346,7 @@ export default {
     this.toSearchList();
   },
   methods: {
+    formatEmptyValue,
     //查询泊位列表
     toSearchList() {
       this.listQuery.pageNum = 1;

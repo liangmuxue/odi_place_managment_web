@@ -19,9 +19,21 @@
     </div>
     <div class="base_dialog_main_content">
       <el-table :data="list" border style="width: 100%" max-height="400">
-        <el-table-column prop="merchantName" label="商户名称" align="center"></el-table-column>
-        <el-table-column prop="amountBalance" label="账户余额" align="center"></el-table-column>
-        <el-table-column prop="parkingLotName" label="停车场名称" align="center"></el-table-column>
+        <el-table-column prop="merchantName" label="商户名称" align="center">
+          <template slot-scope="scope">
+            <span>{{ formatEmptyValue(scope.row.merchantName) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="amountBalance" label="账户余额" align="center">
+          <template slot-scope="scope">
+            <span>{{ formatEmptyValue(scope.row.amountBalance) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="parkingLotName" label="停车场名称" align="center">
+          <template slot-scope="scope">
+            <span>{{ formatEmptyValue(scope.row.parkingLotName) }}</span>
+          </template>
+        </el-table-column>
       </el-table>
       
       <div class="footer-tip">
@@ -34,6 +46,7 @@
 
 <script>
 import { toggleTodayOnOff } from "@/api/merchantManagement";
+import { formatEmptyValue } from "../../util/amountUtil";
 
 export default {
   name: "NegativeBalanceDialog",
@@ -45,6 +58,7 @@ export default {
     };
   },
   methods: {
+    formatEmptyValue,
     showDialog(list) {
       this.isShow = true;
       this.list = list;

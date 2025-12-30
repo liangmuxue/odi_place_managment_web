@@ -94,12 +94,12 @@
             ></el-table-column>
             <el-table-column label="抵扣券名称" align="center" show-overflow-tooltip>
               <template slot-scope="scope">
-                <span class="content">{{ scope.row.deductionName }}</span>
+                <span class="content">{{ formatEmptyValue(scope.row.deductionName) }}</span>
               </template>
             </el-table-column>
             <el-table-column label="扣款方式" align="center" show-overflow-tooltip>
               <template slot-scope="scope">
-                <span class="content">{{ scope.row.deductionMode }}</span>
+                <span class="content">{{ formatEmptyValue(scope.row.deductionMode) }}</span>
               </template>
             </el-table-column>
             <el-table-column label="充值剩余" align="center" show-overflow-tooltip>
@@ -185,7 +185,7 @@ import DeductionRechargeDialog from "./deductionRechargeDialog.vue";
 import DeductionRefundDialog from "./deductionRefundDialog.vue";
 import merchantImg from "@/assets/images/merchantManagement/merchant.png";
 import topupImg from "@/assets/images/merchantManagement/topup.png";
-import { formatAmount } from "../../util/amountUtil";
+import { formatAmount, formatEmptyValue } from "../../util/amountUtil";
 
 export default {
   name: "MerchantDetail",
@@ -242,6 +242,7 @@ export default {
     }
   },
   methods: {
+    formatEmptyValue,
     // 显示详情弹窗
     showDialog(id) {
       this.isShow = true;
@@ -287,7 +288,7 @@ export default {
     // 获取充值剩余显示
     getBalanceDisplay(row) {
       if (row.deductionMode === "预充") {
-        return "-";
+        return "--";
       } else if (row.deductionMode === "次数") {
         return (row.quantityBalance || 0) + "次";
       }

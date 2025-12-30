@@ -9,3 +9,11 @@ export function formatAmount(value) {
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   return sign + parts.join(".");
 }
+
+// 格式化空值显示，除备注字段外，空值统一显示为"--"
+export function formatEmptyValue(value, isRemarkField = false) {
+  if (value === null || value === undefined || value === '') {
+    return isRemarkField ? '' : '--';
+  }
+  return value;
+}
