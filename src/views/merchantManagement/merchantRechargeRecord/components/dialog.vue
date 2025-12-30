@@ -40,9 +40,9 @@
               <span class="base_dialog_condit_text">{{ detail.amountActuality | getMoney }}</span>
             </el-form-item>
           </span>
-          <span class="base_dialog_condit" v-if="detail.memo">
+          <span class="base_dialog_condit">
             <el-form-item label="备注">
-              <span class="base_dialog_condit_text">{{ detail.memo }}</span>
+              <span class="base_dialog_condit_text">{{ detail.memo || '' }}</span>
             </el-form-item>
           </span>
           <span class="base_dialog_condit">
