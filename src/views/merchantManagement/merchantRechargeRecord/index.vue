@@ -103,7 +103,7 @@
         </el-table-column>
         <el-table-column label="售价(元)" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.price | getMoney }}</span>
+            <span class="content">{{ scope.row.rechargeType === '预充' ? '--' : (scope.row.price | getMoney) }}</span>
           </template>
         </el-table-column>
         <el-table-column
