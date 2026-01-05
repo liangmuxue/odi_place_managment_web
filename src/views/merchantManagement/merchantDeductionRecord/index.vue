@@ -16,12 +16,12 @@
         <el-input v-model="listQuery.parkName" placeholder="请输入">
         </el-input>
       </span>
-      <span class="search_content">
+      <span class="search_content search_content_wide">
         <div class="search_content_title2">商户名称</div>
         <el-input v-model="listQuery.merchantName" placeholder="请输入">
         </el-input>
       </span>
-      <span class="search_content">
+      <span class="search_content search_content_wide">
         <div class="search_content_title2">抵扣券名称</div>
         <el-input v-model="listQuery.deductionName" placeholder="请输入">
         </el-input>
@@ -385,6 +385,15 @@ export default {
     border-radius: 9px;
     border: 1px solid #6ca6e8;
     font-size: 12px;
+  }
+}
+
+.search_content_wide {
+  max-width: 360px;
+
+  ::v-deep(.el-input) {
+    flex: 1;
+    width: 100%;
   }
 }
 </style>
