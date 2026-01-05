@@ -75,6 +75,37 @@
                           : "无"
                       }}
                     </span>
+                    <span v-else-if="newList.discountType == 5">
+                      {{
+                        newList.discountMoney
+                          ? newList.discountMoney + "分钟(生活券)"
+                          : "无"
+                      }}
+                    </span>
+                    <span v-else-if="newList.discountType == 6">
+                      {{
+                        newList.discountMoney
+                          ? newList.discountMoney + "小时(商户券)"
+                          : "无"
+                      }}
+                    </span>
+                    <span v-else-if="newList.discountType == 7">
+                      {{
+                        newList.discountMoney
+                          ? newList.discountMoney + "元(商户券)"
+                          : "无"
+                      }}
+                    </span>
+                    <span v-else-if="newList.discountType == 8">
+                      {{
+                        newList.discountMoney
+                          ? newList.discountMoney * 10 + "折(商户券)"
+                          : "无"
+                      }}
+                    </span>
+                    <span v-else-if="newList.discountType == 9">
+                      全免抵扣(商户券)
+                    </span>
                     <span v-else>
                       无
                     </span>
