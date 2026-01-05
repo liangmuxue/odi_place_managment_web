@@ -88,17 +88,17 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.deductionName }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.deductionName) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="抵扣类型" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.deductionType }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.deductionType) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="扣款方式" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.deductionMode }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.deductionMode) }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -123,7 +123,7 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.deductionValidDays }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.deductionValidDays) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="使用门槛" align="center" show-overflow-tooltip>
@@ -212,6 +212,7 @@
 import { merchantDeductionRuleList, merchantDeductionRuleBatchDelete } from "@/api/merchantManagement";
 import Dialog from "./components/ruleDialog";
 import MerchantLinkDialog from "./components/merchantLinkDialog";
+import { formatEmptyValue } from "../util/amountUtil";
 
 export default {
   name: "MerchantDeductionRules",
@@ -247,6 +248,7 @@ export default {
     this.toSearchList();
   },
   methods: {
+    formatEmptyValue,
     // 查询规则列表
     toSearchList() {
       this.listQuery.pageNum = 1;

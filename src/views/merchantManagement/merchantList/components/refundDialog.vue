@@ -74,8 +74,8 @@ export default {
       } else {
         const num = parseFloat(value);
         const bal = parseFloat(this.balance);
-        if (isNaN(num) || num <= 0) {
-          callback(new Error("退款金额请输入大于0的数值"));
+        if (isNaN(num) || num < 0) {
+          callback(new Error("退款金额请输入大于等于0的数值"));
         } else if (!isNaN(bal) && num > bal) {
           callback(new Error("退款金额需小于等于账户余额"));
         } else {
@@ -90,8 +90,8 @@ export default {
       } else {
         const num = parseFloat(value);
         const refund = parseFloat(this.form.refundAmount);
-        if (isNaN(num) || num <= 0) {
-          callback(new Error("实退金额请输入大于0的数值"));
+        if (isNaN(num) || num < 0) {
+          callback(new Error("实退金额请输入大于等于0的数值"));
         } else if (!isNaN(refund) && num > refund) {
           callback(new Error("实退金额需小于等于退款金额"));
         } else {

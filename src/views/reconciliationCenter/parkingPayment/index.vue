@@ -207,6 +207,18 @@
             <span class="content" v-else-if="scope.row.discountType == 5">{{
               scope.row.discountMoney + "分钟(生活券)"
             }}</span>
+            <span class="content" v-else-if="scope.row.discountType == 6">{{
+              scope.row.discountMoney + "小时(商户券)"
+            }}</span>
+            <span class="content" v-else-if="scope.row.discountType == 7">{{
+              scope.row.discountMoney + "元(商户券)"
+            }}</span>
+            <span class="content" v-else-if="scope.row.discountType == 8">{{
+              scope.row.discountMoney * 10 + "折(商户券)"
+            }}</span>
+            <span class="content" v-else-if="scope.row.discountType == 9"
+              >全免抵扣(商户券)</span
+            >
             <span class="content" v-else-if="scope.row.discountType == 1">{{
               scope.row.discountMoney + "元"
             }}</span>

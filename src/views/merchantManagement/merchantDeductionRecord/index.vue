@@ -81,22 +81,22 @@
         ></el-table-column>
         <el-table-column label="订单号" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.orderNum }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.orderNum) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="订单类型" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.orderType }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.orderType) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="手机" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.phone }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.phone) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="车牌号" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.vehicleNumber }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.vehicleNumber) }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -105,12 +105,12 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.parkName }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.parkName) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="商户名称" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.merchantName }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.merchantName) }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -119,12 +119,12 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.deductionName }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.deductionName) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="抵扣类型" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.deductionType }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.deductionType) }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -133,7 +133,7 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.deductionQuantity }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.deductionQuantity) }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -178,6 +178,7 @@ import {
   merchantDeductionRecordList,
   merchantDeductionRecordExport
 } from "@/api/merchantManagement";
+import { formatEmptyValue } from "../util/amountUtil";
 
 export default {
   name: "merchantDeductionRecord",
@@ -217,6 +218,7 @@ export default {
     this.toSearchList();
   },
   methods: {
+    formatEmptyValue,
     changeTime() {
       if (this.time[0] && this.time[1]) {
         this.listQuery.beginTime = this.time[0];

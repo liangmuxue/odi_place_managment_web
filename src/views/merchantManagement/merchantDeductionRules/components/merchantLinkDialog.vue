@@ -254,13 +254,14 @@ export default {
 }
 
 .transfer_footer_tips {
-  margin-top: 5px;
+  margin-top: 10px;
   color: #909399;
   font-size: 12px;
   text-align: left;
   /* 与右侧列表宽度保持一致，视觉上贴在右侧选择框下方 */
   width: 400px;
   margin-left: 700px;
+  flex-shrink: 0;
 }
 
 /* 有不可取消关联的商户时，禁止右侧面板头部“全选”勾选 */
@@ -298,11 +299,19 @@ export default {
   align-items: center;
 }
 
-// .base_dialog_main {
-//   ::v-deep .el-transfer-panel {
-//     height: 545px !important;
-//   }
-// }
+/* 设置 transfer 面板高度 */
+::v-deep .el-transfer-panel {
+  height: 545px !important;
+}
+
+::v-deep .el-transfer-panel__body {
+  height: calc(100% - 40px) !important;
+}
+
+::v-deep .el-transfer-panel__list {
+  height: calc(100% - 26px) !important;
+  overflow-y: auto;
+}
 
 ::v-deep .el-transfer-panel:first-child .el-transfer-panel__list {
   position: relative;

@@ -80,7 +80,7 @@
         ></el-table-column>
         <el-table-column label="商户名称" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.merchantName }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.merchantName) }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -89,7 +89,7 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.deductionName }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.deductionName) }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -98,12 +98,12 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.quantity }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.quantity) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="售价(元)" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.price | getMoney }}</span>
+            <span class="content">{{ scope.row.rechargeType === '预充' ? '--' : (scope.row.price | getMoney) }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -126,7 +126,7 @@
         </el-table-column>
         <el-table-column label="充值类型" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.rechargeType }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.rechargeType) }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -143,7 +143,7 @@
         </el-table-column>
         <el-table-column label="操作人" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.operator }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.operator) }}</span>
           </template>
         </el-table-column>
 
@@ -186,6 +186,7 @@ import {
   merchantRechargeRecordExport
 } from "@/api/merchantManagement";
 import Dialog from "./components/dialog";
+import { formatEmptyValue } from "../util/amountUtil";
 
 export default {
   name: "merchantRechargeRecord",
@@ -230,6 +231,7 @@ export default {
     this.toSearchList();
   },
   methods: {
+    formatEmptyValue,
     changeTime() {
       if (this.time[0] && this.time[1]) {
         const pad = n => (n < 10 ? "0" + n : n);

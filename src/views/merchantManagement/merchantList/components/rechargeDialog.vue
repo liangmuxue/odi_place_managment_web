@@ -67,8 +67,8 @@ export default {
         callback(new Error("请输入应收金额"));
       } else {
         const num = parseFloat(value);
-        if (isNaN(num) || num <= 0) {
-          callback(new Error("应收金额请输入大于0的数值"));
+        if (isNaN(num) || num < 0) {
+          callback(new Error("应收金额请输入大于等于0的数值"));
         } else {
           callback();
         }
@@ -81,8 +81,8 @@ export default {
       } else {
         const num = parseFloat(value);
         const receivable = parseFloat(this.form.receivableAmount);
-        if (isNaN(num) || num <= 0) {
-          callback(new Error("实收金额请输入大于0的数值"));
+        if (isNaN(num) || num < 0) {
+          callback(new Error("实收金额请输入大于等于0的数值"));
         } else if (!isNaN(receivable) && num > receivable) {
           callback(new Error("实收金额需小于等于应收金额"));
         } else {

@@ -22,9 +22,6 @@
                 @input="handleQuantityInput"
               />
             </el-form-item>
-            <div class="base_dialog_main_prompt" v-if="form.quantity && (form.quantity < 1 || form.quantity > remainingBalance)">
-              只能输入小于充值剩余的整数
-            </div>
             <el-form-item label="退款金额（元）" prop="refundAmount">
               <span>{{ refundAmount }}</span>
             </el-form-item>
@@ -147,9 +144,6 @@ export default {
     },
     handleQuantityInput(value) {
       this.form.quantity = value.replace(/[^\d]/g, "");
-      if (this.$refs["refundTimesForm"] && this.form.actualRefundAmount) {
-        this.$refs["refundTimesForm"].validateField("actualRefundAmount");
-      }
     },
     handleActualRefundInput(value) {
       this.form.actualRefundAmount = value.replace(/[^\d.]/g, "");
@@ -201,16 +195,4 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.base_dialog_main_prompt {
-  width: 72%;
-  height: 24px;
-  line-height: 24px;
-  text-align: center;
-  margin-left: 136px;
-  background: rgba($color: #ffd986, $alpha: 0.3);
-  color: #f50e0e;
-  margin-top: -24px;
-  margin-bottom: 10px;
-  font-size: 12px;
-}
 </style>
