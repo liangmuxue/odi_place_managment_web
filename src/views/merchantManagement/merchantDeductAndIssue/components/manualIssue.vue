@@ -1,7 +1,12 @@
 <template>
   <div>
     <div class="merchantDeductAndIssue_main ">
-      <el-form :model="newList" :rules="rules" ref="licensePlateForm" label-width="140px">
+      <el-form
+        :model="newList"
+        :rules="rules"
+        ref="licensePlateForm"
+        label-width="140px"
+      >
         <div class="base_dialog_main_content">
           <div class="base_dialog_main_left" style="padding:100px">
             <span class="base_dialog_condit">
@@ -103,7 +108,12 @@
               </el-form-item>
             </span>
             <div class="base_dialog_main_btnBox btn_condit">
-              <el-button type="info" @click="submitForm" v-has="{ red: 'merchantDeductAndIssueManualSubmit', type: 1 }">确认发券</el-button>
+              <el-button
+                type="info"
+                @click="submitForm"
+                v-has="{ red: 'merchantDeductAndIssueManualSubmit', type: 1 }"
+                >确认发券</el-button
+              >
             </div>
           </div>
         </div>
@@ -115,7 +125,10 @@
 
 <script>
 import Dialog from "./dialog";
-import { getDeductionsByMerchantIdNoPage, manualSaveDistribution } from "@/api/merchantManagement";
+import {
+  getDeductionsByMerchantIdNoPage,
+  manualSaveDistribution
+} from "@/api/merchantManagement";
 
 export default {
   name: "manualIssue",
@@ -133,7 +146,10 @@ export default {
         return callback(new Error("发放数量必须为大于等于1的整数"));
       }
       // 检查余额
-      if (this.selectedDeduction && this.selectedDeduction.deductionMode === "预充") {
+      if (
+        this.selectedDeduction &&
+        this.selectedDeduction.deductionMode === "预充"
+      ) {
         const overdraftAllowed =
           this.selectedDeduction.allowOverdraft === true ||
           this.selectedDeduction.allowOverdraft === 1;
@@ -144,13 +160,19 @@ export default {
           }
         }
       }
-      if (this.selectedDeduction && this.selectedDeduction.deductionMode === "次数") {
+      if (
+        this.selectedDeduction &&
+        this.selectedDeduction.deductionMode === "次数"
+      ) {
         const balance = this.selectedDeduction.quantityBalance || 0;
         if (value > balance) {
           return callback(new Error(`发放次数超过剩余次数，无法发放`));
         }
       }
-      if (this.selectedDeduction && this.selectedDeduction.deductionMode === "预充") {
+      if (
+        this.selectedDeduction &&
+        this.selectedDeduction.deductionMode === "预充"
+      ) {
         if (value > 999) {
           return callback(new Error("预充方式，发放数量不能超过999"));
         }
@@ -208,7 +230,11 @@ export default {
           { required: true, message: "请选择抵扣券", trigger: "change" }
         ],
         quantity: [
-          { required: true, validator: validateQuantity, trigger: ["blur", "change"] }
+          {
+            required: true,
+            validator: validateQuantity,
+            trigger: ["blur", "change"]
+          }
         ],
         validTimeStart: [
           { required: true, validator: validateValidTimeStart, trigger: "blur" }
@@ -216,9 +242,7 @@ export default {
         validTimeEnd: [
           { required: true, validator: validateValidTimeEnd, trigger: "blur" }
         ],
-        memo: [
-          { validator: validateMemo, trigger: "blur" }
-        ]
+        memo: [{ validator: validateMemo, trigger: "blur" }]
       }
     };
   },
@@ -228,14 +252,20 @@ export default {
     },
     showRepeatTime() {
       // deductionTimes为null表示有效期内重复使用
-      return this.selectedDeduction && this.selectedDeduction.deductionTimes === null;
+      return (
+        this.selectedDeduction && this.selectedDeduction.deductionTimes === null
+      );
     },
     maxQuantity() {
       // 移除自动限制机制，改为验证提示
       return 9999;
     },
     quantityBalance() {
-      if (this.selectedDeduction && this.selectedDeduction.deductionMode === "次数" && this.selectedDeduction.quantityBalance !== undefined) {
+      if (
+        this.selectedDeduction &&
+        this.selectedDeduction.deductionMode === "次数" &&
+        this.selectedDeduction.quantityBalance !== undefined
+      ) {
         return this.selectedDeduction.quantityBalance;
       }
       return "";
@@ -268,7 +298,11 @@ export default {
       // 清除相关字段的校验状态
       this.$nextTick(() => {
         if (this.$refs.licensePlateForm) {
-          this.$refs.licensePlateForm.clearValidate(["quantity", "validTimeStart", "validTimeEnd"]);
+          this.$refs.licensePlateForm.clearValidate([
+            "quantity",
+            "validTimeStart",
+            "validTimeEnd"
+          ]);
         }
       });
     },
@@ -300,8 +334,12 @@ export default {
             merchantDeductionRuleId: this.newList.merchantDeductionRuleId,
             vehicleNumber: this.newList.licensePlate,
             quantity: this.newList.quantity,
-            validTimeStart: this.showRepeatTime ? this.newList.validTimeStart : null,
-            validTimeEnd: this.showRepeatTime ? this.newList.validTimeEnd : null,
+            validTimeStart: this.showRepeatTime
+              ? this.newList.validTimeStart
+              : null,
+            validTimeEnd: this.showRepeatTime
+              ? this.newList.validTimeEnd
+              : null,
             memo: this.newList.memo
           };
           manualSaveDistribution(para).then(res => {

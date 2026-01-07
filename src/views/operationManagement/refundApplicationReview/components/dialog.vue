@@ -104,7 +104,7 @@
                       }}
                     </span>
                     <span v-else-if="newList.discountType == 9">
-                      全免抵扣(商户券)
+                      全免(商户券)
                     </span>
                     <span v-else>
                       无

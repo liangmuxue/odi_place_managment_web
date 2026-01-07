@@ -217,7 +217,7 @@
               scope.row.discountMoney * 10 + "折(商户券)"
             }}</span>
             <span class="content" v-else-if="scope.row.discountType == 9"
-              >全免抵扣(商户券)</span
+              >全免(商户券)</span
             >
             <span class="content" v-else-if="scope.row.discountType == 1">{{
               scope.row.discountMoney + "元"
