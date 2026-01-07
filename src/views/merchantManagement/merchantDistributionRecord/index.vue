@@ -160,7 +160,13 @@
         </el-table-column>
         <el-table-column label="是否限在场领取" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.needVehicle ? '是' : '--' }}</span>
+            <span class="content">
+              {{
+                scope.row.needVehicle
+                  ? '是'
+                  : (scope.row.distrbuteMode.includes('二维码') ? '否' : '--')
+              }}
+            </span>
           </template>
         </el-table-column>
         <el-table-column label="手机" align="center" show-overflow-tooltip min-width="150px">
