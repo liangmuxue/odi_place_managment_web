@@ -30,8 +30,20 @@
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">抵扣类型</div>
-        <el-input v-model="listQuery.deductionType" placeholder="请输入">
-        </el-input>
+        <el-select
+          v-model="listQuery.deductionType"
+          placeholder="选择抵扣类型"
+          clearable
+          class="filter-item"
+          style="width: 72%"
+        >
+          <el-option
+            v-for="item in deductionTypeOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
       </span>
       <span class="search_content2">
         <div class="search_content_title">抵扣时间</div>
@@ -128,7 +140,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="抵扣数据(单位)"
+          label="抵扣数量(单位)"
           align="center"
           show-overflow-tooltip
         >
@@ -137,7 +149,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="抵扣金额换算(元)"
+          label="抵扣金额(元)"
           align="center"
           show-overflow-tooltip
         >
@@ -198,6 +210,12 @@ export default {
         beginTime: "",
         endTime: ""
       },
+      deductionTypeOptions: [
+        { label: "固定时长", value: "固定时长" },
+        { label: "固定金额", value: "固定金额" },
+        { label: "固定折扣", value: "固定折扣" },
+        { label: "全免抵扣", value: "全免抵扣" }
+      ],
       time: [],
       listLoading: null,
       list: []

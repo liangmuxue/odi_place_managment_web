@@ -246,9 +246,10 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{
+            <span v-if="scope.row.validTimeStart" class="content">{{
               scope.row.validTimeStart | parseTime("{y}-{m}-{d} {h}:{i}:{s}")
             }}</span>
+            <span v-else class="content">--</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -258,9 +259,10 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{
+            <span v-if="scope.row.validTimeEnd" class="content">{{
               scope.row.validTimeEnd | parseTime("{y}-{m}-{d} {h}:{i}:{s}")
             }}</span>
+            <span v-else class="content">--</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -270,9 +272,10 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{
+            <span v-if="scope.row.recycleTime" class="content">{{
               scope.row.recycleTime | parseTime("{y}-{m}-{d} {h}:{i}:{s}")
             }}</span>
+            <span v-else class="content">--</span>
           </template>
         </el-table-column>
         <el-table-column label="备注" align="center" show-overflow-tooltip min-width="200px">
