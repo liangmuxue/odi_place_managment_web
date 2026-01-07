@@ -59,6 +59,7 @@
                   placeholder="请选择结束时间"
                   style="width: 72%"
                   size="small"
+                  default-time="23:59:59"
                 />
               </el-form-item>
             </span>

@@ -128,7 +128,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="抵扣数据(单位)"
+          label="抵扣数量(单位)"
           align="center"
           show-overflow-tooltip
         >
@@ -137,7 +137,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="抵扣金额换算(元)"
+          label="抵扣金额(元)"
           align="center"
           show-overflow-tooltip
         >
