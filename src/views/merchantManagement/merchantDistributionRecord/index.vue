@@ -160,7 +160,13 @@
         </el-table-column>
         <el-table-column label="是否限在场领取" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.needVehicle ? '是' : '--' }}</span>
+            <span class="content">
+              {{
+                scope.row.needVehicle
+                  ? '是'
+                  : (scope.row.distrbuteMode.includes('二维码') ? '否' : '--')
+              }}
+            </span>
           </template>
         </el-table-column>
         <el-table-column label="手机" align="center" show-overflow-tooltip min-width="150px">
@@ -207,12 +213,12 @@
           min-width="70px"
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.status === 2 ? '是' : '否' }}</span>
+            <span class="content">{{ formatUnusedExpired(scope.row) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="未使用失效是否可回收" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.allowRecycle ? '是' : '否' }}</span>
+            <span class="content">{{ formatUnusedAllowRecycle(scope.row) }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -350,6 +356,30 @@ export default {
   },
   methods: {
     formatEmptyValue,
+    formatUnusedExpired(row) {
+      const qty = row ? row.quantity : null;
+      if (qty === 0) {
+        return '--';
+      }
+      if (row == null || row.status == null) {
+        return '--';
+      }
+      return row.status === 2 ? '是' : '否';
+    },
+    formatUnusedAllowRecycle(row) {
+      const qty = row ? row.quantity : null;
+      if (qty === 0) {
+        return '--';
+      }
+      const deductionType = row ? row.deductionType : null;
+      if (deductionType === '固定折扣' || deductionType === '全免抵扣') {
+        return '--';
+      }
+      if (row == null || row.allowRecycle == null) {
+        return '--';
+      }
+      return row.allowRecycle ? '是' : '否';
+    },
     //查询泊位列表
     toSearchList() {
       this.listQuery.pageNum = 1;
