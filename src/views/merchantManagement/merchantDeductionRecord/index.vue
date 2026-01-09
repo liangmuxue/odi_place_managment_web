@@ -91,12 +91,22 @@
           min-width="60px"
           align="center"
         ></el-table-column>
-        <el-table-column label="订单号" align="center" show-overflow-tooltip>
+        <el-table-column
+          label="订单号"
+          min-width="100px"
+          align="center"
+          show-overflow-tooltip
+        >
           <template slot-scope="scope">
             <span class="content">{{ formatEmptyValue(scope.row.orderNum) }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="订单类型" align="center" show-overflow-tooltip>
+        <el-table-column
+          label="订单类型"
+          min-width="60px"
+          align="center"
+          show-overflow-tooltip
+        >
           <template slot-scope="scope">
             <span class="content">{{ formatEmptyValue(scope.row.orderType) }}</span>
           </template>
