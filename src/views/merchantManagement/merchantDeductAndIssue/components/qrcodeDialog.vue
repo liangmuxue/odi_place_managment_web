@@ -8,17 +8,19 @@
     </div>
     <div class="base_dialog_main">
       <div class="qrcode-content">
-        <!-- 白色标题栏 -->
-        <div class="qrcode-title-bar">
-          <img :src="headerIcon" class="header-icon" />
-          <span>扫一扫领取停车抵扣</span>
-        </div>
-        <!-- 蓝色背景区域 -->
-        <div class="qrcode-blue-bg">
-          <div class="qrcode-wrapper">
-            <img v-if="qrcodeUrl" :src="qrcodeUrl" class="qrcode-img" ref="qrcodeImg" />
-            <div v-else class="qrcode-loading">
-              <i class="el-icon-loading"></i>
+        <div class="qrcode-capture" ref="qrcodeCapture">
+          <!-- 白色标题栏 -->
+          <div class="qrcode-title-bar">
+            <img :src="headerIcon" class="header-icon" />
+            <span>扫一扫领取停车抵扣</span>
+          </div>
+          <!-- 蓝色背景区域 -->
+          <div class="qrcode-blue-bg">
+            <div class="qrcode-wrapper">
+              <img v-if="qrcodeUrl" :src="qrcodeUrl" class="qrcode-img" ref="qrcodeImg" />
+              <div v-else class="qrcode-loading">
+                <i class="el-icon-loading"></i>
+              </div>
             </div>
           </div>
         </div>
@@ -41,6 +43,7 @@
 import { getQrcode } from "@/api/merchantManagement";
 import dynamicCode from "@/assets/images/merchantManagement/dynamicCode.png";
 import staticCode from "@/assets/images/merchantManagement/staticCode.png";
+import html2canvas from "html2canvas";
 
 export default {
   name: "QrcodeDialog",
@@ -122,12 +125,20 @@ export default {
     },
     downloadQrcode() {
       if (!this.qrcodeUrl) return;
-      const link = document.createElement("a");
-      link.href = this.qrcodeUrl;
-      link.download = `qrcode_${this.qrcodeId}.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const captureEl = this.$refs.qrcodeCapture;
+      if (!captureEl) return;
+      html2canvas(captureEl, {
+        useCORS: true,
+        backgroundColor: "#ffffff",
+        scale: 2
+      }).then(canvas => {
+        const link = document.createElement("a");
+        link.href = canvas.toDataURL("image/png");
+        link.download = `qrcode_${this.qrcodeId}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
     }
   }
 };
@@ -140,6 +151,11 @@ export default {
   align-items: center;
   padding: 20px 40px;
   margin-top: 20px;
+}
+.qrcode-capture {
+  width: 400px;
+  display: flex;
+  flex-direction: column;
 }
 .qrcode-title-bar {
   width: 400px;
