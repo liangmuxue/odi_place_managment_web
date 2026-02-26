@@ -72,6 +72,16 @@ const reconciliationCenter = {
       },
     },
     {
+      path: 'dailyWaterFlowReport',
+      component: () => import('@/views/reconciliationCenter/dailyWaterFlowReport/index'),
+      name: 'DailyWaterFlowReport',
+      meta: {
+        title: '流水日报',
+        icon: 'feeRules',
+
+      },
+    },
+    {
       path: 'invoicesManagement',
       component: () => import('@/views/reconciliationCenter/invoicesManagement/index'),
       name: 'InvoicesManagement',

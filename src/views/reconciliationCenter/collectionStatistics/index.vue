@@ -105,12 +105,15 @@
         <el-table-column
           label="序号"
           type="index"
+          fixed
           min-width="60px"
           align="center"
         ></el-table-column>
         <el-table-column
           label="停车场名称"
           align="center"
+          fixed
+          min-width="170px"
           show-overflow-tooltip
         >
           <template slot-scope="scope">
@@ -118,8 +121,21 @@
           </template>
         </el-table-column>
         <el-table-column
+          label="日期"
+          align="center"
+          fixed
+          min-width="120px"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">{{ scope.row.date }}</span></template
+          >
+        </el-table-column>
+        <el-table-column
           label="实收总额（元）"
           align="center"
+          fixed
+          min-width="120px"
           show-overflow-tooltip
         >
           <template slot-scope="scope">
@@ -129,6 +145,7 @@
         <el-table-column
           label="长租实收（元）"
           align="center"
+          min-width="120px"
           show-overflow-tooltip
         >
           <template slot-scope="scope">
@@ -139,7 +156,7 @@
         </el-table-column>
         <!-- <el-table-column
           label="长租分成（元）建设发展公司"
-          width="120px"
+          min-width="120px"
           align="center"
           show-overflow-tooltip
         >
@@ -149,7 +166,7 @@
         </el-table-column>
         <el-table-column
           label="长租分成（元）海创物业公司"
-          width="120px"
+          min-width="120px"
           align="center"
           show-overflow-tooltip
         >
@@ -160,6 +177,7 @@
         <el-table-column
           label="临停实收（元）"
           align="center"
+          min-width="120px"
           show-overflow-tooltip
         >
           <template slot-scope="scope">
@@ -172,6 +190,7 @@
         <el-table-column
           label="临停收款（元）"
           align="center"
+          min-width="120px"
           show-overflow-tooltip
         >
           <template slot-scope="scope">
@@ -184,6 +203,7 @@
         <el-table-column
           label="临停退款（元）"
           align="center"
+          min-width="120px"
           show-overflow-tooltip
         >
           <template slot-scope="scope">
@@ -193,8 +213,33 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="建设发展公司分成（元）"
-          width="170px"
+          label="海创物业分成（元）"
+          min-width="170px"
+          align="center"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">{{
+              scope.row.temporaryStopSharingTwo | getMoney
+            }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          label="建设发展分成（元）"
+          min-width="170px"
+          align="center"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">{{
+              scope.row.temporaryStopSharing | getMoney
+            }}</span>
+          </template>
+        </el-table-column>
+        <!-- <el-table-column
+          label="联通分成（元）"
+          min-width="170px"
           align="center"
           show-overflow-tooltip
         >
@@ -205,8 +250,8 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="海创物业公司分成（元）"
-          width="170px"
+          label="豪之英分成（元）"
+          min-width="170px"
           align="center"
           show-overflow-tooltip
         >
@@ -216,9 +261,46 @@
             }}</span>
           </template>
         </el-table-column>
+        <el-table-column
+          label="锦辉分成（元）"
+          min-width="170px"
+          align="center"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">{{
+              scope.row.temporaryStopSharing | getMoney
+            }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="科创交流中心分成（元）"
+          min-width="170px"
+          align="center"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">{{
+              scope.row.temporaryStopSharingTwo | getMoney
+            }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="商业广场分成（元）"
+          min-width="170px"
+          align="center"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">{{
+              scope.row.temporaryStopSharingTwo | getMoney
+            }}</span>
+          </template>
+        </el-table-column> -->
+
         <!-- <el-table-column
           label="临停分成（元）建设发展公司"
-          width="120px"
+          min-width="120px"
           align="center"
           show-overflow-tooltip
         >
@@ -228,7 +310,7 @@
         </el-table-column>
         <el-table-column
           label="临停分成（元）海创物业公司"
-          width="120px"
+          min-width="120px"
           align="center"
           show-overflow-tooltip
         >
@@ -246,17 +328,6 @@
             <span class="content">{{ scope.row.arrearsAmount }}</span>
           </template>
         </el-table-column> -->
-
-        <el-table-column
-          label="日期"
-          align="center"
-          width="120px"
-          show-overflow-tooltip
-        >
-          <template slot-scope="scope">
-            <span class="content">{{ scope.row.date }}</span></template
-          >
-        </el-table-column>
       </el-table>
       <el-pagination
         :current-page="listQuery.pageNum"

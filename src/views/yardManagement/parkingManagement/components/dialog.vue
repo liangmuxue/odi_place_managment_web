@@ -317,6 +317,36 @@
             </span>
             <span class="base_dialog_condit">
               <el-form-item label="实收分成比例" prop="temporaryStopSharing">
+                <!-- <div v-if="pageType == 3">
+                  <span>建设发展公司</span>
+                  <span> {{ newList.temporaryStopSharing || " -- " }}</span>
+                </div>
+
+                <div v-else>
+                  <el-select
+                    v-model="newList.charge"
+                    placeholder="请选择公司"
+                    clearable
+                    class="filter-item"
+                    style="width: 100px"
+                    size="small"
+                  >
+                    <el-option
+                      v-for="item in companyList"
+                      :key="item.enumValue"
+                      :label="item.enumName"
+                      :value="item.enumValue"
+                    />
+                  </el-select>
+                  <el-input
+                    v-model.number="newList.temporaryStopSharing"
+                    placeholder="输入0-100的数值，最多保留一位小数"
+                    style="width: 100px"
+                    class="filter-item"
+                    size="small"
+                  />%
+                </div> -->
+
                 <span>建设发展公司</span>
                 <span v-if="pageType == 3">
                   {{ newList.temporaryStopSharing || " -- " }}</span
@@ -676,7 +706,21 @@ export default {
         { enumName: "支持", enumValue: 1 },
         { enumName: "不支持", enumValue: 0 }
       ],
-
+      companyList: [
+        { enumName: "海创物业", enumValue: "海创物业" },
+        { enumName: "建设发展", enumValue: "建设发展" },
+        { enumName: "联通", enumValue: "联通" },
+        { enumName: "豪之英", enumValue: "豪之英" },
+        { enumName: "锦辉", enumValue: "锦辉" },
+        { enumName: "科创交流中心", enumValue: "科创交流中心" },
+        { enumName: "商业广场", enumValue: "商业广场" }
+      ],
+      temporaryStopSharingList: [
+        { id: null, value: 0 },
+        { id: null, value: 0 },
+        { id: null, value: 0 },
+        { id: null, value: 0 }
+      ],
       rules: {
         name: [
           { required: true, message: "请输入停车场名称", trigger: "blur" },

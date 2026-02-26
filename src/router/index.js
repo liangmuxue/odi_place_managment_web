@@ -85,7 +85,7 @@ export const constantRoutes = [
   // homePage, //首页
   // videoManagement, //视频管理
   // operationManagement, //运营管理
-  // reconciliationCenter, //对账中心
+  reconciliationCenter, //对账中心
   // yardManagement, //车场管理
   // specificVehicleManagement, //特定车管理
   // equipmentManagement, //设备管理

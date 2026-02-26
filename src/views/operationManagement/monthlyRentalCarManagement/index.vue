@@ -194,9 +194,12 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{
-              scope.row.userType == 1 ? "普通用户" : "企业员工"
-            }}</span>
+            <span class="content" v-if="scope.row.userType == 1"
+              >普通用户
+            </span>
+            <span class="content" v-if="scope.row.userType == 2"
+              >企业员工
+            </span>
           </template>
         </el-table-column>
         <el-table-column
