@@ -181,6 +181,18 @@
               </el-form-item>
             </span>
             <span class="base_dialog_condit">
+              <el-form-item label="套餐名称：" prop="title">
+                <span class="base_dialog_condit_text" v-if="newList.title">
+                  {{ newList.title }}
+                </span>
+                <span class="base_dialog_condit_text" v-else
+                  >长租套餐
+                  <span v-if="newList.land == 1">（地上）</span>
+                  <span v-if="newList.land == 2">（地下）</span>
+                </span>
+              </el-form-item>
+            </span>
+            <span class="base_dialog_condit">
               <el-form-item label="长租时间：" prop="beginTime">
                 <span class="base_dialog_condit_text">
                   {{ newList.beginTime }} - {{ newList.dueTime }}

@@ -399,11 +399,16 @@
   color: #037659 !important;
 }
 
-
 .el-table {
-  border: $titleTextH 1px solid;
 
-  .el-table__header-wrapper {
+  border: $titleTextH 1px solid;
+}
+
+.el-table,
+.el-table__fixed {
+
+  .el-table__header-wrapper,
+  .el-table__fixed-header-wrapper {
 
     .el-table__header {
 
@@ -422,10 +427,22 @@
         }
 
       }
+
+      thead {
+        tr {
+          height: 50px;
+
+          th {
+            color: #333;
+            font-size: 14px;
+          }
+        }
+      }
     }
   }
 
-  .el-table__body-wrapper {
+  .el-table__body-wrapper,
+  .el-table__fixed-body-wrapper {
     background: #fff;
 
     .el-table__body {
@@ -659,9 +676,12 @@
     .el-tree-node__children {
       display: flex;
       flex-direction: row;
+      flex-wrap: wrap;
+      padding: 0 20px;
 
       // white-space: wrap;
       .el-tree-node .el-tree-node__content {
+        width: 120px !important;
         padding-left: 10px !important;
       }
 
@@ -692,4 +712,8 @@
 .el-image-viewer__wrapper {
   position: fixed !important;
   z-index: 12000 !important;
+}
+
+.base_dialog_main_content .el-transfer-panel__list {
+  height: 500px !important;
 }

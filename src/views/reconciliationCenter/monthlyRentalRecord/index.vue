@@ -96,6 +96,21 @@
             <span class="content">{{ scope.row.orderNum }}</span>
           </template>
         </el-table-column>
+        <el-table-column label="类型" align="center" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span class="content" v-if="scope.row.userType == 1"
+              >普通用户
+            </span>
+            <span class="content" v-if="scope.row.userType == 2"
+              >企业员工
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column label="车主姓名" align="center" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span class="content">{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="车主手机" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="content">{{ scope.row.phone }}</span>

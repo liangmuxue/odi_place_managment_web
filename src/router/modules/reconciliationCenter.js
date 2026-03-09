@@ -66,7 +66,17 @@ const reconciliationCenter = {
       component: () => import('@/views/reconciliationCenter/collectionStatistics/index'),
       name: 'CollectionStatistics',
       meta: {
-        title: '收款统计',
+        title: '收入日报',
+        icon: 'feeRules',
+
+      },
+    },
+    {
+      path: 'dailyWaterFlowReport',
+      component: () => import('@/views/reconciliationCenter/dailyWaterFlowReport/index'),
+      name: 'DailyWaterFlowReport',
+      meta: {
+        title: '流水日报',
         icon: 'feeRules',
 
       },

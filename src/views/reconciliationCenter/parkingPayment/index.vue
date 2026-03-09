@@ -207,6 +207,18 @@
             <span class="content" v-else-if="scope.row.discountType == 5">{{
               scope.row.discountMoney + "分钟(生活券)"
             }}</span>
+            <span class="content" v-else-if="scope.row.discountType == 6">{{
+              scope.row.discountMoney + "小时(商户券)"
+            }}</span>
+            <span class="content" v-else-if="scope.row.discountType == 7">{{
+              scope.row.discountMoney + "元(商户券)"
+            }}</span>
+            <span class="content" v-else-if="scope.row.discountType == 8">{{
+              scope.row.discountMoney * 10 + "折(商户券)"
+            }}</span>
+            <span class="content" v-else-if="scope.row.discountType == 9"
+              >全免(商户券)</span
+            >
             <span class="content" v-else-if="scope.row.discountType == 1">{{
               scope.row.discountMoney + "元"
             }}</span>
@@ -234,7 +246,7 @@
             }}</span>
           </template>
         </el-table-column>
-        <!-- <el-table-column
+        <el-table-column
           label="是否已开票"
           align="center"
           show-overflow-tooltip
@@ -244,7 +256,7 @@
               scope.row.invoice == 1 ? "是" : "否"
             }}</span>
           </template>
-        </el-table-column> -->
+        </el-table-column>
         <el-table-column label="是否退款" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="content" v-if="scope.row.finalRefundStatus == '否'">
@@ -275,7 +287,7 @@
           <template slot-scope="scope">
             <span
               class="operation_button update_btn"
-              v-if="scope.row.finalRefundStatus !== '已退款'"
+              v-if="scope.row.finalRefundStatus == '待退款'"
               @click="openRefund(scope.row.orderId)"
               v-has="{ red: 'parkingPaymentRefund', type: 1 }"
             >

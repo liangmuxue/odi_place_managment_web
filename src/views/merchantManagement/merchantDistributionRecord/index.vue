@@ -3,35 +3,102 @@
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">商户名称</div>
-        <el-input v-model="listQuery.licensePlate" placeholder="请输入">
+        <el-input v-model="listQuery.merchantName" placeholder="请输入">
         </el-input>
       </span>
       <span class="search_content">
         <div class="search_content_title2">抵扣券名称</div>
-        <el-input v-model="listQuery.parkingLotName" placeholder="请输入">
+        <el-input v-model="listQuery.deductionName" placeholder="请输入">
         </el-input>
       </span>
       <span class="search_content">
         <div class="search_content_title">发放方式</div>
         <el-select
-          v-model="listQuery.status"
-          placeholder="请选择选择"
+          v-model="listQuery.distrbuteMode"
+          placeholder="请选择"
+          clearable
+          class="filter-item"
+          style="width: 72%"
+        >
+          <el-option
+            v-for="item in distrbuteModeList"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </span>
+      <span class="search_content">
+        <div class="search_content_title2">车牌号</div>
+        <el-input v-model="listQuery.vehicleNumber" placeholder="请输入">
+        </el-input>
+      </span>
+      <span class="search_content">
+        <div class="search_content_title">手机</div>
+        <el-input v-model="listQuery.purePhoneNumber" placeholder="请输入">
+        </el-input>
+      </span>
+      <span class="search_content2">
+        <div class="search_content_title2">未使用券是否失效</div>
+        <el-select
+          v-model="listQuery.isExpired"
+          placeholder="请选择"
           clearable
           class="filter-item"
           style="width: 72%"
         >
           <el-option
             v-for="item in statusList"
-            :key="item.enumValue"
-            :label="item.enumName"
-            :value="item.enumValue"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
           />
         </el-select>
       </span>
+    </div>
+    <div class="search_box">
       <span class="search_content">
-        <div class="search_content_title2">车牌号</div>
-        <el-input v-model="listQuery.parkingLotName" placeholder="请输入">
-        </el-input>
+        <div class="search_content_title2" style="width: 260px;">未使用失效是否可回收</div>
+        <el-select
+          v-model="listQuery.allowRecycle"
+          placeholder="请选择"
+          clearable
+          class="filter-item"
+          style="width: 72%"
+        >
+          <el-option
+            v-for="item in allowRecycleList"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </span>
+      <span class="search_content2">
+        <div class="search_content_title">发放时间</div>
+        <el-date-picker
+          style="width: 72%"
+          v-model="operateTime"
+          value-format="yyyy-MM-dd HH:mm:ss"
+          type="datetimerange"
+          range-separator="-"
+          start-placeholder="请选择时间"
+          end-placeholder
+          :default-time="['00:00:00', '23:59:59']"
+        ></el-date-picker>
+      </span>
+      <span class="search_content2">
+        <div class="search_content_title">到期时间</div>
+        <el-date-picker
+          style="width: 72%"
+          v-model="expireTime"
+          value-format="yyyy-MM-dd HH:mm:ss"
+          type="datetimerange"
+          range-separator="-"
+          start-placeholder="请选择时间"
+          end-placeholder
+          :default-time="['00:00:00', '23:59:59']"
+        ></el-date-picker>
       </span>
 
       <el-button icon="el-icon-refresh-right" @click="resetList"
@@ -45,8 +112,8 @@
       <el-button
         type="info"
         icon="el-icon-upload2"
-        @click="toAdd"
-        v-has="{ red: 'freeCodeManagementAdd', type: 1 }"
+        @click="toExport"
+        v-has="{ red: 'merchantDistributionRecordExport', type: 1 }"
         >导出</el-button
       >
     </div>
@@ -58,92 +125,168 @@
         size="mini"
         stripe
         height="calc(100vh - 340px)"
-        @selection-change="handleSelectionChange"
         align="left"
       >
-        <el-table-column type="selection" width="34"></el-table-column>
         <el-table-column
           label="序号"
           type="index"
           min-width="60px"
           align="center"
         ></el-table-column>
-        <el-table-column label="商户名称" align="center" show-overflow-tooltip>
+        <el-table-column label="商户名称" align="center" show-overflow-tooltip min-width="150px">
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.licensePlate }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.merchantName) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="停车场名称" align="center" show-overflow-tooltip min-width="150px">
+          <template slot-scope="scope">
+            <span class="content">{{ formatEmptyValue(scope.row.parkingLotName) }}</span>
           </template>
         </el-table-column>
         <el-table-column
           label="抵扣券名称"
           align="center"
           show-overflow-tooltip
+          min-width="150px"
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.phone }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.deductionName) }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="发放方式" align="center" show-overflow-tooltip>
+        <el-table-column label="发放方式" align="center" show-overflow-tooltip min-width="150px">
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.masterName }}</span>
+            <span class="content">{{ formatEmptyValue(formatDistributeMode(scope.row)) }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="车牌号" align="center" show-overflow-tooltip>
+        <el-table-column label="是否限在场领取" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{
-              getNames(scope.row.vehicleWaiverParkingLots)
-            }}</span>
+            <span class="content">
+              {{
+                scope.row.needVehicle
+                  ? '是'
+                  : (scope.row.distrbuteMode.includes('二维码') ? '否' : '--')
+              }}
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column label="手机" align="center" show-overflow-tooltip min-width="150px">
+          <template slot-scope="scope">
+            <span class="content">{{ formatEmptyValue(scope.row.purePhoneNumber) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="车牌号" align="center" show-overflow-tooltip min-width="200px">
+          <template slot-scope="scope">
+            <span class="content">{{ formatEmptyValue(scope.row.vehicleNumber) }}</span>
           </template>
         </el-table-column>
         <el-table-column
-          label="发放数量(张)"
+          label="发放数量"
           align="center"
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{
-              getNames(scope.row.vehicleWaiverParkingLots)
-            }}</span>
+            <span class="content">{{ formatEmptyValue(scope.row.distributionQuantity) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="使用数量"
+          align="center"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">{{ formatEmptyValue(scope.row.usedQuantity) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="未使用数量"
+          align="center"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">{{ formatEmptyValue(scope.row.quantity) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="未使用券是否失效"
+          align="center"
+          show-overflow-tooltip
+          min-width="70px"
+        >
+          <template slot-scope="scope">
+            <span class="content">{{ formatUnusedExpired(scope.row) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="未使用失效是否可回收" align="center" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span class="content">{{ formatUnusedAllowRecycle(scope.row) }}</span>
           </template>
         </el-table-column>
         <el-table-column
           label="发放时间"
-          min-width="130px"
+          min-width="150px"
           align="center"
           show-overflow-tooltip
         >
           <template slot-scope="scope">
             <span class="content">{{
-              scope.row.createTime | parseTime("{y}-{m}-{d} {h}:{i}:{s}")
+              scope.row.operateTime | parseTime("{y}-{m}-{d} {h}:{i}:{s}")
+            }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="到期时间"
+          min-width="150px"
+          align="center"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">{{
+              scope.row.expireTime | parseTime("{y}-{m}-{d} {h}:{i}:{s}")
             }}</span>
           </template>
         </el-table-column>
         <el-table-column
           label="重复使用开始时间"
-          min-width="130px"
+          min-width="150px"
           align="center"
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{
-              scope.row.createTime | parseTime("{y}-{m}-{d} {h}:{i}:{s}")
+            <span v-if="scope.row.validTimeStart" class="content">{{
+              scope.row.validTimeStart | parseTime("{y}-{m}-{d} {h}:{i}:{s}")
             }}</span>
+            <span v-else class="content">--</span>
           </template>
         </el-table-column>
         <el-table-column
           label="重复使用结束时间"
-          min-width="130px"
+          min-width="150px"
           align="center"
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{
-              scope.row.createTime | parseTime("{y}-{m}-{d} {h}:{i}:{s}")
+            <span v-if="scope.row.validTimeEnd" class="content">{{
+              scope.row.validTimeEnd | parseTime("{y}-{m}-{d} {h}:{i}:{s}")
             }}</span>
+            <span v-else class="content">--</span>
           </template>
         </el-table-column>
-        <el-table-column label="备注" align="center" show-overflow-tooltip>
+        <el-table-column
+          label="回收时间"
+          min-width="150px"
+          align="center"
+          show-overflow-tooltip
+        >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.createrName }}</span>
+            <span v-if="scope.row.recycleTime" class="content">{{
+              scope.row.recycleTime | parseTime("{y}-{m}-{d} {h}:{i}:{s}")
+            }}</span>
+            <span v-else class="content">--</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="备注" align="center" show-overflow-tooltip min-width="200px">
+          <template slot-scope="scope">
+            <span class="content">{{ formatEmptyValue(scope.row.memo, true) }}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -158,86 +301,104 @@
         @current-change="handleCurrentChange"
       />
     </div>
-    <Dialog ref="dialog" @getList="getList" @openLoading="openLoading"></Dialog>
   </div>
 </template>
 
 <script>
 import {
-  vehicleWaiverList, //限免车列表
-  vehicleWaiverBatchDelete //限免车批量删除
-} from "@/api/specificVehicleManagement";
-import Dialog from "./components/dialog";
-import { fieldTable } from "@/api/common";
+  merchantDeductionDistributionList,
+  merchantDeductionDistributionExport
+} from "@/api/merchantManagement";
+import { formatEmptyValue } from "../util/amountUtil";
 
 export default {
-  name: "freeCodeManagement",
-  components: { Dialog },
+  name: "merchantDistributionRecord",
+  components: {},
   data() {
     return {
       listQuery: {
         pageNum: 1,
         pageSize: 10,
         total: 0,
-        licensePlate: "", //车牌号
-        parkingLotName: "", //停车场名
-        expirationStartTime: "", //开始时间
-        expirationEndTime: "", //结束时间
-        status: null //使用状态
+        merchantName: "",
+        deductionName: "",
+        distrbuteMode: "",
+        vehicleNumber: "",
+        purePhoneNumber: "",
+        isExpired: "",
+        allowRecycle: "",
+        operateTimeStart: "",
+        operateTimeEnd: "",
+        expireTimeStart: "",
+        expireTimeEnd: ""
       },
-      selGateway: null,
-      statusList: [
-        { enumName: "到期", enumValue: 1 },
-        { enumName: "正常", enumValue: 0 }
+      distrbuteModeList: [
+        { label: "人工发放", value: "人工" },
+        { label: "静态二维码发放", value: "二维码-静态" },
+        { label: "动态二维码发放", value: "二维码-动态" }
       ],
-      totalMoney: null, //收款统计
-      Dictionaries: {
-        enumTypes: "RULE_VEHICLE_TYPE,RULE_PARKING_DIRECTION"
-      },
-      enumsData: {}, //字典表返回数据
-      time: [],
-      listLoading: false, //加载
-      list: [] //信息
+      allowRecycleList: [
+        { label: "是", value: true },
+        { label: "否", value: false }
+      ],
+      statusList: [
+        { label: "是", value: true },
+        { label: "否", value: false }
+      ],
+      operateTime: [],
+      expireTime: [],
+      listLoading: null,
+      list: []
     };
   },
-  watch: {
-    time(value) {
-      if (value === null) {
-        this.time = ["", ""];
-      } else if (value.length === 0) {
-        this.time = ["", ""];
-      }
-      this.changeTime();
-    }
-  },
-
   created() {
     this.toSearchList();
-    this.getFieldTable();
   },
   methods: {
-    getFieldTable() {
-      fieldTable(this.Dictionaries).then(response => {
-        this.enumsData = response.data;
-      });
+    formatEmptyValue,
+    formatUnusedExpired(row) {
+      const qty = row ? row.quantity : null;
+      if (qty === 0) {
+        return '--';
+      }
+      if (row == null || row.status == null) {
+        return '--';
+      }
+      return row.status === 2 ? '是' : '否';
     },
-    getNames(arr) {
-      let names = [];
-      arr.forEach(el => {
-        if (el.parkingLot) {
-          names.push(el.parkingLot.name);
-        }
-      });
-      return names.toString();
+    formatUnusedAllowRecycle(row) {
+      const qty = row ? row.quantity : null;
+      if (qty === 0) {
+        return '--';
+      }
+      const deductionType = row ? row.deductionType : null;
+      if (deductionType === '固定折扣' || deductionType === '全免抵扣') {
+        return '--';
+      }
+      if (row == null || row.allowRecycle == null) {
+        return '--';
+      }
+      return row.allowRecycle ? '是' : '否';
     },
-    changeTime() {
-      this.listQuery.expirationStartTime = this.time[0].getTime();
-      this.listQuery.expirationEndTime = this.time[1].getTime();
-    },
-
     //查询泊位列表
     toSearchList() {
       this.listQuery.pageNum = 1;
+      // 处理发放时间范围
+      if (this.operateTime && this.operateTime.length === 2) {
+        this.listQuery.operateTimeStart = this.operateTime[0];
+        this.listQuery.operateTimeEnd = this.operateTime[1];
+      } else {
+        this.listQuery.operateTimeStart = "";
+        this.listQuery.operateTimeEnd = "";
+      }
+      // 处理到期时间范围
+      if (this.expireTime && this.expireTime.length === 2) {
+        this.listQuery.expireTimeStart = this.expireTime[0];
+        this.listQuery.expireTimeEnd = this.expireTime[1];
+      } else {
+        this.listQuery.expireTimeStart = "";
+        this.listQuery.expireTimeEnd = "";
+      }
       this.openLoading();
       this.getList();
     },
@@ -247,34 +408,22 @@ export default {
         pageNum: 1,
         pageSize: 10,
         total: 0,
-        licensePlate: "", //车牌号
-        parkingLotName: "", //停车场名
-        expirationStartTime: "", //开始时间
-        expirationEndTime: "", //结束时间
-        status: null //使用状态
+        merchantName: "",
+        deductionName: "",
+        distrbuteMode: "",
+        vehicleNumber: "",
+        purePhoneNumber: "",
+        isExpired: "",
+        allowRecycle: "",
+        operateTimeStart: "",
+        operateTimeEnd: "",
+        expireTimeStart: "",
+        expireTimeEnd: ""
       };
-      this.time = [];
+      this.operateTime = [];
+      this.expireTime = [];
       this.openLoading();
       this.getList();
-    },
-    //显示溢出隐藏
-    showTips(obj, row) {
-      /*obj为鼠标移入时的事件对象*/
-      /*currentWidth 为文本在页面中所占的宽度，创建标签，加入到页面，获取currentWidth ,最后在移除*/
-      let TemporaryTag = document.createElement("span");
-      TemporaryTag.innerText = row.note;
-      TemporaryTag.className = "getTextWidth";
-      document.querySelector("body").appendChild(TemporaryTag);
-      let currentWidth = document.querySelector(".getTextWidth").offsetWidth;
-      document.querySelector(".getTextWidth").remove();
-
-      /*cellWidth为表格容器的宽度*/
-      const cellWidth = obj.target.offsetWidth;
-
-      /*当文本宽度小于||等于容器宽度两倍时，代表文本显示未超过两行*/
-      currentWidth <= 2 * cellWidth
-        ? (row.showTooltip = false)
-        : (row.showTooltip = true);
     },
     openLoading() {
       let claeeName;
@@ -282,6 +431,9 @@ export default {
         claeeName = "hasSidebar";
       } else {
         claeeName = "noSidebar";
+      }
+      if (this.listLoading && this.listLoading.close) {
+        this.listLoading.close();
       }
       this.listLoading = this.$loading({
         lock: true,
@@ -294,96 +446,53 @@ export default {
 
     //获取数据列表
     getList() {
-      let para = this.listQuery;
-      vehicleWaiverList(para)
+      const para = { ...this.listQuery };
+      merchantDeductionDistributionList(para)
         .then(response => {
-          this.list = response.rows;
+          this.list = response.rows || [];
           if (response.total > 0) {
-            this.listQuery.total = response.total; // 数据总条数
+            this.listQuery.total = response.total;
           } else {
-            this.listQuery.pageSize = 40; //每页数量
-            this.listQuery.total = 0; // 数据总条数
-            this.listQuery.pageNum = 1; // 当前页
+            this.listQuery.total = 0;
+            this.listQuery.pageNum = 1;
           }
-          this.total = response.total;
-
-          // Just to simulate the time of the request
-          setTimeout(() => {
-            this.listLoading.close();
-          }, 300);
         })
-        .catch(() => {
+        .finally(() => {
           setTimeout(() => {
-            this.listLoading.close();
+            if (this.listLoading && this.listLoading.close) {
+              this.listLoading.close();
+            }
+            this.listLoading = null;
           }, 300);
         });
     },
 
-    //打开添加长租规则
-    toAdd() {
-      let id = null;
-      let pageType = 1;
-      this.$refs.dialog.showDialog(id, pageType);
-    },
-
-    //选择复选框
-    handleSelectionChange(val) {
-      this.selGateway = val;
-    },
-
-    //批量删除
-    toDel() {
-      if (this.selGateway.length > 0) {
-        let arr = [];
-        this.selGateway.forEach(el => {
-          arr.push(el.id);
-        });
-        let text = "确认批量删除限免车吗?";
-        if (this.selGateway.length == 1) {
-          text = "确认删除该限免车吗?";
-        }
-
-        this.$confirm(text, "提示", {
-          type: "warning"
-        }).then(() => {
-          let para = {
-            ids: arr.toString()
-          };
-          vehicleWaiverBatchDelete(para).then(response => {
-            if (response.code == "200") {
-              this.$message({
-                type: "success",
-                message: "删除成功"
-              });
-              this.openLoading();
-              this.getList();
-            } else {
-              // this.$message({
-              //   type: "error",
-              //   message: "删除失败"
-              // });
-            }
-          });
-        });
-      } else {
-        this.$message({
-          type: "warning",
-          message: "请选择删除限免车"
-        });
-      }
-    },
-
-    //打开编辑长租规则
-    toEdit(e) {
-      let id = e.id;
-      let pageType = 2;
-      this.$refs.dialog.showDialog(id, pageType);
-    },
-    //打开长租规则详情
-    toDetails(e) {
-      let id = e.id;
-      let pageType = 3;
-      this.$refs.dialog.showDialog(id, pageType);
+    // 导出
+    toExport() {
+      const para = {
+        merchantName: this.listQuery.merchantName,
+        deductionName: this.listQuery.deductionName,
+        distrbuteMode: this.listQuery.distrbuteMode,
+        vehicleNumber: this.listQuery.vehicleNumber,
+        purePhoneNumber: this.listQuery.purePhoneNumber,
+        isExpired: this.listQuery.isExpired,
+        allowRecycle: this.listQuery.allowRecycle,
+        operateTimeStart: this.listQuery.operateTimeStart,
+        operateTimeEnd: this.listQuery.operateTimeEnd,
+        expireTimeStart: this.listQuery.expireTimeStart,
+        expireTimeEnd: this.listQuery.expireTimeEnd
+      };
+      merchantDeductionDistributionExport(para).then(res => {
+        const content = res.data;
+        const blob = new Blob([content]);
+        const elink = document.createElement("a");
+        elink.download = "抵扣券发放明细" + new Date().getTime() + ".xls";
+        elink.style.display = "none";
+        elink.href = URL.createObjectURL(blob);
+        document.body.appendChild(elink);
+        elink.click();
+        document.body.removeChild(elink);
+      });
     },
     // 切换页码方法
     handleSizeChange(val) {
@@ -397,6 +506,19 @@ export default {
       this.listQuery.pageNum = val;
       this.openLoading();
       this.getList();
+    },
+    // 格式化发放方式显示
+    formatDistributeMode(row) {
+      if (row.distrbuteMode === '人工') {
+        return '人工发放';
+      } else if (row.distrbuteMode === '二维码') {
+        if (row.qrcodeMode === '静态') {
+          return '静态二维码发放';
+        } else if (row.qrcodeMode === '动态') {
+          return '动态二维码发放';
+        }
+      }
+      return row.distrbuteMode || '';
     }
   }
 };
