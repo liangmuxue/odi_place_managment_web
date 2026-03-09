@@ -11,5 +11,5 @@ let config = {
   // serverIP: "http://218.60.117.168:8101/hiCar"
   // serverIP: "http://218.60.117.168:8111/hiCar"
   // serverIP: "http://218.61.32.173:8111/hiCar"
-  serverIP: "http://218.60.118.241:8111/hiCar"
+  serverIP: "http://218.61.32.173:8102/hiCarWeb"
 }

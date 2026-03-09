@@ -66,7 +66,7 @@ const reconciliationCenter = {
       component: () => import('@/views/reconciliationCenter/collectionStatistics/index'),
       name: 'CollectionStatistics',
       meta: {
-        title: '收款统计',
+        title: '收入日报',
         icon: 'feeRules',
 
       },

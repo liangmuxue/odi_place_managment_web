@@ -2,16 +2,26 @@
   <div class="commit_page">
     <div class="totalMoney_box">
       <span>实收总额统计：{{ totalMoneyList.totalAmount | getMoney }}元 </span>
-      <span class="totalMoney_box_small">（实收总额=长租实收+临停实收） </span>
-      <span
-        >长租实收统计：{{ totalMoneyList.termRentalAmount | getMoney }}元</span
+      <!-- <span class="totalMoney_box_small">（实收总额=长租实收+临停实收） </span> -->
+      <span class="totalMoney_box_small"
+        >（微信: {{ totalMoneyList.allWxPay | getMoney }}元；钱包余额:{{
+          totalMoneyList.allWalletPay | getMoney
+        }}元）</span
       >
-      <span class="totalMoney_box_small"></span>
       <span
         >临停实收统计：{{
           totalMoneyList.temporaryStopAmount | getMoney
         }}元</span
-      ><span class="totalMoney_box_small">（临停实收=临停收款-临停退款）</span>
+      >
+      <!-- <span class="totalMoney_box_small">（临停实收=临停收款-临停退款）</span> -->
+      <span class="totalMoney_box_small"
+        >（临停收款: {{ totalMoneyList.allTemporaryPay | getMoney }}元；
+        临停退款:{{ totalMoneyList.allTemporaryRefund | getMoney }}元）</span
+      >
+      <span
+        >长租实收统计：{{ totalMoneyList.termRentalAmount | getMoney }}元</span
+      >
+      <span class="totalMoney_box_small"></span>
       <!-- <span class="totalMoney_box_small"
         >(长租实收：{{ totalMoneyList.termRentalAmount }}元、临停实收：{{
           totalMoneyList.temporaryStopAmount
@@ -29,24 +39,28 @@
       </span> -->
     </div>
     <div class="totalMoney_box">
-      <!-- <div class="totalMoney_com_box">
-        <div class="totalMoney_com_box_text">建设发展（元）</div>
-        <div class="totalMoney_com_box_text">
-          {{ (totalMoneyList.totalShare * 100000) | getMoney }}
-        </div>
-      </div> -->
-      <span
-        >建设发展分成统计：{{ totalMoneyList.totalShare | getMoney }}元</span
+      <div
+        class="totalMoney_com_box"
+        v-for="(sharing, index) in sharingAllList"
+        :key="index"
       >
+        <div class="totalMoney_com_box_text">{{ sharing.sharingName }}(元)</div>
+        <div class="totalMoney_com_box_text">
+          {{ sharing.temporarySharingAmount | getMoney }}
+        </div>
+      </div>
+      <!-- <span
+        >建设发展分成统计：{{ totalMoneyList.totalShare | getMoney }}元</span
+      > -->
       <!-- <span class="totalMoney_box_small"
         >(长租分成：{{ totalMoneyList.termRentalSharing }}元、临停分成：{{
           totalMoneyList.temporaryStopSharing
         }}元)
       </span> -->
-      <span class="totalMoney_box_small"></span>
+      <!-- <span class="totalMoney_box_small"></span>
       <span
         >海创物业分成统计：{{ totalMoneyList.totalShareTwo | getMoney }}元</span
-      >
+      > -->
       <!-- <span class="totalMoney_box_small"
         >(长租分成：{{ totalMoneyList.termRentalSharingTwo }}元、临停分成：{{
           totalMoneyList.temporaryStopSharingTwo
@@ -143,6 +157,30 @@
           </template>
         </el-table-column>
         <el-table-column
+          label="微信实收（元）"
+          align="center"
+          fixed
+          min-width="120px"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">{{ scope.row.wxPayAmount | getMoney }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="钱包余额实收（元）"
+          align="center"
+          fixed
+          min-width="140px"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">{{
+              scope.row.walletPayAmount | getMoney
+            }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
           label="长租实收（元）"
           align="center"
           min-width="120px"
@@ -212,7 +250,7 @@
             }}</span>
           </template>
         </el-table-column>
-        <el-table-column
+        <!-- <el-table-column
           label="海创物业分成（元）"
           min-width="170px"
           align="center"
@@ -236,98 +274,21 @@
               scope.row.temporaryStopSharing | getMoney
             }}</span>
           </template>
-        </el-table-column>
-        <!-- <el-table-column
-          label="联通分成（元）"
-          min-width="170px"
-          align="center"
-          show-overflow-tooltip
-        >
-          <template slot-scope="scope">
-            <span class="content">{{
-              scope.row.temporaryStopSharing | getMoney
-            }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="豪之英分成（元）"
-          min-width="170px"
-          align="center"
-          show-overflow-tooltip
-        >
-          <template slot-scope="scope">
-            <span class="content">{{
-              scope.row.temporaryStopSharingTwo | getMoney
-            }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="锦辉分成（元）"
-          min-width="170px"
-          align="center"
-          show-overflow-tooltip
-        >
-          <template slot-scope="scope">
-            <span class="content">{{
-              scope.row.temporaryStopSharing | getMoney
-            }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="科创交流中心分成（元）"
-          min-width="170px"
-          align="center"
-          show-overflow-tooltip
-        >
-          <template slot-scope="scope">
-            <span class="content">{{
-              scope.row.temporaryStopSharingTwo | getMoney
-            }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="商业广场分成（元）"
-          min-width="170px"
-          align="center"
-          show-overflow-tooltip
-        >
-          <template slot-scope="scope">
-            <span class="content">{{
-              scope.row.temporaryStopSharingTwo | getMoney
-            }}</span>
-          </template>
         </el-table-column> -->
-
-        <!-- <el-table-column
-          label="临停分成（元）建设发展公司"
-          min-width="120px"
+        <el-table-column
+          v-for="(item, index) in sharingList"
+          :key="index"
+          :label="item + '分成（元）'"
+          :prop="item + index"
+          width="200"
           align="center"
-          show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.temporaryStopSharing }}</span>
+            <span class="content">{{
+              scope.row.sharingList[index].temporarySharingAmount
+            }}</span>
           </template>
         </el-table-column>
-        <el-table-column
-          label="临停分成（元）海创物业公司"
-          min-width="120px"
-          align="center"
-          show-overflow-tooltip
-        >
-          <template slot-scope="scope">
-            <span class="content">{{ scope.row.temporaryStopSharingTwo }}</span>
-          </template>
-        </el-table-column> -->
-
-        <!-- <el-table-column
-          label="欠款总额（元）"
-          align="center"
-          show-overflow-tooltip
-        >
-          <template slot-scope="scope">
-            <span class="content">{{ scope.row.arrearsAmount }}</span>
-          </template>
-        </el-table-column> -->
       </el-table>
       <el-pagination
         :current-page="listQuery.pageNum"
@@ -363,16 +324,30 @@ export default {
         parkName: "" //停车场
       },
       totalMoneyList: {
-        totalAmount: 0,
-        termRentalAmount: 0,
+        totalAmount: 0, //实收总额
+        termRentalAmount: 0, //长租实收
         temporaryStopAmount: 0,
+        allTemporaryPay: 0, //临停收款汇总
+        allTemporaryRefund: 0, //临停退款汇总
+        allWxPay: 0, //微信实收
+        allWalletPay: 0, //钱包实收
         totalShare: 0,
         totalShareTwo: 0
       }, //收款金额数据
+      sharingList: [
+        "海创物业",
+        "建设发展",
+        "联通",
+        "豪之英",
+        "锦辉",
+        "科创交流中心",
+        "商业广场"
+      ],
       selGateway: null,
       time: [],
       listLoading: false, //加载
-      list: [] //信息
+      list: [], //信息
+      sharingAllList: [] //分成比例信息
     };
   },
   watch: {
@@ -437,6 +412,7 @@ export default {
       collectionStatisticsPageList(para)
         .then(response => {
           this.list = response.data.list;
+          this.sharingAllList = response.data.sharingAllList;
           this.totalMoneyList = response.data;
           if (response.data.total > 0) {
             this.listQuery.total = response.data.total; // 数据总条数
