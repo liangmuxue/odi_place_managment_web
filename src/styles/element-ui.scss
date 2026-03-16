@@ -1,8 +1,8 @@
 // cover some element-ui styles
 //滚动条的宽度
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 10px;
+  height: 10px;
 }
 
 //滚动条的滑块
@@ -441,6 +441,11 @@
     }
   }
 
+  .table-noPadding .el-table__fixed-body-wrapper {
+
+    top: 50px !important;
+  }
+
   .el-table__body-wrapper,
   .el-table__fixed-body-wrapper {
     background: #fff;
@@ -615,6 +620,63 @@
 
 
       }
+    }
+  }
+}
+
+.teble-noPadding {
+  // position: relative;
+
+  .el-table__body tbody tr td {
+    padding: 0 !important;
+
+    .cell {
+      padding: 0 !important;
+    }
+
+    .teble-noPadding-hasPaddingTr {
+      display: flex;
+      justify-content: center;
+      /* 水平居中 */
+      align-items: center;
+      /* 垂直居中 */
+      letter-spacing: 1px;
+      height: 108px;
+      line-height: 16px;
+      // writing-mode: vertical-lr;
+      // text-orientation: upright;
+      padding: 10px;
+
+    }
+
+    .teble-noPadding-hasPaddingTr2 {
+      display: flex;
+      justify-content: center;
+      /* 水平居中 */
+      align-items: center;
+      /* 垂直居中 */
+      letter-spacing: 1px;
+      height: 216px;
+      line-height: 16px;
+      // writing-mode: vertical-lr;
+      // text-orientation: upright;
+      padding: 10px;
+      font-weight: bold;
+    }
+
+    .teble-noPadding-hasPaddingTr3 {
+      display: flex;
+      justify-content: center;
+      /* 水平居中 */
+      align-items: center;
+      /* 垂直居中 */
+      letter-spacing: 1px;
+      height: 324px;
+      line-height: 16px;
+      // writing-mode: vertical-lr;
+      // text-orientation: upright;
+      padding: 10px;
+      font-weight: bold;
     }
   }
 }

@@ -102,7 +102,10 @@
         v-has="{ red: 'collectionStatisticsExport', type: 1 }"
         >导出</el-button
       >
-      <span class="btn_box_text">* 临停退款以退款操作时间计入报表 </span>
+      <span class="btn_box_text"
+        >*
+        以下数据仅包含微信支付现金流水，不含钱包支付数据，退款以操作时间计入报表
+      </span>
     </div>
 
     <div class="content_box">

@@ -143,6 +143,15 @@ export function collectionStatisticsExport(data) {
 
   })
 }
+//流水日报分页
+export function capitalFlowDailyReportList(data) {
+  return request({
+    url: 'system/capitalFlowDailyReport/list',
+    method: 'post',
+    data
+
+  })
+}
 
 //发票管理分页
 export function invoicePage(data) {
