@@ -5,6 +5,8 @@ const UserIdKey = 'Admin-UserId-Portrait'
 const TenantIdKey = 'Admin-TenantId-Portrait'
 const InitflagKey = 'Admin-InitflagKey-Portrait'
 const UserNameKey = 'Admin-UserName-Portrait'
+const NickNameKey = 'Admin-NickName-Portrait'
+const RoleNameKey = 'Admin-RoleName-Portrait'
 const UserBoxKey = 'Admin-UserBox'
 
 export function getToken() {
@@ -56,6 +58,20 @@ export function getUserName() {
 
 export function setUserName(userName) {
   return Cookies.set(UserNameKey, userName)
+}
+export function getNickName() {
+  return Cookies.get(NickNameKey)
+}
+
+export function setNickName(userName) {
+  return Cookies.set(NickNameKey, userName)
+}
+export function getRoleName() {
+  return Cookies.get(RoleNameKey)
+}
+
+export function setRoleName(userName) {
+  return Cookies.set(RoleNameKey, userName)
 }
 
 export function getWeekData(e) { //获得上周周一~周日的年月日  

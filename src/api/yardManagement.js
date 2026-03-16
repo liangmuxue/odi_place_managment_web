@@ -132,11 +132,72 @@ export function monitorSpace(data) {
 
   })
 }
+//车位状态监控列表
+export function spaceReamingMonitorSpace(data) {
+  return request({
+    url: '/system/spaceReaming/monitorSpace',
+    method: 'post',
+    data
+
+  })
+}
+//修改车位
+export function spaceReamingUpdate(data) {
+  return request({
+    url: '/system/spaceReaming/update',
+    method: 'post',
+    data
+
+  })
+}
+//车位单条数据详情
+export function spaceReamingDetail(data) {
+  return request({
+    url: '/system/spaceReaming/detail',
+    method: 'post',
+    data
+
+  })
+}
 //获取车场下拉框
 export function lotSelect() {
   return request({
     url: '/system/lot/select',
     method: 'get',
 
+  })
+}
+//获取车场下拉框（停车缴费）
+export function getName(data) {
+  return request({
+    url: '/system/order/getName',
+    method: 'post',
+    data
+
+  })
+}
+
+//获取所有车场下拉框
+export function lotSelectAll() {
+  return request({
+    url: '/system/lot/selectAll',
+    method: 'get',
+
+  })
+}
+//获取长租规则
+export function ruleParkingLeasesListNoPage() {
+  return request({
+    url: '/system/ruleParkingLeases/listNoPage',
+    method: 'get',
+
+  })
+}
+//获取临停规则
+export function ruleTemporaryParkingList(data) {
+  return request({
+    url: '/system/ruleTemporaryParking/list',
+    method: 'POST',
+    data
   })
 }

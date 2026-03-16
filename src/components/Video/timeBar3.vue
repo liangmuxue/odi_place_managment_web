@@ -129,7 +129,7 @@ export default {
         -20,
         this.scaleXpointArr[this.scaleXpointArr.length - 2] + 100,
         100,
-        { fillStyle: "#ccc" }
+        { fillStyle: "#e7f4f2" }
       );
       this.drawTimeStrip();
 
@@ -355,7 +355,7 @@ export default {
           12,
           this.vehicleStatusCanvas[i].width,
           5,
-          { fillStyle: "#30bee9" }
+          { fillStyle: "#037659" }
         );
       }
       // this.$emit("toIsHistory");
@@ -453,7 +453,7 @@ export default {
 }
 .time-scale-container {
   position: relative;
-  margin-top: 20px;
+  margin-top: 10px;
   padding-top: 20px;
 }
 .time-scale-tooltip {

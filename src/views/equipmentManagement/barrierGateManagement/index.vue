@@ -1,5 +1,5 @@
 <template>
-  <div class="parkingManagement_page">
+  <div class="commit_page">
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">停车场</div>
@@ -34,17 +34,26 @@
       >
     </div>
     <div class="btn_box">
-      <el-button type="info" icon="el-icon-circle-plus-outline" @click="toAdd"
-        >添加</el-button
+      <el-button
+        type="info"
+        icon="el-icon-circle-plus-outline"
+        @click="toAdd"
+        v-has="{ red: 'barrierGateAdd', type: 1 }"
+        >新增</el-button
       >
-      <!-- v-has="{ red: 'addBox', type: 1 }" -->
-      <el-button type="danger" icon="el-icon-circle-plus-outline" @click="toDel"
+      <el-button
+        type="danger"
+        icon="el-icon-circle-close"
+        @click="toDel"
+        v-has="{ red: 'barrierGateDelete', type: 1 }"
         >删除</el-button
       >
-      <!-- v-has="{ red: 'deleteBox', type: 1 }" -->
-      <el-button type="info" icon="el-icon-unlock" @click="openDoor"
+      <!-- <el-button type="info" icon="el-icon-unlock" @click="openDoors"
         >远程开闸</el-button
       >
+      <el-button type="warning" icon="el-icon-lock" @click="openDoors"
+        >远程关闸</el-button
+      > -->
     </div>
 
     <div class="content_box">
@@ -55,6 +64,7 @@
         stripe
         height="calc(100vh - 320px)"
         @selection-change="handleSelectionChange"
+        ref="selTable"
         align="left"
       >
         <el-table-column type="selection" width="34"></el-table-column>
@@ -73,14 +83,14 @@
             <span class="content">{{ scope.row.parkName }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="道闸编号" align="center" show-overflow-tooltip>
-          <template slot-scope="scope">
-            <span class="content">{{ scope.row.id }}</span>
-          </template>
-        </el-table-column>
         <el-table-column label="道闸名称" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="content">{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="道闸编号" align="center" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span class="content">{{ scope.row.barrierNumber }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -154,45 +164,79 @@
         </el-table-column>
         <el-table-column
           label="操作"
-          align="center"
+          align="left"
           header-align="center"
-          min-width="160px"
+          width="380px"
           class-name="small-padding fixed-width"
         >
           <template slot-scope="scope">
-            <span>
-              <el-button
+            <span
+              v-loading="scope.row.loading"
+              style="display: inline-block;height:30px"
+            >
+              <!-- <el-button
                 type="info"
-                v-if="scope.row.online == 1"
                 icon="el-icon-unlock"
-                @click="openDoor"
+                @click="openDoorAlways"
                 size="mini"
                 >一键常开</el-button
-              >
-              <el-button
+              > -->
+              <!-- v-if="scope.row.online == 1" -->
+              <!-- <el-button
                 type="danger"
                 v-else
                 icon="el-icon-lock"
-                @click="openDoor"
+                @click="openDoorCancel"
                 size="mini"
                 >取消常开</el-button
+              > -->
+              <div
+                class="openBtn"
+                @click="openDoor(scope.row)"
+                v-has="{ red: 'remoteOpen', type: 1 }"
               >
+                <!-- <i class="el-icon-unlock"></i>  -->
+                开闸
+              </div>
+              <div
+                class="closeBtn"
+                @click="closeDoor(scope.row)"
+                v-has="{ red: 'remoteOpen', type: 1 }"
+              >
+                <!-- <i class="el-icon-lock"></i>  -->
+                关闸
+              </div>
             </span>
 
             <span
               class="operation_button update_btn"
               @click="toEdit(scope.row)"
+              v-has="{ red: 'barrierGateEdit', type: 1 }"
             >
               编辑
             </span>
-            <!-- v-has="{ red: 'editBox', type: 1 }" -->
             <span
               class="operation_button update_btn"
               @click="toDetails(scope.row)"
+              v-has="{ red: 'barrierGateDetails', type: 1 }"
             >
               详情
             </span>
-            <!-- v-has="{ red: 'editBox', type: 1 }" -->
+            <span
+              class="operation_button update_btn"
+              @click="toQrCode(scope.row)"
+              v-has="{ red: 'barrierGateQR', type: 1 }"
+            >
+              {{ scope.row.type > 2 ? "出场码" : "入场码" }}
+            </span>
+            <span
+              class="operation_button update_btn"
+              style="width:60px"
+              @click="toReleaseRule(scope.row)"
+              v-if="scope.row.type < 3"
+              v-has="{ red: 'releaseRule', type: 1 }"
+              >放行规则
+            </span>
           </template>
         </el-table-column>
       </el-table>
@@ -208,20 +252,33 @@
       />
     </div>
     <Dialog ref="dialog" @getList="getList" @openLoading="openLoading"></Dialog>
+    <QrCode ref="qrCode" @getList="getList" @openLoading="openLoading"></QrCode>
+    <ReleaseRule
+      ref="releaseRule"
+      @getList="getList"
+      @openLoading="openLoading"
+    ></ReleaseRule>
   </div>
 </template>
 
 <script>
 import {
   gateList, //道闸管理分页查询
+  openGate, //远程开闸
   gateDelete //删除道闸
 } from "@/api/equipmentManagement";
+import {
+  tranceFrom //远程开闸(通过传参实现)
+} from "@/api/operationManagement";
+
 import Dialog from "./components/dialog";
+import QrCode from "./components/qrCode";
+import ReleaseRule from "./components/releaseRule";
 import { fieldTable } from "@/api/common";
 
 export default {
   name: "BarrierGateManagement",
-  components: { Dialog },
+  components: { Dialog, QrCode, ReleaseRule },
   data() {
     return {
       listQuery: {
@@ -365,12 +422,17 @@ export default {
 
     //批量删除
     toDel() {
-      let arr = [];
-      this.selGateway.forEach(el => {
-        arr.push(el.id);
-      });
-      if (this.selGateway.length > 0) {
-        this.$confirm("确认批量删除道闸吗?", "提示", {
+      if (this.selGateway && this.selGateway.length > 0) {
+        let arr = [];
+        this.selGateway.forEach(el => {
+          arr.push(el.id);
+        });
+        let text = "确认批量删除道闸吗?";
+        if (this.selGateway.length == 1) {
+          text = "确认删除该道闸吗?";
+        }
+
+        this.$confirm(text, "提示", {
           type: "warning"
         }).then(() => {
           gateDelete(arr.toString()).then(response => {
@@ -382,22 +444,110 @@ export default {
               this.openLoading();
               this.getList();
             } else {
-              this.$message({
-                type: "warning",
-                message: "删除失败"
-              });
+              // this.$message({
+              //   type: "error",
+              //   message: "删除失败"
+              // });
             }
           });
         });
       } else {
         this.$message({
-          type: "warning",
-          message: "请选择删除的泊位"
+          type: "error",
+          message: "请选择删除的道闸"
         });
       }
     },
     //远程开闸
-    openDoor() {},
+    openDoor(e) {
+      function createObjectFromArrays(keys, values) {
+        return keys
+          .map((key, index) => [key, values[index]])
+          .reduce((obj, [key, value]) => {
+            obj[key] = value;
+            return obj;
+          }, {});
+      }
+      let arr = [e.barrierNumber];
+      let arr2 = [e.parkId];
+      const result = createObjectFromArrays(arr, arr2);
+      let para = { gateMap: result, path: "/hiCar/system/gate/openGate" };
+      this.$set(e, "loading", true);
+      tranceFrom(para)
+        .then(response => {
+          if (response.code == "200") {
+            this.$message({
+              type: "success",
+              message: "开闸成功"
+            });
+          } else {
+            // this.$message({
+            //   type: "error",
+            //   message: "开闸失败"
+            // });
+          }
+          setTimeout(() => {
+            e.loading = false;
+          }, 300);
+        })
+        .catch(() => {
+          setTimeout(() => {
+            e.loading = false;
+          }, 300);
+        });
+    },
+    //远程关闸
+    closeDoor(e) {
+      this.$message({
+        type: "warning",
+        message: "该设备暂不支持此功能"
+      });
+    },
+    //远程开闸(原多选)
+    openDoors() {
+      function createObjectFromArrays(keys, values) {
+        return keys
+          .map((key, index) => [key, values[index]])
+          .reduce((obj, [key, value]) => {
+            obj[key] = value;
+            return obj;
+          }, {});
+      }
+      if (this.selGateway && this.selGateway.length > 0) {
+        let arr = [];
+        let arr2 = [];
+        this.selGateway.forEach(el => {
+          arr.push(el.barrierNumber);
+          arr2.push(el.parkId);
+        });
+        const result = createObjectFromArrays(arr, arr2);
+        console.log(123, result);
+        let para = { gateMap: result, path: "/hiCar/system/gate/openGate" };
+        tranceFrom(para).then(response => {
+          if (response.code == "200") {
+            this.$message({
+              type: "success",
+              message: "开闸成功"
+            });
+          } else {
+            // this.$message({
+            //   type: "error",
+            //   message: "开闸失败"
+            // });
+          }
+        });
+        this.$refs.selTable.clearSelection();
+      }
+    },
+    //常开
+    openDoorAlways() {
+      this.$message({
+        type: "warning",
+        message: "该设备暂不支持此功能"
+      });
+    },
+    //取消常开
+    openDoorCancel() {},
     //打开编辑道闸
     toEdit(e) {
       let id = e.id;
@@ -409,6 +559,15 @@ export default {
       let id = e.id;
       let pageType = 3;
       this.$refs.dialog.showDialog(id, pageType);
+    },
+    //打开二维码页面
+    toQrCode(e) {
+      let id = e.id;
+      this.$refs.qrCode.showDialog(id);
+    },
+    toReleaseRule(e) {
+      let id = e.id;
+      this.$refs.releaseRule.showDialog(id);
     },
     // 切换页码方法
     handleSizeChange(val) {
@@ -428,7 +587,33 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.parkingManagement_page {
+.openBtn {
+  display: inline-block;
+  cursor: pointer;
+  background: #30c4c6;
+  height: 28px;
+  line-height: 28px;
+  border-radius: 5px;
+  width: 56px;
+  text-align: center;
+  font-size: 14px;
+  color: #fff;
+  margin: 0 2px;
+}
+.closeBtn {
+  display: inline-block;
+  cursor: pointer;
+  background: #ffc833;
+  height: 28px;
+  line-height: 28px;
+  border-radius: 5px;
+  width: 56px;
+  text-align: center;
+  font-size: 14px;
+  color: #fff;
+  margin: 0 2px;
+}
+.commit_page {
   position: relative;
 }
 .content_box {

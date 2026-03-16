@@ -30,6 +30,15 @@ const equipmentManagement = {
         icon: 'longTermRentalRules'
       }
     },
+    {
+      path: 'monitoringEquipment',
+      component: () => import('@/views/equipmentManagement/monitoringEquipment/index'),
+      name: 'MonitoringEquipment',
+      meta: {
+        title: '监控管理',
+        icon: 'monitoringEquipment'
+      }
+    },
   ]
 }
 

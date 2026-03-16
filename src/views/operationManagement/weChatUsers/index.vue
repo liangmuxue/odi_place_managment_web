@@ -1,5 +1,5 @@
 <template>
-  <div class="parkingManagement_page">
+  <div class="commit_page">
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">手机</div>
@@ -37,7 +37,7 @@
         </el-select>
       </span>
       <span class="search_content">
-        <div class="search_content_title">免密</div>
+        <div class="search_content_title">免密支付签约</div>
         <el-select
           v-model="listQuery.noPasswordPay"
           placeholder="请选择"
@@ -98,15 +98,28 @@
             <span class="content">{{ scope.row.nickname }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="头像" min-width="90px" align="center">
+        <el-table-column label="头像" width="90px" align="center">
           <template slot-scope="scope">
-            <div class="content">
-              <img
-                slot="reference"
-                :src="scope.row.avatar"
-                width="36"
-                height="48"
-              />
+            <div class="content" :key="scope.row.id">
+              <el-popover placement="top-start" width="500" trigger="click">
+                <img
+                  :src="scope.row.avatar ? scope.row.avatar : scope.row.avatar"
+                  width="100%"
+                />
+                <img
+                  v-if="scope.row.avatar !== '' && scope.row.avatar !== null"
+                  slot="reference"
+                  :src="scope.row.avatar"
+                  width="36"
+                  height="36"
+                />
+                <!-- :src="
+                    scope.row.avatar + '?x-oss-process=image/resize,h_36,w_48'
+                  " -->
+                <span>
+                  <div min-width="36" height="36"></div>
+                </span>
+              </el-popover>
             </div>
           </template>
         </el-table-column>
@@ -184,7 +197,7 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.balance }}</span>
+            <span class="content">{{ scope.row.balance | getMoney }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -197,10 +210,10 @@
             <span
               class="operation_button update_btn"
               @click="toDetial(scope.row)"
+              v-has="{ red: 'weChatUsersDetails', type: 1 }"
             >
               详情
             </span>
-            <!-- v-has="{ red: 'editBox', type: 1 }" -->
           </template>
         </el-table-column>
       </el-table>
@@ -290,8 +303,13 @@ export default {
       this.getList();
     },
     changeTime() {
-      this.listQuery.startTime = this.time[0].getTime();
-      this.listQuery.endTime = this.time[1].getTime();
+      if (this.time[0]) {
+        this.listQuery.startTime = this.time[0].getTime();
+        this.listQuery.endTime = this.time[1].getTime();
+      } else {
+        this.listQuery.startTime = "";
+        this.listQuery.endTime = "";
+      }
     },
 
     //查询用户列表
@@ -314,6 +332,7 @@ export default {
         startTime: "", //开始时间
         endTime: "" //结束时间
       };
+      this.time = [];
       this.openLoading();
       this.$refs.eTable.clearSort();
       this.getList();
@@ -403,7 +422,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.parkingManagement_page {
+.commit_page {
   position: relative;
 }
 .content_box {

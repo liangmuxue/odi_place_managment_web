@@ -4,6 +4,38 @@
 
 .totalMoney_box {
   padding-left: 15px;
+  font-size: 16px;
+  height: 30px;
+  line-height: 30px;
+  display: flex;
+
+  .totalMoney_box_small {
+    padding-right: 50px;
+    font-size: 14px;
+  }
+
+  .totalMoney_com_box {
+    min-width: 120px;
+    height: 36px;
+    text-align: center;
+    background: #33ae73;
+    border-radius: 5px;
+    margin-right: 10px;
+
+    .totalMoney_com_box_text {
+      // white-space: nowrap;
+      // /* 禁止换行 */
+      // overflow: hidden;
+      // /* 隐藏溢出内容 */
+      // text-overflow: ellipsis;
+      // /* 显示省略号 */
+      // width: 130px;
+      height: 18px;
+      line-height: 18px;
+      font-size: 14px;
+      color: #fff;
+    }
+  }
 }
 
 .search_box {
@@ -41,11 +73,12 @@
       text-align: center;
       font-size: 14px;
     }
+
   }
 
   .search_content2 {
     flex: 1;
-    max-width: 470px;
+    max-width: 490px;
     margin-right: 10px;
     display: flex;
 
@@ -60,6 +93,41 @@
       border-radius: 4px 0px 0px 4px;
       text-align: center;
       font-size: 14px;
+    }
+
+    .search_content_title2 {
+      width: 160px;
+      height: 36px;
+      line-height: 36px;
+      background: #fff;
+      border-left: 1px solid #dcdfe6;
+      border-top: 1px solid #dcdfe6;
+      border-bottom: 1px solid #dcdfe6;
+      border-radius: 4px 0px 0px 4px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+  }
+
+  .search_content3 {
+    width: 160px;
+    margin-right: 10px;
+    display: flex;
+
+    .search_content_switchBox {
+      width: 150px;
+      height: 36px;
+      line-height: 36px;
+      background: #fff;
+      border-left: 1px solid #dcdfe6;
+      border-top: 1px solid #dcdfe6;
+      border-bottom: 1px solid #dcdfe6;
+      border-radius: 4px 0px 0px 4px;
+      text-align: center;
+      padding: 0 10px;
+      font-size: 14px;
+
     }
 
   }
@@ -93,6 +161,15 @@
   background: #33ae73;
 }
 
+.blueLine_ball {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background: #1C85F9;
+}
+
+
 .errLine_ball {
   display: inline-block;
   width: 10px;
@@ -105,11 +182,33 @@
   color: #828484;
 }
 
+.blueLine {
+  color: #1C85F9;
+}
+
 .onLine {
   color: #33ae73;
 }
 
 .errLine {
+  color: #ea2e1c;
+}
+
+.trueBox {
+  height: 36px;
+  line-height: 36px;
+  padding: 5px 8px;
+  border: 1px solid #33ae73;
+  border-radius: 5px;
+  color: #33ae73;
+}
+
+.falseBox {
+  height: 36px;
+  line-height: 36px;
+  padding: 5px 8px;
+  border: 1px solid #ea2e1c;
+  border-radius: 5px;
   color: #ea2e1c;
 }
 
@@ -125,13 +224,14 @@
 
 }
 
+
 .base_dialog {
   position: absolute;
   left: 0;
   top: -40px;
   width: 100%;
   height: calc(100vh - 100px);
-  z-index: 1;
+  z-index: 1002;
   background: $mainBg;
   padding: 10px;
 
@@ -169,23 +269,24 @@
       display: flex;
 
       .step {
-        width: 120px;
+        width: 140px;
         height: 40px;
         line-height: 40px;
         color: #999;
         background: #eee;
         text-align: center;
+        cursor: pointer;
       }
 
       .step2 {
-        width: 120px;
+        width: 140px;
         height: 40px;
         line-height: 40px;
         color: $titleTextH;
         background: $mainBg;
         text-align: center;
         border-bottom: 2px solid $titleTextH;
-
+        cursor: pointer;
       }
     }
 
@@ -202,19 +303,51 @@
         padding: 20px 20px 0px 100px;
       }
 
-      .base_dialog_main_right {
+      .base_dialog_main_left2 {
         flex: 1;
-        padding: 20px 100px 0px 20px;
+        max-width: 800px;
+        padding: 20px 20px 0px 100px;
+
+        .el-form-item__label {
+          width: 100px;
+        }
+
+      }
+
+      .base_dialog_main_left3 {
+        flex: 1;
+        max-width: 1500px;
+        padding: 20px 20px 0px 100px;
+
+        .el-form-item__label {
+          width: 90px;
+        }
 
       }
 
       .el-form-item__label {
-        width: 130px;
+        width: 136px;
       }
 
       .el-form-item__error {
-        margin-left: 130px;
+        margin-left: 136px;
       }
+
+      .base_dialog_main_right {
+        flex: 1;
+        padding: 20px 100px 0px 20px;
+
+        .el-form-item__label {
+          width: 148px;
+        }
+
+        .el-form-item__error {
+          margin-left: 148px;
+        }
+
+
+      }
+
 
 
       .el-transfer-panel {
@@ -263,13 +396,79 @@
       }
     }
 
+    .longTermRentalRules_content {
+      .el-form-item__label {
+        width: 220px;
+      }
+
+      .base_dialog_condit_text {
+        width: 50%;
+      }
+
+      .el-form-item__error {
+        margin-left: 220px;
+      }
+
+      .longTermRentalRules_content_worker_box_ground_box_item {
+        display: inline-block;
+        width: 100%;
+        height: 66px;
+
+        .el-form-item__label {
+          width: 80px;
+        }
+
+        .el-form-item__error {
+          margin-left: 80px;
+          width: 130px;
+
+        }
+
+        .inItem {
+          display: inline-block;
+          width: 90px;
+
+          .el-form-item__error {
+            margin-left: 10px;
+            width: 130px;
+          }
+
+        }
+      }
+
+      .base_dialog_condit_hasprompt {
+        .el-form-item__content {
+          margin-bottom: 20px;
+        }
+
+        .el-form-item__error {
+          margin-top: 20px;
+        }
+
+      }
+    }
+
     .base_dialog_main_btnBox {
       width: 200px;
       height: 40px;
       margin: 10px auto 0;
       display: flex;
       justify-content: space-around;
+
+      .el-button {
+        min-width: 80px;
+      }
     }
+  }
+}
+
+.merchantDeductAndIssue_main .base_dialog_main_content .base_dialog_main_left .base_dialog_condit {
+  .el-form-item__label {
+    width: 100px;
+  }
+
+  .el-form-item__error {
+    margin-left: 100px;
   }
 }
 
@@ -278,4 +477,29 @@
     width: 200px !important;
   }
 
+}
+
+.base_dialog_condit_text {
+  display: inline-block;
+  width: 72%;
+  word-wrap: break-word;
+}
+
+.base_dialog_condit_flex {
+  display: flex;
+
+  .base_dialog_condit_flexItem {
+    flex: 1;
+    height: 60px;
+
+    .base_dialog_condit_text {
+      display: inline-block;
+      width: 50%;
+    }
+
+  }
+}
+
+.releaseRule_err1 .el-form-item__error {
+  margin-left: 285px;
 }

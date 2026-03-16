@@ -49,8 +49,82 @@
               </el-form-item>
             </span>
             <span class="base_dialog_condit">
+              <el-form-item label="身份证：" prop="idcardPhoto">
+                <el-image
+                  v-if="newList.idcardPhoto"
+                  style="width: 48px; height: 36px"
+                  :src="newList.idcardPhoto"
+                  :preview-src-list="getPhotoList2(newList.idcardPhoto)"
+                >
+                </el-image>
+
+                <!-- <el-popover
+                  placement="top-start"
+                  width="500"
+                  trigger="click"
+                  :key="newList.id"
+                >
+                  <img
+                    :src="
+                      newList.idcardPhoto
+                        ? newList.idcardPhoto
+                        : newList.idcardPhoto
+                    "
+                    width="100%"
+                  />
+                  <img
+                    v-if="
+                      newList.idcardPhoto !== '' && newList.idcardPhoto !== null
+                    "
+                    slot="reference"
+                    :src="newList.idcardPhoto"
+                    width="48"
+                    height="36"
+                  />
+                  <span v-else>
+                    <div min-width="48" height="36"></div>
+                  </span>
+                </el-popover> -->
+              </el-form-item>
+            </span>
+            <span class="base_dialog_condit">
               <el-form-item label="行驶证：" prop="drivingLicense">
-                <img :src="newList.drivingLicense" width="36" height="48" />
+                <el-image
+                  v-if="newList.drivingLicense"
+                  style="width: 48px; height: 36px"
+                  :src="newList.drivingLicense"
+                  :preview-src-list="getPhotoList2(newList.drivingLicense)"
+                >
+                </el-image>
+
+                <!-- <el-popover
+                  placement="top-start"
+                  width="500"
+                  trigger="click"
+                  :key="newList.id"
+                >
+                  <img
+                    :src="
+                      newList.drivingLicense
+                        ? newList.drivingLicense
+                        : newList.drivingLicense
+                    "
+                    width="100%"
+                  />
+                  <img
+                    v-if="
+                      newList.drivingLicense !== '' &&
+                        newList.drivingLicense !== null
+                    "
+                    slot="reference"
+                    :src="newList.drivingLicense"
+                    width="48"
+                    height="36"
+                  />
+                  <span v-else>
+                    <div min-width="48" height="36"></div>
+                  </span>
+                </el-popover> -->
               </el-form-item>
             </span>
             <span class="base_dialog_condit">
@@ -60,15 +134,33 @@
                 </span>
               </el-form-item>
             </span>
+            <span class="base_dialog_condit" v-if="pageType != 2">
+              <el-form-item label="状态：" prop="auditType">
+                <span class="base_dialog_condit_text">
+                  {{ getStatusName(newList) }}
+                </span>
+              </el-form-item>
+            </span>
+            <span class="base_dialog_condit">
+              <el-form-item label="申请时间：" prop="auditType">
+                <span class="base_dialog_condit_text">
+                  {{ newList.createTime }}
+                </span>
+              </el-form-item>
+            </span>
+            <span class="base_dialog_condit" v-if="newList.status == -1">
+              <el-form-item label="不通过原因：" prop="auditType">
+                <span class="base_dialog_condit_text">
+                  {{ newList.reason }}
+                </span>
+              </el-form-item>
+            </span>
           </div>
         </div>
       </el-form>
       <div class="base_dialog_main_btnBox" v-if="pageType == 2">
-        <el-button type="info" icon="el-icon-circle-plus" @click="toPass"
-          >通过</el-button
-        ><el-button type="danger" icon="el-icon-error" @click="tonoPass"
-          >不通过</el-button
-        >
+        <el-button type="info" @click="toPass">通过</el-button
+        ><el-button type="danger" @click="tonoPass">不通过</el-button>
       </div>
     </div>
     <el-dialog
@@ -77,10 +169,10 @@
       title="不通过原因"
       center
       class="dialog_vehicle"
-      :modal="false"
+      append-to-body
     >
-      <div class="base_dialog_main_content">
-        <el-form :model="newList" ref="userForm">
+      <div class="base_dialog_content">
+        <el-form :model="newList" :rules="rules" ref="userForm">
           <div class="base_dialog_main_content">
             <div class="base_dialog_main_left" style="padding:20px 80px">
               <span class="base_dialog_condit">
@@ -102,11 +194,8 @@
           </div>
         </el-form>
         <div class="base_dialog_main_btnBox" style="padding:0px 240px 30px">
-          <el-button type="info" icon="el-icon-circle-plus" @click="noPass"
-            >保存</el-button
-          ><el-button type="danger" icon="el-icon-error" @click="closeDialog2"
-            >取消</el-button
-          >
+          <el-button type="info" @click="noPass">保存</el-button
+          ><el-button type="danger" @click="closeDialog2">取消</el-button>
         </div>
       </div>
     </el-dialog>
@@ -115,6 +204,7 @@
 
 <script>
 import {
+  listByVehicle, //申诉时查是否有认证的
   certificationGetInfo, //车辆认证详情
   certificationAudit, //车辆人证审批
   getPhoneByVehicle //通过车牌号查原绑定手机号
@@ -127,6 +217,7 @@ export default {
       pageType: 1,
       title: "详情",
       isShow: false,
+      hasExamine: false, //是否含有审核数据
       phone: null, //车辆绑定手机号
       newList: {
         vehicle: "", //车牌号：
@@ -137,11 +228,22 @@ export default {
         drivingLicense: "", //行驶证：
         auditType: null //审核类型：
       }, //详情
-      dialogFormVisible: false //不同意弹窗
+      dialogFormVisible: false, //不同意弹窗
+      rules: {
+        reason: [
+          { required: true, message: "请输入不通过原因描述", trigger: "blur" }
+        ]
+      }
     };
   },
   created() {},
   methods: {
+    getPhotoList2(url) {
+      let arr = [];
+      arr.push(url);
+      return arr;
+    },
+
     //打开弹窗
     showDialog(id, type) {
       this.isShow = true;
@@ -160,32 +262,55 @@ export default {
         //1车辆认证
         this.passNext();
       } else {
-        //2车辆申诉
-        this.$confirm(
-          "申诉通过后，" +
-            this.newList.vehicle +
-            " 该车辆与原 " +
-            this.phone +
-            " 用户自动解绑，并绑定至申诉用户 " +
-            this.newList.phone +
-            "  名下。是否确认通过该申诉？",
-          "提示",
-          {
-            confirmButtonText: "确定",
-            cancelButtonText: "取消",
-            type: "warning",
-            center: true
-          }
-        )
-          .then(() => {
-            this.passNext();
-          })
-          .catch(() => {});
+        if (this.hasExamine) {
+          this.$message({
+            message: "该车辆有待审核车辆认证，请优先处理！",
+            type: "warning"
+          });
+        } else {
+          //2车辆申诉
+          this.$confirm(
+            "申诉通过后，" +
+              this.newList.vehicle +
+              " 该车辆与原 " +
+              this.phone +
+              " 用户自动解绑，并绑定至申诉用户 " +
+              this.newList.phone +
+              "  名下。是否确认通过该申诉？",
+            "提示",
+            {
+              confirmButtonText: "确定",
+              cancelButtonText: "取消",
+              type: "warning",
+              center: true
+            }
+          )
+            .then(() => {
+              this.passNext();
+            })
+            .catch(() => {});
+        }
       }
     },
+    //获取状态名称
+    getStatusName(e) {
+      let status = e.status;
+      let used = e.used;
+      let name;
+      if (status == null && used == 1) {
+        name = "审核通过";
+      } else if (status == 0) {
+        name = "待审核";
+      } else if (status == 1) {
+        name = "审核通过";
+      } else {
+        name = "不通过";
+      }
+      return name;
+    },
+
     //通过
     passNext() {
-      this.isShow = false;
       let arr = [];
       arr.push(this.newList.id);
       let para = {
@@ -193,20 +318,27 @@ export default {
         status: 1,
         reason: ""
       };
-      certificationAudit(para).then(response => {
-        if (response.code == "200") {
-          this.$message({
-            type: "success",
-            message: "审核成功"
-          });
-          this.$emit("openLoading", {});
-          this.$emit("getList", {});
-        } else {
-          this.$message({
-            type: "warning",
-            message: "审核失败"
-          });
-        }
+      let text = "确认审核通过该申请吗?";
+      this.$confirm(text, "提示", {
+        type: "warning"
+      }).then(() => {
+        this.isShow = false;
+
+        certificationAudit(para).then(response => {
+          if (response.code == "200") {
+            this.$message({
+              type: "success",
+              message: "审核成功"
+            });
+            this.$emit("openLoading", {});
+            this.$emit("getList", {});
+          } else {
+            // this.$message({
+            //   type: "error",
+            //   message: "审核失败"
+            // });
+          }
+        });
       });
     },
     //开启不通过弹窗
@@ -225,31 +357,35 @@ export default {
             status: -1,
             reason: this.newList.reason
           };
-
-          certificationAudit(para)
-            .then(response => {
-              if (response.code == "200") {
-                this.dialogFormVisible = false;
-                this.isShow = false;
-                this.$emit("openLoading", {});
-                this.$emit("getList", {});
-                this.$message({
-                  type: "success",
-                  message: "审核成功"
-                });
-              } else {
-                this.$message({
-                  type: "warning",
-                  message: "审核失败"
-                });
-              }
-            })
-            .catch(() => {
-              this.$message({
-                type: "warning",
-                message: "审核失败"
+          let text = "确认审核不通过该申请吗?";
+          this.$confirm(text, "提示", {
+            type: "warning"
+          }).then(() => {
+            certificationAudit(para)
+              .then(response => {
+                if (response.code == "200") {
+                  this.dialogFormVisible = false;
+                  this.isShow = false;
+                  this.$emit("openLoading", {});
+                  this.$emit("getList", {});
+                  this.$message({
+                    type: "success",
+                    message: "审核成功"
+                  });
+                } else {
+                  // this.$message({
+                  //   type: "error",
+                  //   message: "审核失败"
+                  // });
+                }
+              })
+              .catch(() => {
+                // this.$message({
+                //   type: "error",
+                //   message: "审核失败"
+                // });
               });
-            });
+          });
         } else {
           console.log("error submit!!");
           return false;
@@ -274,6 +410,20 @@ export default {
       certificationGetInfo(para).then(response => {
         this.newList = response.data;
         this.getPhone(response.data.vehicle);
+        this.getExamine();
+      });
+    },
+    //获取是否有审核数据
+    getExamine() {
+      let para = {
+        vehicle: this.newList.vehicle //车牌号
+      };
+      listByVehicle(para).then(response => {
+        if (response.data && response.data.length > 0) {
+          this.hasExamine = true;
+        } else {
+          this.hasExamine = false;
+        }
       });
     },
     //车辆手机号
@@ -297,6 +447,9 @@ export default {
   .el-form-item__label {
     width: 120px;
     text-align: left;
+  }
+  .el-form-item__error {
+    margin-left: 120px;
   }
 }
 </style>

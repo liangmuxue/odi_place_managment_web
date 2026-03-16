@@ -1,5 +1,5 @@
 <template>
-  <div class="parkingManagement_page">
+  <div class="commit_page">
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">停车场</div>
@@ -16,6 +16,7 @@
     <div class="content_box">
       <el-table
         :data="list"
+        row-key="id"
         highlight-current-row
         size="mini"
         stripe
@@ -36,7 +37,7 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.id }}</span>
+            <span class="content">{{ scope.row.parkingLot.id }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -45,7 +46,7 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.name }}</span>
+            <span class="content">{{ scope.row.parkingLot.name }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -55,29 +56,91 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.address }}</span>
+            <span class="content">{{ scope.row.parkingLot.address }}</span>
           </template>
         </el-table-column>
         <el-table-column label="泊位总数" min-width="90px" align="center">
           <template slot-scope="scope">
             <div class="content">
-              {{ scope.row.number }}
+              {{ scope.row.parkingLot.number }}
             </div>
           </template>
         </el-table-column>
         <el-table-column label="已停车" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.usedNum }}</span>
+            <span class="content" v-if="!scope.row.usedEdit"
+              >{{ scope.row.in_use }}
+              <!-- <i
+                class="el-icon-edit"
+                v-if="!scope.row.faulEdit"
+                style="color: #037659;margin-left: 5px;cursor: pointer;"
+                @click="toEditUsed(scope.row)"
+              ></i> -->
+            </span>
+            <span class="content" v-else
+              ><el-input
+                v-model="scope.row.in_use"
+                placeholder="请输入"
+                type="number"
+                min="0"
+                @input="useInput(scope.row)"
+                :max="scope.row.parkingLot.number - scope.row.in_error"
+                step="1"
+                style="width:100px"
+              >
+              </el-input>
+              <i
+                class="el-icon-circle-check"
+                style="color: #037659;margin-left: 5px;cursor: pointer;"
+                @click="editUsed(scope.row)"
+              ></i>
+              <i
+                class="el-icon-circle-close"
+                style="color: #EA2E1C ;margin-left: 5px;cursor: pointer;"
+                @click="closeEditUsed(scope.row)"
+              ></i>
+            </span>
           </template>
         </el-table-column>
         <el-table-column label="空闲数" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.freeNum }}</span>
+            <span class="content">{{ scope.row.parkingLot.freeNum }}</span>
           </template>
         </el-table-column>
         <el-table-column label="故障数" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.faultNum }}</span>
+            <span class="content" v-if="!scope.row.faulEdit"
+              >{{ scope.row.in_error }}
+              <!-- <i
+                class="el-icon-edit"
+                v-if="!scope.row.usedEdit"
+                style="color: #037659;margin-left: 5px;cursor: pointer;"
+                @click="toEditFaul(scope.row)"
+              ></i> -->
+            </span>
+            <span class="content" v-else
+              ><el-input
+                v-model="scope.row.in_error"
+                placeholder="请输入"
+                type="number"
+                @input="errorInput(scope.row)"
+                min="0"
+                :max="scope.row.parkingLot.number - scope.row.in_use"
+                step="1"
+                style="width:100px"
+              >
+              </el-input>
+              <i
+                class="el-icon-circle-check"
+                style="color: #037659;margin-left: 5px;cursor: pointer;"
+                @click="editFaul(scope.row)"
+              ></i>
+              <i
+                class="el-icon-circle-close"
+                style="color: #EA2E1C ;margin-left: 5px;cursor: pointer;"
+                @click="closeEditFaul(scope.row)"
+              ></i>
+            </span>
           </template>
         </el-table-column>
         <el-table-column
@@ -86,7 +149,9 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.occupancy * 100 }}</span>
+            <span class="content">{{
+              getNumber(scope.row.parkingLot.occupancy)
+            }}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -106,7 +171,9 @@
 
 <script>
 import {
-  monitorSpace //车场分页查询
+  spaceReamingMonitorSpace, //车位分页查询
+  spaceReamingDetail, //车位单条数据详情
+  spaceReamingUpdate //修改车位
 } from "@/api/yardManagement";
 import { fieldTable } from "@/api/common";
 
@@ -126,6 +193,7 @@ export default {
       },
       enumsData: {}, //字典表返回数据
       listLoading: false, //加载
+      curDate: null,
       list: [] //信息
     };
   },
@@ -134,6 +202,10 @@ export default {
     // this.getFieldTable();
   },
   methods: {
+    getNumber(n) {
+      let n2 = Math.round(n * 100);
+      return n2;
+    },
     getFieldTable() {
       fieldTable(this.Dictionaries).then(response => {
         this.enumsData = response.data;
@@ -172,13 +244,29 @@ export default {
         background: "rgba(0, 0, 0, 0.7)"
       });
     },
-
+    useInput(e) {
+      let all = e.in_use * 1 + e.in_error;
+      if (all > e.parkingLot.number) {
+        e.in_use = e.parkingLot.number - e.in_error;
+      }
+    },
+    errorInput(e) {
+      let all = e.in_use + e.in_error * 1;
+      if (all > e.parkingLot.number) {
+        e.in_error = e.parkingLot.number - e.in_use;
+      }
+    },
     //获取列表
     getList() {
       let para = this.listQuery;
-      monitorSpace(para)
+      spaceReamingMonitorSpace(para)
         .then(response => {
-          this.list = response.rows;
+          let list = response.rows;
+          list.forEach(el => {
+            el.usedEdit = false;
+            el.faulEdit = false;
+          });
+          this.list = list;
           if (response.total > 0) {
             this.listQuery.total = response.total; // 数据总条数
           } else {
@@ -199,7 +287,92 @@ export default {
           }, 300);
         });
     },
+    //开启修改已停车
+    toEditUsed(item) {
+      item.usedEdit = true;
+      this.curDate = item;
+    },
+    //修改已停车
+    editUsed(item) {
+      item.usedEdit = false;
+      this.curDate = item;
+      this.toEditDetail();
+    },
+    //关闭修改已停车
+    closeEditUsed(item) {
+      item.usedEdit = false;
+      this.getEditDetail();
+    },
+    //开启修改故障数
+    toEditFaul(item) {
+      item.faulEdit = true;
+      this.curDate = item;
+    },
+    //修改故障数
+    editFaul(item) {
+      item.faulEdit = false;
+      this.curDate = item;
+      this.toEditDetail();
+    },
+    //关闭修改故障数
+    closeEditFaul(item) {
+      item.faulEdit = false;
+      this.getEditDetail();
+    },
+    //修改信息
+    toEditDetail() {
+      let para = {
+        id: this.curDate.id,
+        inUse: this.curDate.in_use * 1,
+        inError: this.curDate.in_error * 1
+      };
+      spaceReamingUpdate(para)
+        .then(response => {
+          this.getEditDetail();
+        })
+        .catch(() => {});
+    },
+    //获取修改后信息
+    getEditDetail() {
+      let claeeName;
+      if (this.$store.getters.sidebar.opened) {
+        claeeName = "hasSidebar";
+      } else {
+        claeeName = "noSidebar";
+      }
+      this.listLoading = this.$loading({
+        lock: true,
+        text: "数据加载中...",
+        customClass: claeeName, // *这里设置他的class名称,这里最重要
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)"
+      });
 
+      let para = { id: this.curDate.id };
+      spaceReamingDetail(para)
+        .then(response => {
+          this.list.forEach((el, i) => {
+            if (el.id == this.curDate.id) {
+              console.log(i);
+              this.$set(this.list[i], "in_use", response.data.in_use);
+              this.$set(this.list[i], "in_error", response.data.in_error);
+              this.$set(this.list[i], "parkingLot", response.data.parkingLot);
+            }
+          });
+          // Just to simulate the time of the request
+          setTimeout(() => {
+            this.listLoading.close();
+          }, 300);
+        })
+        .catch(() => {
+          setTimeout(() => {
+            this.listLoading.close();
+          }, 300);
+        });
+    },
+
+    //获取修改的数据
+    getEdit() {},
     // 切换页码方法
     handleSizeChange(val) {
       this.listQuery.pageNum = 1;
@@ -218,7 +391,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.parkingManagement_page {
+.content_edit {
+}
+.commit_page {
   position: relative;
 }
 .content_box {

@@ -1,5 +1,5 @@
 <template>
-  <div class="parkingManagement_page">
+  <div class="commit_page">
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">车主手机</div>
@@ -32,7 +32,7 @@
       </span>
 
       <span class="search_content2">
-        <div class="search_content_title">注册时间</div>
+        <div class="search_content_title">申请时间</div>
         <!-- value-format="yyyy-MM-dd HH:mm:ss" -->
         <el-date-picker
           style="width: 72%"
@@ -58,7 +58,7 @@
         @input="toSearchList"
         style="margin-right:10px"
       >
-        <el-radio-button :label="0">未审批</el-radio-button>
+        <el-radio-button :label="0">待审批</el-radio-button>
         <el-radio-button :label="1">审核通过</el-radio-button>
         <el-radio-button :label="-1">不通过</el-radio-button>
       </el-radio-group>
@@ -68,6 +68,7 @@
         icon="el-icon-s-check"
         @click="toAudits"
         v-if="listQuery.status == 0"
+        v-has="{ red: 'certificationAudit', type: 1 }"
         >批量审核</el-button
       >
       <!-- v-has="{ red: 'deleteBox', type: 1 }" -->
@@ -124,21 +125,84 @@
             <span class="content">{{ scope.row.idcard }}</span>
           </template>
         </el-table-column>
+        <el-table-column label="身份证" min-width="90px" align="center">
+          <template slot-scope="scope">
+            <div class="content" :key="scope.row.id">
+              <el-image
+                v-if="scope.row.idcardPhoto"
+                style="width: 48px; height: 36px"
+                :src="scope.row.idcardPhoto"
+                :preview-src-list="getPhotoList2(scope.row.idcardPhoto)"
+              >
+              </el-image>
+
+              <!-- <el-popover placement="top-start" width="500" trigger="click">
+                <img
+                  :src="
+                    scope.row.idcardPhoto
+                      ? scope.row.idcardPhoto
+                      : scope.row.idcardPhoto
+                  "
+                  width="100%"
+                />
+                <img
+                  v-if="
+                    scope.row.idcardPhoto !== '' &&
+                      scope.row.idcardPhoto !== null
+                  "
+                  slot="reference"
+                  :src="scope.row.idcardPhoto"
+                  width="48"
+                  height="36"
+                />
+                <span v-else>
+                  <div min-width="48" height="36"></div>
+                </span>
+              </el-popover> -->
+            </div>
+          </template>
+        </el-table-column>
+
         <el-table-column label="车辆行驶证" min-width="90px" align="center">
           <template slot-scope="scope">
-            <div class="content">
-              <img
-                slot="reference"
+            <div class="content" :key="scope.row.id">
+              <el-image
+                v-if="scope.row.drivingLicense"
+                style="width: 48px; height: 36px"
                 :src="scope.row.drivingLicense"
-                width="36"
-                height="48"
-              />
+                :preview-src-list="getPhotoList2(scope.row.drivingLicense)"
+              >
+              </el-image>
+
+              <!-- <el-popover placement="top-start" width="500" trigger="click">
+                <img
+                  :src="
+                    scope.row.drivingLicense
+                      ? scope.row.drivingLicense
+                      : scope.row.drivingLicense
+                  "
+                  width="100%"
+                />
+                <img
+                  v-if="
+                    scope.row.drivingLicense !== '' &&
+                      scope.row.drivingLicense !== null
+                  "
+                  slot="reference"
+                  :src="scope.row.drivingLicense"
+                  width="48"
+                  height="36"
+                />
+                <span v-else>
+                  <div min-width="48" height="36"></div>
+                </span>
+              </el-popover> -->
             </div>
           </template>
         </el-table-column>
         <el-table-column label="状态" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ getStatusName(scope.row.status) }}</span>
+            <span class="content">{{ getStatusName(scope.row) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="审核类型" align="center" show-overflow-tooltip>
@@ -175,6 +239,7 @@
             <span
               class="operation_button update_btn"
               @click="toDetial(scope.row)"
+              v-has="{ red: 'vehicleCertificationAuditDetails', type: 1 }"
             >
               详情
             </span>
@@ -182,6 +247,7 @@
               class="operation_button update_btn"
               @click="toAudit(scope.row)"
               v-if="listQuery.status == 0"
+              v-has="{ red: 'certificationAudit', type: 1 }"
             >
               审核
             </span>
@@ -231,11 +297,8 @@
           </div>
         </el-form>
         <div class="base_dialog_main_btnBox" style="padding:0px 240px 30px">
-          <el-button type="info" icon="el-icon-circle-plus" @click="noPass"
-            >保存</el-button
-          ><el-button type="danger" icon="el-icon-error" @click="closeDialog"
-            >取消</el-button
-          >
+          <el-button type="info" @click="noPass">保存</el-button
+          ><el-button type="danger" @click="closeDialog">取消</el-button>
         </div>
       </div>
     </el-dialog>
@@ -303,6 +366,12 @@ export default {
     // this.getFieldTable();
   },
   methods: {
+    getPhotoList2(url) {
+      let arr = [];
+      arr.push(url);
+      return arr;
+    },
+
     //判断车辆申诉不可选
     selectable(e) {
       if (e.auditType == 1 && e.status == 0) {
@@ -319,10 +388,14 @@ export default {
 
     //获取状态名称
     getStatusName(e) {
+      let status = e.status;
+      let used = e.used;
       let name;
-      if (e == 0) {
+      if (status == null && used == 1) {
+        name = "审核通过";
+      } else if (status == 0) {
         name = "待审核";
-      } else if (e == 1) {
+      } else if (status == 1) {
         name = "审核通过";
       } else {
         name = "不通过";
@@ -430,15 +503,18 @@ export default {
         this.$confirm("请选择以上批量审核操作", "提示", {
           confirmButtonText: "批量通过",
           cancelButtonText: "批量不通过",
+          distinguishCancelAndClose: true,
           type: "warning",
           center: true
         })
           .then(() => {
             this.toPass(arr);
           })
-          .catch(() => {
-            this.dialogFormVisible = true;
-            this.ids = arr;
+          .catch(action => {
+            if (action === "cancel") {
+              this.dialogFormVisible = true;
+              this.ids = arr;
+            }
           });
       } else {
         this.$message({
@@ -461,20 +537,25 @@ export default {
         status: 1,
         reason: ""
       };
-      certificationAudit(para).then(response => {
-        if (response.code == "200") {
-          this.$message({
-            type: "success",
-            message: "审核成功"
-          });
-          this.openLoading();
-          this.getList();
-        } else {
-          this.$message({
-            type: "warning",
-            message: "审核失败"
-          });
-        }
+      let text = "确认批量审核通过吗?";
+      this.$confirm(text, "提示", {
+        type: "warning"
+      }).then(() => {
+        certificationAudit(para).then(response => {
+          if (response.code == "200") {
+            this.$message({
+              type: "success",
+              message: "审核成功"
+            });
+            this.openLoading();
+            this.getList();
+          } else {
+            // this.$message({
+            //   type: "error",
+            //   message: "审核失败"
+            // });
+          }
+        });
       });
     },
     //不通过
@@ -486,30 +567,34 @@ export default {
             status: -1,
             reason: this.newList.reason
           };
-
-          certificationAudit(para)
-            .then(response => {
-              if (response.code == "200") {
-                this.dialogFormVisible = false;
-                this.openLoading();
-                this.getList();
-                this.$message({
-                  type: "success",
-                  message: "审核成功"
-                });
-              } else {
-                this.$message({
-                  type: "warning",
-                  message: "审核失败"
-                });
-              }
-            })
-            .catch(() => {
-              this.$message({
-                type: "warning",
-                message: "审核失败"
+          let text = "确认批量审核不通过吗?";
+          this.$confirm(text, "提示", {
+            type: "warning"
+          }).then(() => {
+            certificationAudit(para)
+              .then(response => {
+                if (response.code == "200") {
+                  this.dialogFormVisible = false;
+                  this.openLoading();
+                  this.getList();
+                  this.$message({
+                    type: "success",
+                    message: "审核成功"
+                  });
+                } else {
+                  // this.$message({
+                  //   type: "error",
+                  //   message: "审核失败"
+                  // });
+                }
+              })
+              .catch(() => {
+                // this.$message({
+                //   type: "error",
+                //   message: "审核失败"
+                // });
               });
-            });
+          });
         } else {
           console.log("error submit!!");
           return false;
@@ -544,7 +629,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.parkingManagement_page {
+.commit_page {
   position: relative;
 }
 .content_box {

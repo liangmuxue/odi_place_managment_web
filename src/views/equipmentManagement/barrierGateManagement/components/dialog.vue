@@ -10,6 +10,13 @@
       <el-form :model="newList" :rules="rules" ref="parkingForm">
         <div class="base_dialog_main_content">
           <div class="base_dialog_main_left" style="padding:100px">
+            <div
+              v-if="pageType == 1"
+              class="base_dialog_main_prompt
+"
+            >
+              新增设备，需由技术人员配合，调试相关硬件参数！
+            </div>
             <span class="base_dialog_condit">
               <el-form-item label="停车场" prop="parkId">
                 <span class="base_dialog_condit_text" v-if="pageType == 3">
@@ -57,6 +64,7 @@
                 <el-input
                   v-else
                   v-model="newList.equipmentNumber"
+                  :disabled="pageType == 2"
                   placeholder="输入设备序列号"
                   style="width: 72%"
                   class="filter-item"
@@ -65,7 +73,7 @@
               </el-form-item>
             </span>
             <span class="base_dialog_condit">
-              <el-form-item label="道闸类型" prop="parkingDirection">
+              <el-form-item label="道闸类型" prop="type">
                 <span class="base_dialog_condit_text" v-if="pageType == 3">
                   {{ getType(newList.type) }}</span
                 >
@@ -111,6 +119,7 @@
                 <el-input
                   v-else
                   v-model="newList.ip"
+                  :disabled="pageType == 2"
                   placeholder="输入道闸IP"
                   style="width: 72%"
                   class="filter-item"
@@ -126,6 +135,7 @@
                 <el-input
                   v-else
                   v-model="newList.cameraNumber"
+                  :disabled="pageType == 2"
                   placeholder="输入辅助相机序列号"
                   style="width: 72%"
                   class="filter-item"
@@ -157,6 +167,7 @@
                 <el-input
                   v-else
                   v-model="newList.cameraIp"
+                  :disabled="pageType == 2"
                   placeholder="输入辅助相机IP"
                   style="width: 72%"
                   class="filter-item"
@@ -168,11 +179,8 @@
         </div>
       </el-form>
       <div class="base_dialog_main_btnBox" v-if="pageType < 3">
-        <el-button type="info" icon="el-icon-circle-plus" @click="toSave"
-          >保存</el-button
-        ><el-button type="danger" icon="el-icon-error" @click="closeDialog"
-          >取消</el-button
-        >
+        <el-button type="info" @click="toSave">保存</el-button
+        ><el-button type="danger" @click="closeDialog">取消</el-button>
       </div>
     </div>
   </div>
@@ -185,18 +193,115 @@ import {
 import {
   gateGetInfo, //获取单个道闸信息
   gateAdd, //新增道闸
-  gateUpdate //编辑道闸
+  gateUpdate, //编辑道闸
+  gateCheckFive //字段重复校验
 } from "@/api/equipmentManagement";
 
 export default {
   components: {},
   data() {
+    const validateName = (rule, value, callback) => {
+      if (this.editName !== value) {
+        let para = {
+          name: value
+        };
+        gateCheckFive(para)
+          .then(response => {
+            callback();
+          })
+          .catch(err => {
+            if (err == "Error: 道闸名称已存在") {
+              callback(new Error("道闸名称已存在"));
+            }
+          });
+      } else {
+        callback();
+      }
+    };
+    const validateIp = (rule, value, callback) => {
+      if (this.editIp !== value) {
+        let para = {
+          ip: value
+        };
+        gateCheckFive(para)
+          .then(response => {
+            callback();
+          })
+          .catch(err => {
+            if (err == "Error: 道闸IP已存在") {
+              callback(new Error("道闸IP已存在"));
+            }
+          });
+      } else {
+        callback();
+      }
+    };
+    const validateEquipmentNumber = (rule, value, callback) => {
+      if (this.editEquipmentNumber !== value) {
+        let para = {
+          equipmentNumber: value
+        };
+        gateCheckFive(para)
+          .then(response => {
+            callback();
+          })
+          .catch(err => {
+            if (err == "Error: 设备序列号已存在") {
+              callback(new Error("设备序列号已存在"));
+            }
+          });
+      } else {
+        callback();
+      }
+    };
+    const validateCameraNumber = (rule, value, callback) => {
+      if (this.editCameraNumber !== value) {
+        let para = {
+          cameraNumber: value
+        };
+        gateCheckFive(para)
+          .then(response => {
+            callback();
+          })
+          .catch(err => {
+            if (err == "Error: 辅助相机序列号已存在") {
+              callback(new Error("辅助相机序列号已存在"));
+            }
+          });
+      } else {
+        callback();
+      }
+    };
+    const validateCameraIp = (rule, value, callback) => {
+      if (this.editCameraIp !== value) {
+        let para = {
+          cameraIp: value
+        };
+        gateCheckFive(para)
+          .then(response => {
+            callback();
+          })
+          .catch(err => {
+            if (err == "Error: 辅助相机IP已存在") {
+              callback(new Error("辅助相机IP已存在"));
+            }
+          });
+      } else {
+        callback();
+      }
+    };
+
     return {
       pageType: 1,
       title: "新增",
       isShow: false,
       editParkingSpaceId: null, //编辑泊位号
       editGeomagnetismId: null, //编辑地磁编号
+      editName: null, //道闸名称
+      editEquipmentNumber: null, //设备序列号
+      editIp: null, //道闸ip
+      editCameraNumber: null, //辅助像机序列号
+      editCameraIp: null, //相机IP
       newList: {
         parkId: null, //停车场id
         name: "", //道闸名称
@@ -214,18 +319,56 @@ export default {
       ],
       parkingList: [],
       rules: {
-        parkId: [{ required: true, message: "请选择停车场", trigger: "blur" }],
-        name: [{ required: true, message: "请输入道闸名称", trigger: "blur" }],
-        ip: [{ required: true, message: "请输入道闸IP", trigger: "blur" }],
-        equipmentNumber: [
-          { required: true, message: "请输入设备序列号", trigger: "blur" }
+        parkId: [
+          { required: true, message: "请选择停车场", trigger: "change" }
         ],
-        type: [{ required: true, message: "请选择道闸类型", trigger: "blur" }],
+        name: [
+          { required: true, message: "请输入道闸名称", trigger: "blur" },
+          {
+            required: true,
+            message: "道闸名称已存在",
+            trigger: "blur",
+            validator: validateName
+          }
+        ],
+        ip: [
+          { required: true, message: "请输入道闸IP", trigger: "blur" },
+          {
+            required: true,
+            message: "道闸IP已存在",
+            trigger: "blur",
+            validator: validateIp
+          }
+        ],
+        equipmentNumber: [
+          { required: true, message: "请输入设备序列号", trigger: "blur" },
+          {
+            required: true,
+            message: "设备序列号已存在",
+            trigger: "blur",
+            validator: validateEquipmentNumber
+          }
+        ],
+        type: [
+          { required: true, message: "请选择道闸类型", trigger: "change" }
+        ],
         cameraNumber: [
-          { required: true, message: "请输入辅助相机序列号", trigger: "blur" }
+          { required: true, message: "请输入辅助相机序列号", trigger: "blur" },
+          {
+            required: true,
+            message: "辅助相机序列号已存在",
+            trigger: "blur",
+            validator: validateCameraNumber
+          }
         ],
         cameraIp: [
-          { required: true, message: "请输入辅助相机IP", trigger: "blur" }
+          { required: true, message: "请输入辅助相机IP", trigger: "blur" },
+          {
+            required: true,
+            message: "辅助相机IP已存在",
+            trigger: "blur",
+            validator: validateCameraIp
+          }
         ]
       }
     };
@@ -277,6 +420,14 @@ export default {
           parkingSpaceId: "", //道闸ID 泊位号
           geomagnetismId: "" //地磁ID
         };
+        this.editName = null;
+        this.editEquipmentNumber = null;
+        this.editIp = null;
+        this.editCameraNumber = null;
+        this.editCameraIp = null;
+        this.editParkingSpaceId = null;
+        this.editGeomagnetismId = null;
+
         if (this.$refs["parkingForm"]) {
           this.$nextTick(() => {
             this.$refs["parkingForm"].clearValidate();
@@ -289,6 +440,11 @@ export default {
       let para = { id: id };
       gateGetInfo(para).then(response => {
         this.newList = response.data;
+        this.editName = response.data.name;
+        this.editEquipmentNumber = response.data.equipmentNumber;
+        this.editIp = response.data.ip;
+        this.editCameraNumber = response.data.cameraNumber;
+        this.editCameraIp = response.data.cameraIp;
         this.editParkingSpaceId = response.data.parkingSpaceId;
         this.editGeomagnetismId = response.data.geomagnetismId;
       });
@@ -326,20 +482,20 @@ export default {
                   });
                   // this.getDetials(response.id);
                 } else {
-                  this.$message({
-                    type: "warning",
-                    message: "提交失败"
-                  });
+                  // this.$message({
+                  //   type: "error",
+                  //   message: "提交失败"
+                  // });
                 }
                 setTimeout(() => {
                   this.$emit("getList", {});
                 }, 300);
               })
               .catch(() => {
-                this.$message({
-                  type: "warning",
-                  message: "提交失败"
-                });
+                // this.$message({
+                //   type: "error",
+                //   message: "提交失败"
+                // });
                 setTimeout(() => {
                   this.$emit("getList", {});
                 }, 300);
@@ -366,20 +522,20 @@ export default {
                     message: "提交成功"
                   });
                 } else {
-                  this.$message({
-                    type: "warning",
-                    message: "提交失败"
-                  });
+                  // this.$message({
+                  //   type: "error",
+                  //   message: "提交失败"
+                  // });
                 }
                 setTimeout(() => {
                   this.$emit("getList", {});
                 }, 300);
               })
               .catch(() => {
-                this.$message({
-                  type: "warning",
-                  message: "提交失败"
-                });
+                // this.$message({
+                //   type: "error",
+                //   message: "提交失败"
+                // });
                 setTimeout(() => {
                   this.$emit("getList", {});
                 }, 300);
@@ -395,4 +551,15 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.base_dialog_main_prompt {
+  width: 72%;
+  height: 32px;
+  line-height: 32px;
+  text-align: center;
+  margin-left: 136px;
+  background: rgba($color: #ffd986, $alpha: 0.3);
+  color: #f50e0e;
+  margin-bottom: 10px;
+}
+</style>

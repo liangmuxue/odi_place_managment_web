@@ -1,5 +1,5 @@
 <template>
-  <div class="parkingManagement_page">
+  <div class="commit_page">
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">规则名称</div>
@@ -43,14 +43,20 @@
       >
     </div>
     <div class="btn_box">
-      <el-button type="info" icon="el-icon-circle-plus-outline" @click="toAdd"
-        >添加</el-button
+      <el-button
+        type="info"
+        icon="el-icon-circle-plus-outline"
+        @click="toAdd"
+        v-has="{ red: 'feeRulesAdd', type: 1 }"
+        >新增</el-button
       >
-      <!-- v-has="{ red: 'addBox', type: 1 }" -->
-      <el-button type="danger" icon="el-icon-circle-plus-outline" @click="toDel"
+      <el-button
+        type="danger"
+        icon="el-icon-circle-close"
+        @click="toDel"
+        v-has="{ red: 'feeRulesDelete', type: 1 }"
         >删除</el-button
       >
-      <!-- v-has="{ red: 'deleteBox', type: 1 }" -->
     </div>
 
     <div class="content_box">
@@ -84,7 +90,7 @@
         </el-table-column>
 
         <el-table-column
-          label="是否区分大小型车计费"
+          label="是否区分大中小型车计费"
           align="center"
           show-overflow-tooltip
         >
@@ -144,12 +150,14 @@
             <span
               class="operation_button update_btn"
               @click="toEdit(scope.row)"
+              v-has="{ red: 'feeRulesEdit', type: 1 }"
             >
               编辑
             </span>
             <span
               class="operation_button update_btn"
               @click="toDetails(scope.row)"
+              v-has="{ red: 'feeRulesDetails', type: 1 }"
             >
               详情
             </span>
@@ -174,8 +182,8 @@
 
 <script>
 import {
-  ruleTemporaryParkingPage, //长租分页查询
-  ruleParkingLeasesDeleteBath //长租规则批量删除
+  ruleTemporaryParkingPage, //临停分页查询
+  ruleTemporaryParkingdeleteBatch //临停批量删除
 } from "@/api/operationManagement";
 import Dialog from "./components/dialog";
 import { fieldTable } from "@/api/common";
@@ -319,18 +327,23 @@ export default {
 
     //批量删除
     toDel() {
-      let arr = [];
-      this.selGateway.forEach(el => {
-        arr.push(el.id);
-      });
       if (this.selGateway.length > 0) {
-        this.$confirm("确认批量删除长租规则吗?", "提示", {
+        let arr = [];
+        this.selGateway.forEach(el => {
+          arr.push(el.id);
+        });
+        let text = "确认批量删除临停规则吗?";
+        if (this.selGateway.length == 1) {
+          text = "确认删除该临停规则吗?";
+        }
+
+        this.$confirm(text, "提示", {
           type: "warning"
         }).then(() => {
           let para = {
             ids: arr.toString()
           };
-          ruleParkingLeasesDeleteBath(para).then(response => {
+          ruleTemporaryParkingdeleteBatch(para).then(response => {
             if (response.code == "200") {
               this.$message({
                 type: "success",
@@ -339,17 +352,17 @@ export default {
               this.openLoading();
               this.getList();
             } else {
-              this.$message({
-                type: "warning",
-                message: "删除失败"
-              });
+              // this.$message({
+              //   type: "error",
+              //   message: "删除失败"
+              // });
             }
           });
         });
       } else {
         this.$message({
           type: "warning",
-          message: "请选择删除的泊位"
+          message: "请选择删除的临停规则"
         });
       }
     },
@@ -384,7 +397,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.parkingManagement_page {
+.commit_page {
   position: relative;
 }
 .content_box {

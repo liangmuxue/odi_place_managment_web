@@ -9,7 +9,7 @@
     <div class="base_dialog_main">
       <el-form :model="newList" :rules="rules" ref="userForm">
         <div class="base_dialog_main_content">
-          <div class="base_dialog_main_left" style="padding:100px">
+          <div class="base_dialog_main_left" style="padding:100px 0">
             <span class="password_dialog_condit">
               <el-form-item
                 :label="'请输入 ' + newList.userName + ' 的新密码'"
@@ -18,7 +18,7 @@
                 <el-input
                   v-model="newList.password"
                   placeholder="请输入6-32个以内的字符，输入字符必须包含大小写、数字、特殊字符等三种以上组合"
-                  style="width: 72%"
+                  style="width: 560px"
                   class="filter-item"
                   size="small"
                 />
@@ -28,11 +28,8 @@
         </div>
       </el-form>
       <div class="base_dialog_main_btnBox">
-        <el-button type="info" icon="el-icon-circle-plus" @click="toSave"
-          >保存</el-button
-        ><el-button type="danger" icon="el-icon-error" @click="closeDialog"
-          >取消</el-button
-        >
+        <el-button type="info" @click="toSave">保存</el-button
+        ><el-button type="danger" @click="closeDialog">取消</el-button>
       </div>
     </div>
   </div>
@@ -48,7 +45,7 @@ export default {
   data() {
     return {
       pageType: 1,
-      title: "修改密码",
+      title: "重置密码",
       isShow: false,
       newList: {
         userId: null, //用户id
@@ -58,7 +55,7 @@ export default {
         password: [
           { required: true, message: "请输入新密码", trigger: "blur" },
           {
-            pattern: /^(?![a-zA-Z]+$)(?![A-Z0-9]+$)(?![A-Z\\W_!@#$%^&*`~()-+=]+$)(?![a-z0-9]+$)(?![a-z\\W_!@#$%^&*`~()-+=]+$)(?![0-9\\W_!@#$%^&*`~()-+=]+$)[a-zA-Z0-9\\W_!@#$%^&*`~()-+=]{6,32}$/,
+            pattern: /^(?![a-zA-Z]+$)(?![A-Z0-9]+$)(?![A-Z\\W_!@#$%^&*`~()-+=]+$)(?![a-z0-9]+$)(?![a-z\\W_!@#$%^&*`~()-+=]+$)(?![0-9\\W_!@#$%^&*`~()-+=]+$)[a-zA-Z0-9\\W_!@#$%^&*`~()\-+=]{6,32}$/,
             message:
               "请输入6-32个以内的字符，输入字符必须包含大小写、数字、特殊字符等三种以上组合",
             trigger: "blur"
@@ -73,6 +70,7 @@ export default {
     showDialog(e, pageType) {
       this.isShow = true;
       this.pageType = pageType;
+
       if (this.$refs["userForm"]) {
         this.$refs["userForm"].resetFields();
       }
@@ -81,6 +79,7 @@ export default {
     //获取详情
     getDetials(e) {
       this.newList = e;
+      this.newList.password = "";
       this.newList.roleId = e.roles[0].roleId;
     },
     //关闭新增/编辑弹窗
@@ -108,20 +107,20 @@ export default {
                     message: "提交成功"
                   });
                 } else {
-                  this.$message({
-                    type: "warning",
-                    message: "提交失败"
-                  });
+                  // this.$message({
+                  //   type: "error",
+                  //   message: "提交失败"
+                  // });
                 }
                 setTimeout(() => {
                   this.$emit("getList", {});
                 }, 300);
               })
               .catch(() => {
-                this.$message({
-                  type: "warning",
-                  message: "提交失败"
-                });
+                // this.$message({
+                //   type: "error",
+                //   message: "提交失败"
+                // });
                 setTimeout(() => {
                   this.$emit("getList", {});
                 }, 300);

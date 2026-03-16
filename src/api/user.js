@@ -8,11 +8,19 @@ export function login(data) {
   })
 }
 
-export function getInfo(data) {
+// export function getInfo(data) {
+//   return request({
+//     url: '/getInfo',
+//     method: 'get',
+//     data
+//   })
+// }
+
+export function getInfo() {
   return request({
-    url: '/getInfo',
-    method: 'get',
-    data
+    url: '/resource/get',
+    method: 'post',
+    data: {}
   })
 }
 

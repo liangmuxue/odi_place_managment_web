@@ -1,5 +1,6 @@
 <template>
-  <div class="parkingManagement_page">
+  <div class="commit_page">
+    <div class="totalMoney_box">充值统计：{{ totalMoney | getMoney }}元</div>
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">用户ID</div>
@@ -36,8 +37,8 @@
           range-separator="-"
           start-placeholder="请选择时间"
           end-placeholder
+          :default-time="['00:00:00', '23:59:59']"
         ></el-date-picker>
-        <!-- :default-time="['00:00:00', '23:59:59']" -->
       </span>
       <el-button icon="el-icon-refresh-right" @click="resetList"
         >重置</el-button
@@ -47,7 +48,11 @@
       >
     </div>
     <div class="btn_box">
-      <el-button type="info" icon="el-icon-upload2" @click="toExport"
+      <el-button
+        type="info"
+        icon="el-icon-upload2"
+        @click="toExport"
+        v-has="{ red: 'userRechargeExport', type: 1 }"
         >导出</el-button
       >
     </div>
@@ -85,9 +90,15 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.money }}</span>
+            <span class="content">{{ scope.row.money | getMoney }}</span>
           </template>
         </el-table-column>
+        <el-table-column label="备注" align="center" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span class="content">{{ scope.row.remark }}</span>
+          </template>
+        </el-table-column>
+
         <el-table-column label="充值时间" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="content">{{ scope.row.payTime }}</span></template
@@ -96,8 +107,11 @@
         <el-table-column label="支付方式" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="content">{{
-              scope.row.payType == 1 ? "微信" : "银联"
+              scope.row.payType == 1 ? "微信" : ""
             }}</span>
+            <!-- <span class="content">{{
+              scope.row.payType == 1 ? "微信" : "银联"
+            }}</span> -->
           </template>
         </el-table-column>
       </el-table>
@@ -127,6 +141,7 @@ export default {
   components: {},
   data() {
     return {
+      totalMoney: null,
       listQuery: {
         pageNum: 1,
         pageSize: 10,
@@ -138,8 +153,8 @@ export default {
         endTime: "" //结束时间
       },
       typeList: [
-        { enumName: "微信", enumValue: 1 },
-        { enumName: "银联", enumValue: 2 }
+        { enumName: "微信", enumValue: 1 }
+        // { enumName: "银联", enumValue: 2 }
       ],
       selGateway: null,
       time: [],
@@ -219,15 +234,16 @@ export default {
       let para = this.listQuery;
       rechargeList(para)
         .then(response => {
-          this.list = response.rows;
-          if (response.total > 0) {
-            this.listQuery.total = response.total; // 数据总条数
+          this.list = response.data.list;
+          this.totalMoney = response.data.totalMoney;
+          if (response.data.total > 0) {
+            this.listQuery.total = response.data.total; // 数据总条数
           } else {
             this.listQuery.pageSize = 40; //每页数量
             this.listQuery.total = 0; // 数据总条数
             this.listQuery.pageNum = 1; // 当前页
           }
-          this.total = response.total;
+          this.listQuery.total = response.data.total; // 数据总条数
 
           // Just to simulate the time of the request
           setTimeout(() => {
@@ -248,11 +264,11 @@ export default {
     //导出
     toExport() {
       let para = {
-        name: this.listQuery.name,
-        parkName: this.listQuery.parkName,
+        openid: this.listQuery.openid,
+        phone: this.listQuery.phone,
         startTime: this.listQuery.startTime,
         endTime: this.listQuery.endTime,
-        type: this.listQuery.type
+        payType: this.listQuery.payType
       };
       rechargeExpor(para).then(res => {
         var content = res.data;
@@ -287,7 +303,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.parkingManagement_page {
+.commit_page {
   position: relative;
 }
 .content_box {

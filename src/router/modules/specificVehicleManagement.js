@@ -16,7 +16,7 @@ const specificVehicleManagement = {
       component: () => import('@/views/specificVehicleManagement/freeCodeManagement/index'),
       name: 'FreeCodeManagement',
       meta: {
-        title: '免费码管理',
+        title: '限免车',
         icon: 'freeCodeManagement',
         keepAlive: false
       },
@@ -38,6 +38,16 @@ const specificVehicleManagement = {
         title: '黑名单',
         icon: 'blackList'
       },
+
+    },
+    {
+      path: 'internalCar',
+      component: () => import('@/views/specificVehicleManagement/internalCar/index'),
+      name: 'InternalCar',
+      meta: {
+        title: '内部临停车',
+        icon: 'specificVehicleManagement'
+      }
     },
   ]
 }

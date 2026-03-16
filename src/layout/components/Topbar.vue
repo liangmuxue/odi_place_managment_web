@@ -122,8 +122,7 @@ export default {
           getDefaultPath(item.children[0]);
         }
       };
-
-      if (item.children) {
+      if (item.children && item.children.length > 0) {
         getDefaultPath(item.children[0], item);
         return path;
       }

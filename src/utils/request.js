@@ -64,9 +64,9 @@ service.interceptors.response.use(
       return response;
     } else if (res.code !== 200) {
       Message({
-        message: res.msg || 'Error',
+        message: res.msg || '请求失败',
         type: 'error',
-        duration: 5 * 1000
+        duration: 3 * 1000
       })
 
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
@@ -81,6 +81,23 @@ service.interceptors.response.use(
             location.reload()
           })
         })
+      } else
+      if (res.code == 401) {
+        let msg = '你的登录凭证已过期，可以取消继续留在该页面，或者重新登录';
+        MessageBox.confirm(msg, '重新登录', {
+          closeOnClickModal: false,
+          confirmButtonText: '重新登录',
+          cancelButtonText: '取消',
+          type: 'warning',
+        }).then(() => {
+
+          store.dispatch('user/resetToken').then(() => {
+            location.reload()
+          })
+
+        }).catch(() => {
+
+        });
       }
       return Promise.reject(new Error(res.msg || 'Error'))
     } else {

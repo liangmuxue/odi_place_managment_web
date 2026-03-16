@@ -24,7 +24,9 @@
       >
         <div class="avatar-wrapper">
           <div class="user-avatar">
-            <div class="el-icon-caret-name">超级管理员： {{ username }}</div>
+            <div class="el-icon-caret-name">
+              {{ roleName }}： {{ nickName }}
+            </div>
           </div>
           <img src="@/assets/images/user-pic.png" alt="" class="user-pic" />
         </div>
@@ -36,7 +38,7 @@
           </el-dropdown-item>
           <el-dropdown-item>
             <span style="display: block" @click="logout"
-              ><i class="el-icon-right"></i>退出登陆</span
+              ><i class="el-icon-right"></i>退出登录</span
             >
           </el-dropdown-item>
         </el-dropdown-menu>
@@ -91,9 +93,12 @@
             </div>
           </el-form>
           <div class="base_dialog_main_btnBox" style="padding-bottom:30px">
-            <el-button type="info" icon="el-icon-circle-plus" @click="toSave"
+            <el-button type="info" style="padding:10px 20px" @click="toSave"
               >保存</el-button
-            ><el-button type="danger" icon="el-icon-error" @click="closeDialog"
+            ><el-button
+              type="danger"
+              style="padding:10px 20px"
+              @click="closeDialog"
               >取消</el-button
             >
           </div>
@@ -114,7 +119,7 @@ import user from "@/store/modules/user"; // has directive
 // import { uesrDetail } from "@/api/systemset";
 // import { infoMap } from "@/api/systemset";
 
-import { getUserName } from "@/utils/auth"; // get token from cookie
+import { getUserId, getUserName, getNickName, getRoleName } from "@/utils/auth"; // get token from cookie
 import {
   userUpdatePwd //重置密码
 } from "@/api/systemset";
@@ -153,6 +158,8 @@ export default {
         eqBoxId: "" //盒子编号
       },
       username: "",
+      roleName: "",
+      nickName: "",
       dateTime: "", //时间
       gisTypeOption: [], // 坐标体系数据源
       selectVillageGis: {
@@ -189,7 +196,7 @@ export default {
           { required: true, message: "请再次输入新密码", trigger: "blur" },
           {
             required: true,
-            message: "用户名已存在",
+            message: "新密码两次输入不一致",
             trigger: "blur",
             validator: validatepassword
           }
@@ -218,16 +225,20 @@ export default {
     }
   },
   mounted() {
-    console.log(user.state);
-    this.userName = user.state.userName;
-    this.newList.userName = user.state.userName;
-    this.newList.userId = user.state.userId;
+    // console.log(user.state);
+    // this.userName = user.state.userName;
+    // this.newList.userName = user.state.userName;
+    // this.newList.userId = user.state.userId;
     this.dateTime = new Date();
     this.getList();
 
-    this.userId = this.$store.getters.userId;
     // this.getcode(); //生成随机码
+    this.userId = getUserId();
     this.username = getUserName();
+    this.roleName = getRoleName();
+    this.nickName = getNickName();
+    this.newList.userName = getUserName();
+    this.newList.userId = getUserId();
   },
   methods: {
     getList() {
@@ -359,6 +370,12 @@ export default {
     },
     changePassWord() {
       this.dialogFormVisible = true;
+      this.newList.password = ""; //原密码
+      this.newList.newPassword = ""; //新密码
+      this.newList.newPassword2 = ""; //确认密码
+      if (this.$refs["userForm"]) {
+        this.$refs["userForm"].resetFields();
+      }
     },
     //关闭新增/编辑设备弹窗
     closeDialog() {
@@ -381,17 +398,17 @@ export default {
                     message: "提交成功"
                   });
                 } else {
-                  this.$message({
-                    type: "warning",
-                    message: "提交失败"
-                  });
+                  // this.$message({
+                  //   type: "warning",
+                  //   message: "提交失败"
+                  // });
                 }
               })
               .catch(() => {
-                this.$message({
-                  type: "warning",
-                  message: "提交失败"
-                });
+                // this.$message({
+                //   type: "warning",
+                //   message: "提交失败"
+                // });
               });
           });
         } else {
@@ -402,8 +419,8 @@ export default {
     },
     logout() {
       let para = {};
-      para.username = getUserName();
-      this.$confirm("是否退出登陆?", "提示", {
+      // para.username = getUserName();
+      this.$confirm("是否退出登录?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
@@ -426,9 +443,9 @@ export default {
 
 <style lang="scss" scoped>
 .el-dropdown-menu {
-  width: 12%;
+  width: 240px;
   // background: #20262d;
-  margin-right: -25px;
+  margin-right: -15px;
   .el-dropdown-menu__item {
     // color: #fff;
     font-weight: bold;
@@ -592,7 +609,7 @@ export default {
     }
     .avatar-container {
       float: right;
-      width: 200px;
+      width: 240px;
       margin-right: 15px;
 
       .avatar-wrapper {
@@ -608,7 +625,7 @@ export default {
         }
         .user-avatar {
           float: right;
-          width: 190px;
+          width: 210px;
           display: inline-block;
           height: 24px;
           line-height: 24px;
@@ -616,7 +633,7 @@ export default {
           cursor: pointer;
           padding-left: 5px;
           .el-icon-caret-name {
-            width: 190px;
+            width: 200px;
             height: 24px;
             line-height: 24px;
             overflow: hidden;

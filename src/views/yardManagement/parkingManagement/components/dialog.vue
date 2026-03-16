@@ -12,7 +12,13 @@
           > 基础信息
         </div>
         <div :class="step == 2 ? 'step2' : 'step'" @click="toStep(2)">
-          > 收费规则
+          > 外来临停车规则
+        </div>
+        <div :class="step == 3 ? 'step2' : 'step'" @click="toStep(3)">
+          > 内部临停车规则
+        </div>
+        <div :class="step == 4 ? 'step2' : 'step'" @click="toStep(4)">
+          > 长租车规则
         </div>
       </div>
       <el-form
@@ -21,7 +27,10 @@
         ref="parkingForm"
         v-show="step == 1"
       >
-        <div class="base_dialog_main_content">
+        <div
+          class="base_dialog_main_content"
+          :style="pageType == 3 ? 'height: calc(100vh - 200px);' : ''"
+        >
           <div class="base_dialog_main_left">
             <span class="base_dialog_condit">
               <el-form-item label="停车场名称" prop="name">
@@ -156,7 +165,7 @@
                 </el-select>
               </el-form-item>
             </span>
-            <span class="base_dialog_condit">
+            <!-- <span class="base_dialog_condit">
               <el-form-item label="是否支持优惠券" prop="coupon">
                 <span class="base_dialog_condit_text" v-if="pageType == 3">
                   {{ newList.coupon == 1 ? "支持" : "不支持" }}
@@ -179,12 +188,37 @@
                   />
                 </el-select>
               </el-form-item>
+            </span> -->
+            <span class="base_dialog_condit">
+              <el-form-item label="是否支持充电" prop="charge">
+                <span class="base_dialog_condit_text" v-if="pageType == 3">
+                  {{ newList.charge == 1 ? "支持" : "不支持" }}
+                </span>
+
+                <el-select
+                  v-else
+                  v-model="newList.charge"
+                  placeholder="选择是否支持充电"
+                  clearable
+                  class="filter-item"
+                  style="width: 72%"
+                  size="small"
+                >
+                  <el-option
+                    v-for="item in couponTypes"
+                    :key="item.enumValue"
+                    :label="item.enumName"
+                    :value="item.enumValue"
+                  />
+                </el-select>
+              </el-form-item>
             </span>
+
             <div
               class="wenzi"
-              style="font-size: 12px;padding-left: 120px;color:#ccc;height:20px;ling-height:20px"
+              style="font-size: 12px;padding-left: 136px;color:#ccc;height:20px;ling-height:20px"
             >
-              *最多支持上传4张，上格式jpg/jpeg/png/bmp
+              *最多支持上传4张，格式jpg/jpeg/png/bmp，建议图片尺寸为960px*540px
             </div>
 
             <span class="base_dialog_condit">
@@ -232,14 +266,239 @@
               </el-form-item>
             </span>
             <span class="base_dialog_condit" v-if="pageType == 3">
-              <el-form-item label="收费规则" prop="feeRules">
+              <el-form-item label="外来临停车规则" prop="feeRules">
                 <span class="base_dialog_condit_text">
                   {{ feeRuleNames }}
                 </span>
-              </el-form-item></span
-            >
+              </el-form-item>
+            </span>
+            <span class="base_dialog_condit" v-if="pageType == 3">
+              <el-form-item label="内部临停车规则" prop="internalFeeRules">
+                <span class="base_dialog_condit_text">
+                  {{ internalFeeRuleNames }}
+                </span>
+              </el-form-item>
+            </span>
+
+            <span class="base_dialog_condit" v-if="pageType == 3">
+              <el-form-item label="长租车规则" prop="feeRules">
+                <span class="base_dialog_condit_text">
+                  {{
+                    newList.ruleParkingLeases.length > 0 &&
+                    newList.ruleParkingLeases[0]
+                      ? newList.ruleParkingLeases[0].ruleName
+                      : ""
+                  }}
+                </span>
+              </el-form-item>
+            </span>
           </div>
           <div class="base_dialog_main_right">
+            <div
+              class="base_dialog_main_right_wenzi"
+              style="font-size: 12px;padding-left: 148px;color:#ccc;height:20px;ling-height:20px;margin-top:-6px"
+            >
+              达到此在场率后，仅限长租车可进入，临停车禁止进入
+            </div>
+
+            <span class="base_dialog_condit">
+              <el-form-item label="长租车位保障临界值" prop="criticalValue">
+                <span v-if="pageType == 3"> {{ newList.criticalValue }}</span>
+                <el-input
+                  v-else
+                  v-model.number="newList.criticalValue"
+                  @input="handleInput2"
+                  placeholder="请输入0-100的数值，最多保留一位小数"
+                  style="width: 68%"
+                  class="filter-item"
+                  size="small"
+                />%
+              </el-form-item>
+            </span>
+            <span class="base_dialog_condit">
+              <el-form-item
+                label="实收分成比例"
+                prop="temporaryStopSharing"
+                style=" position: relative;"
+              >
+                <div v-if="pageType == 3">
+                  <span
+                    v-for="sharing in newList.sharingList"
+                    :key="sharing.id"
+                  >
+                    <span> {{ sharing.sharingName }}</span>
+                    <span>
+                      {{ sharing.temporaryStopSharing || " -- " }}
+                      <span v-if="sharing.temporaryStopSharing">%;</span>
+                    </span>
+                  </span>
+                </div>
+
+                <div v-else style="display:inline-block;width:480px">
+                  <span
+                    v-for="(company, index) in temporaryStopSharingList"
+                    :key="company.id"
+                  >
+                    <el-select
+                      v-model="company.sharingName"
+                      placeholder="请选择公司"
+                      clearable
+                      :class="
+                        selectStatus(company.sharingName) ? 'red-border' : ''
+                      "
+                      class="filter-item"
+                      style="width: 100px"
+                      @change="sharingChange(company.sharingName, index)"
+                      size="small"
+                    >
+                      <el-option
+                        v-for="item in companyList"
+                        :key="item.enumValue"
+                        :label="item.enumName"
+                        :value="item.enumValue"
+                      />
+                    </el-select>
+                    <el-input
+                      v-model.number="company.temporaryStopSharing"
+                      :disabled="!company.sharingName"
+                      placeholder="输入0-100的数值，最多保留一位小数"
+                      :class="classList[index]"
+                      @blur="
+                        inputChange(
+                          company.sharingName,
+                          company.temporaryStopSharing,
+                          index
+                        )
+                      "
+                      style="width: 100px"
+                      class="filter-item"
+                      size="small"
+                    />
+                    %；
+                    <!-- :class="
+                        inputStatus(
+                          company.sharingName,
+                          company.temporaryStopSharing
+                        )
+                          ? 'red-border'
+                          : ''
+                      " -->
+                  </span>
+                </div>
+                <!-- <span>建设发展公司</span>
+                <span v-if="pageType == 3">
+                  {{ newList.temporaryStopSharing || " -- " }}</span
+                >
+                <el-input
+                  v-else
+                  v-model.number="newList.temporaryStopSharing"
+                  placeholder="输入0-100的数值，最多保留一位小数"
+                  style="width: 100px"
+                  class="filter-item"
+                  size="small"
+                />%
+                <span>海创物业公司</span>
+                <span v-if="pageType == 3">
+                  {{ newList.temporaryStopSharingTwo || " -- " }}</span
+                >
+                <el-input
+                  v-else
+                  v-model.number="newList.temporaryStopSharingTwo"
+                  placeholder="输入0-100的数值，最多保留一位小数"
+                  style="width: 100px"
+                  class="filter-item"
+                  size="small"
+                />% -->
+                <div>
+                  <span class="red-text" v-if="temporaryStopSharingError">{{
+                    temporaryStopSharingError
+                  }}</span>
+                </div>
+              </el-form-item>
+            </span>
+            <!-- <span class="base_dialog_condit">
+              <el-form-item
+                label="临停收入分成比例"
+                prop="temporaryStopSharing"
+              >
+                <span>建设发展公司</span>
+                <span v-if="pageType == 3">
+                  {{ newList.temporaryStopSharing || " -- " }}</span
+                >
+                <el-input
+                  v-else
+                  v-model.number="newList.temporaryStopSharing"
+                  placeholder="输入0-100的数值，最多保留一位小数"
+                  style="width: 100px"
+                  class="filter-item"
+                  size="small"
+                />%
+                <span>海创物业公司</span>
+                <span v-if="pageType == 3">
+                  {{ newList.temporaryStopSharingTwo || " -- " }}</span
+                >
+                <el-input
+                  v-else
+                  v-model.number="newList.temporaryStopSharingTwo"
+                  placeholder="输入0-100的数值，最多保留一位小数"
+                  style="width: 100px"
+                  class="filter-item"
+                  size="small"
+                />%
+              </el-form-item>
+            </span>
+            <span class="base_dialog_condit">
+              <el-form-item
+                label="长租收入分成比例"
+                prop="longTermRentalSharing"
+              >
+                <span>建设发展公司</span>
+                <span v-if="pageType == 3">
+                  {{ newList.longTermRentalSharing || " -- " }}</span
+                >
+                <el-input
+                  v-else
+                  v-model.number="newList.longTermRentalSharing"
+                  placeholder="输入0-100的数值，最多保留一位小数"
+                  style="width: 100px"
+                  class="filter-item"
+                  size="small"
+                />%
+                <span>海创物业公司</span>
+                <span v-if="pageType == 3">
+                  {{ newList.longTermRentalSharingTwo || " -- " }}</span
+                >
+                <el-input
+                  v-else
+                  v-model.number="newList.longTermRentalSharingTwo"
+                  placeholder="输入0-100的数值，最多保留一位小数"
+                  style="width: 100px"
+                  class="filter-item"
+                  size="small"
+                />%
+              </el-form-item>
+            </span> -->
+            <!-- <span class="base_dialog_condit">
+              <el-form-item label="放行规则" prop="accessType">
+                <el-radio-group
+                  v-model="newList.accessType"
+                  :disabled="pageType == 2 || pageType == 3"
+                >
+                  <el-radio :label="0">不限</el-radio>
+                  <el-radio :label="1"
+                    >仅限白名单、限免车、长租车可进入</el-radio
+                  >
+                </el-radio-group>
+              </el-form-item>
+              <div
+                v-if="pageType < 3"
+                class="base_dialog_main_prompt
+"
+              >
+                首次配置后不可修改，如需修改，需由技术人员配合调试相关硬件参数
+              </div>
+            </span> -->
+
             <span class="base_dialog_condit">
               <el-form-item label="停车场区域地址" prop="addressId">
                 <span class="base_dialog_condit_text" v-if="pageType == 3">
@@ -250,66 +509,9 @@
                   v-else
                   ref="treedata"
                   v-model="newList.addressId"
-                  style="display: inline-block;width: 72%"
+                  style="display: inline-block;width: 68%"
                   @selectAddress="selectAddress"
                 ></Cascader>
-              </el-form-item>
-            </span>
-            <span class="base_dialog_condit">
-              <el-form-item label="临停收入分成比例" prop="new">
-                <span class="base_dialog_condit_text" v-if="pageType == 3">
-                  {{ newList.new }}</span
-                >
-                <el-input
-                  v-else
-                  v-model="newList.new"
-                  @blur="handleInput1"
-                  placeholder="输入0-100的数值，最多保留一位小数"
-                  style="width: 72%"
-                  class="filter-item"
-                  size="small"
-                />%
-              </el-form-item>
-            </span>
-            <span class="base_dialog_condit">
-              <el-form-item label="临停收入分成比例" prop="new">
-                <span class="base_dialog_condit_text" v-if="pageType == 3">
-                  {{ newList.new }}</span
-                >
-                <el-input
-                  v-else
-                  v-model="newList.new"
-                  @input="handleInput2"
-                  placeholder="输入0-100的数值，最多保留一位小数"
-                  style="width: 72%"
-                  class="filter-item"
-                  size="small"
-                />%
-              </el-form-item>
-            </span>
-
-            <span class="base_dialog_condit">
-              <el-form-item label="是否支持充电" prop="charge">
-                <span class="base_dialog_condit_text" v-if="pageType == 3">
-                  {{ newList.charge == 1 ? "支持" : "不支持" }}
-                </span>
-
-                <el-select
-                  v-else
-                  v-model="newList.charge"
-                  placeholder="选择是否支持优惠券"
-                  clearable
-                  class="filter-item"
-                  style="width: 72%"
-                  size="small"
-                >
-                  <el-option
-                    v-for="item in couponTypes"
-                    :key="item.enumValue"
-                    :label="item.enumName"
-                    :value="item.enumValue"
-                  />
-                </el-select>
               </el-form-item>
             </span>
 
@@ -342,24 +544,62 @@
           filterable
           :props="{
             key: 'id',
-            label: 'name'
+            label: 'ruleName'
           }"
           :titles="['待选择', '已选择']"
           :format="{
             noChecked: '${total}',
             hasChecked: '${checked}/${total}'
           }"
+          @left-check-change="leftRules"
           @change="getRules"
           :data="ruleList"
         >
         </el-transfer>
       </div>
-      <div class="base_dialog_main_btnBox" v-show="pageType < 3">
-        <el-button type="info" icon="el-icon-circle-plus" @click="toSave"
-          >保存</el-button
-        ><el-button type="danger" icon="el-icon-error" @click="closeDialog"
-          >取消</el-button
+      <div class="base_dialog_main_content" v-show="step == 3">
+        <el-transfer
+          style="text-align: left; display: inline-block;"
+          v-model="internalFeeRules"
+          filterable
+          :props="{
+            key: 'id',
+            label: 'ruleName'
+          }"
+          :titles="['待选择', '已选择']"
+          :format="{
+            noChecked: '${total}',
+            hasChecked: '${checked}/${total}'
+          }"
+          @left-check-change="leftRules"
+          @change="getRules2"
+          :data="ruleList"
         >
+        </el-transfer>
+      </div>
+      <div class="base_dialog_main_content" v-show="step == 4">
+        <el-transfer
+          style="text-align: left; display: inline-block;"
+          v-model="newList.ruleParkingLeasesIds"
+          filterable
+          :props="{
+            key: 'id',
+            label: 'ruleName'
+          }"
+          @left-check-change="leftRulesLong"
+          :titles="['待选择', '已选择']"
+          :format="{
+            noChecked: '${total}',
+            hasChecked: '${checked}/${total}'
+          }"
+          @change="getRulesLong"
+          :data="ruleListLong"
+        >
+        </el-transfer>
+      </div>
+      <div class="base_dialog_main_btnBox" style="" v-show="pageType < 3">
+        <el-button type="info" @click="toSave">保存</el-button
+        ><el-button type="danger" @click="closeDialog">取消</el-button>
       </div>
     </div>
   </div>
@@ -370,11 +610,13 @@ import {
   checkName,
   parkingInfo,
   parkingAdd,
-  parkingUpadte
+  parkingUpadte,
+  ruleParkingLeasesListNoPage,
+  ruleTemporaryParkingList
 } from "@/api/yardManagement";
 
 import Cascader from "@/components/Cascader/cascader_regionIdAndNames.vue";
-import BaiduMap from "@/components/Map/map.vue";
+import BaiduMap from "@/components/Map/mapOnload.vue";
 import { UploadImage } from "@/api/common";
 
 export default {
@@ -396,6 +638,156 @@ export default {
         callback();
       }
     };
+    const validateTemporaryStop = (rule, value, callback) => {
+      const inputValue = this.newList.temporaryStopSharing;
+      const inputValue2 = this.newList.temporaryStopSharingTwo;
+      if (inputValue + inputValue2 > 100) {
+        callback(new Error("临停收入分成比例总和不得超过100%"));
+      }
+      // 使用正则表达式限制输入为0-100之间的数字，最多一位小数
+      const regex = /^(([1-9]?\d{0,1}(\.\d{1,2})?)|100|100\.(0){1,2})$/; // 匹配数字和最多一位小数的数字
+      if (!inputValue) {
+        if (!inputValue2) {
+          callback();
+        } else if (!regex.test(inputValue2)) {
+          callback(new Error("输入0-100的数值，最多保留一位小数"));
+        } else {
+          callback();
+        }
+      } else if (!regex.test(inputValue)) {
+        // 如果不符合正则，则报错
+        callback(new Error("输入0-100的数值，最多保留一位小数"));
+      } else {
+        if (!inputValue2) {
+          callback();
+        } else if (!regex.test(inputValue2)) {
+          callback(new Error("输入0-100的数值，最多保留一位小数"));
+        } else {
+          callback();
+        }
+      }
+    };
+    const validateTemporaryStopNew = (rule, value, callback) => {
+      console.log(this.temporaryStopSharingList);
+      let sharingList = this.temporaryStopSharingList;
+      //判断分成公司是否重复
+      function hasDuplicateField(array, field) {
+        // 提取指定字段的非空值
+        const values = array
+          .map(item => item[field])
+          .filter(val => val !== null && val !== undefined && val !== ""); // 忽略空值
+
+        // 使用 Set 去重后比较长度
+        return new Set(values).size !== values.length;
+      }
+      let hasDuplicate = hasDuplicateField(sharingList, "sharingName");
+      if (hasDuplicate) {
+        callback(new Error("分成公司重复"));
+        // console.log("是否重复", hasDuplicate);
+      } else {
+        const inputName = sharingList[0].sharingName;
+        const inputName2 = sharingList[1].sharingName;
+        const inputName3 = sharingList[2].sharingName;
+        const inputName4 = sharingList[3].sharingName;
+        const inputValue = sharingList[0].temporaryStopSharing;
+        const inputValue2 = sharingList[1].temporaryStopSharing;
+        const inputValue3 = sharingList[2].temporaryStopSharing;
+        const inputValue4 = sharingList[3].temporaryStopSharing;
+        if (inputValue + inputValue2 + inputValue3 + inputValue4 > 100) {
+          callback(new Error("收入分成比例总和不得超过100%"));
+        }
+        // 使用正则表达式限制输入为0-100之间的数字，最多一位小数
+        // const regex = /^(([1-9]?\d{0,1}(\.\d{1,2})?)|100|100\.(0){1,2})$/; // 匹配数字和最多一位小数的数字
+        // if (inputName) {
+        //   if (!inputValue) {
+        //     callback("收入分成比例请输入大于0的数值");
+        //   } else if (!regex.test(inputValue)) {
+        //     callback(
+        //       new Error("收入分成比例输入0-100的数值，最多保留一位小数")
+        //     );
+        //   }
+        // }
+        // if (inputName2) {
+        //   if (!inputValue2) {
+        //     callback("收入分成比例请输入大于0的数值");
+        //   } else if (!regex.test(inputValue2)) {
+        //     callback(
+        //       new Error("收入分成比例输入0-100的数值，最多保留一位小数")
+        //     );
+        //   }
+        // }
+        // if (inputName3) {
+        //   if (!inputValue3) {
+        //     callback("收入分成比例请输入大于0的数值");
+        //   } else if (!regex.test(inputValue3)) {
+        //     callback(
+        //       new Error("收入分成比例输入0-100的数值，最多保留一位小数")
+        //     );
+        //   }
+        // }
+        // if (inputName4) {
+        //   if (!inputValue4) {
+        //     callback("收入分成比例请输入大于0的数值");
+        //   } else if (!regex.test(inputValue4)) {
+        //     callback(
+        //       new Error("收入分成比例输入0-100的数值，最多保留一位小数")
+        //     );
+        //   }
+        // }
+        callback();
+
+        // if (!inputValue) {
+        //   if (!inputValue2) {
+        //     callback();
+        //   } else if (!regex.test(inputValue2)) {
+        //     callback(new Error("输入0-100的数值，最多保留一位小数"));
+        //   } else {
+        //     callback();
+        //   }
+        // } else if (!regex.test(inputValue)) {
+        //   // 如果不符合正则，则报错
+        //   callback(new Error("输入0-100的数值，最多保留一位小数"));
+        // } else {
+        //   if (!inputValue2) {
+        //     callback();
+        //   } else if (!regex.test(inputValue2)) {
+        //     callback(new Error("输入0-100的数值，最多保留一位小数"));
+        //   } else {
+        //     callback();
+        //   }
+        // }
+      }
+    };
+    const validateLongTermRental = (rule, value, callback) => {
+      const inputValue = this.newList.longTermRentalSharing;
+      const inputValue2 = this.newList.longTermRentalSharingTwo;
+      if (inputValue + inputValue2 > 100) {
+        callback(new Error("长租收入分成比例总和不得超过100%"));
+      }
+
+      // 使用正则表达式限制输入为0-100之间的数字，最多一位小数
+      const regex = /^(([1-9]?\d{0,1}(\.\d{1,2})?)|100|100\.(0){1,2})$/; // 匹配数字和最多一位小数的数字
+      if (!inputValue) {
+        if (!inputValue2) {
+          callback();
+        } else if (!regex.test(inputValue2)) {
+          callback(new Error("输入0-100的数值，最多保留一位小数"));
+        } else {
+          callback();
+        }
+      } else if (!regex.test(inputValue)) {
+        // 如果不符合正则，则报错
+        callback(new Error("输入0-100的数值，最多保留一位小数"));
+      } else {
+        if (!inputValue2) {
+          callback();
+        } else if (!regex.test(inputValue2)) {
+          callback(new Error("输入0-100的数值，最多保留一位小数"));
+        } else {
+          callback();
+        }
+      }
+    };
 
     return {
       step: 1,
@@ -403,6 +795,7 @@ export default {
       title: "新增",
       isShow: false,
       editName: null,
+      temporaryStopSharingError: "",
       newList: {
         id: null,
         name: "", //停车场名称
@@ -415,22 +808,30 @@ export default {
         operator: null, //运营商网络
         charge: null, //是否支持充电
         coupon: null, //是否支持优惠券
+        accessType: 0, //是否仅限白名单及限免车
         photos: "", //停车场图片
+        criticalValue: 90, //长租车位保障临界值
+        ruleParkingLeases: [],
+        temporaryStopSharing: null, //临停分成建设发展公司
+        temporaryStopSharingTwo: null, //临停分成海创物业公司
+        longTermRentalSharing: null, //长租分成建设发展公司
+        longTermRentalSharingTwo: null, //长租分成海创物业公司
+        sharingList: [], //新版分成数组
         address: "", //停车场区域地址
         addressId: "", //停车场区域地址id
         coordinate: "", //地图坐标
-        feeRules: "" //收费规则
+        feeRules: null, //外来临停收费规则
+        internalFeeRules: null, //内部临停收费规则
+        ruleParkingLeasesIds: [] //长租收费规则
       }, //车场详情
       timeList: ["00:00:00", "23:59:59"], //营业时间
       photos: [], //图片列表
-      feeRules: [1, 2, 3], //收费规则id
-      feeRuleNames: "", //收费规则名称
-      ruleList: [
-        { id: 1, name: "规则1" },
-        { id: 2, name: "规则2" },
-        { id: 3, name: "规则3" },
-        { id: 4, name: "规则4" }
-      ],
+      feeRules: [], //外来收费规则id
+      internalFeeRules: [], //内部收费规则id
+      feeRuleNames: "", //外来临停收费规则名称
+      internalFeeRuleNames: "", //内部临停收费规则名称
+      ruleList: [],
+      ruleListLong: [],
       operators: [
         { enumName: "移动", enumValue: "移动" },
         { enumName: "联通", enumValue: "联通" },
@@ -440,12 +841,47 @@ export default {
         { enumName: "支持", enumValue: 1 },
         { enumName: "不支持", enumValue: 0 }
       ],
-
+      companyList: [
+        { enumName: "海创物业", enumValue: "海创物业" },
+        { enumName: "建设发展", enumValue: "建设发展" },
+        { enumName: "联通", enumValue: "联通" },
+        { enumName: "豪之英", enumValue: "豪之英" },
+        { enumName: "锦辉", enumValue: "锦辉" },
+        { enumName: "科创交流中心", enumValue: "科创交流中心" },
+        { enumName: "商业广场", enumValue: "商业广场" }
+      ],
+      temporaryStopSharingList: [
+        {
+          parkingLotId: null,
+          sharingName: "",
+          temporaryStopSharing: null,
+          longTermRentalSharing: null
+        },
+        {
+          parkingLotId: null,
+          sharingName: "",
+          temporaryStopSharing: null,
+          longTermRentalSharing: null
+        },
+        {
+          parkingLotId: null,
+          sharingName: "",
+          temporaryStopSharing: null,
+          longTermRentalSharing: null
+        },
+        {
+          parkingLotId: null,
+          sharingName: "",
+          temporaryStopSharing: null,
+          longTermRentalSharing: null
+        }
+      ],
+      classList: ["", "", "", ""],
       rules: {
         name: [
           { required: true, message: "请输入停车场名称", trigger: "blur" },
           {
-            pattern: /[\u4E00-\u9FA5a-zA-Z0-9_\-]{1,20}$/,
+            pattern: /^[\u4E00-\u9FA5a-zA-Z0-9_\-]{1,20}$/,
             message: "请输入20以内字符，且不含特殊字符",
             trigger: "blur"
           },
@@ -469,18 +905,15 @@ export default {
           { required: true, message: "请输入总车位数", trigger: "blur" }
         ],
         phone: [
-          { required: true, message: "请输入联系电话", trigger: "blur" },
-          {
-            pattern: /^1\d{10}$/,
-            message: "请输入正确手机号码",
-            trigger: "blur"
-          }
+          { required: true, message: "请输入联系电话", trigger: "blur" }
+          // {
+          //   pattern: /^1\d{10}$/,
+          //   message: "请输入正确手机号码",
+          //   trigger: "blur"
+          // }
         ],
         operator: [
-          { required: true, message: "请选择运营商网络", trigger: "blur" }
-        ],
-        charge: [
-          { required: true, message: "请输入是否支持充电", trigger: "blur" }
+          { required: false, message: "请选择运营商网络", trigger: "blur" }
         ],
         coupon: [
           { required: true, message: "请输入是否支持优惠券", trigger: "blur" }
@@ -491,49 +924,169 @@ export default {
         addressId: [
           { required: true, message: "请选择停车场区域地址", trigger: "blur" }
         ],
+        charge: [
+          { required: true, message: "请选择是否支持充电", trigger: "blur" }
+        ],
+        accessType: [
+          { required: true, message: "请选择放行规则", trigger: "blur" }
+        ],
+        criticalValue: [
+          {
+            required: true,
+            message: "请输入长租车位保障临界值",
+            trigger: "blur"
+          }
+        ],
+        // temporaryStopSharing: [
+        //   {
+        //     required: false,
+        //     message: "",
+        //     trigger: "blur"
+        //     // validator: validateTemporaryStop
+        //     // validator: validateTemporaryStopNew
+        //   }
+        // ],
+        longTermRentalSharing: [
+          {
+            required: false,
+            message: "",
+            trigger: "blur",
+            validator: validateLongTermRental
+          }
+        ],
+
         coordinate: [
           { required: true, message: "请选择地图坐标", trigger: "blur" }
         ]
       }
     };
   },
-  created() {},
+  created() {
+    this.getRulesList();
+  },
   methods: {
-    handleInput1(value) {
-      // 限制输入为0到100之间的一位小数
-      this.newList.new = value
-        .toString()
-        .replace(/[^\d.]/g, "")
-        .replace(/\.{2,}/g, ".")
-        .replace(/^\./g, "")
-        .replace(".", "$#$")
-        .replace(/\./g, "")
-        .replace("$#$", ".")
-        .replace(/^(\-)*(\d+)\.(\d).*$/, "$1$2.$3");
-      if (this.newList.new > 100) {
-        this.newList.new = 100; // 如果超过100，设置为100
-      } else if (this.newList.new < 0) {
-        this.newList.new = 0; // 如果小于0，设置为0
-      }
-    },
-    handleInput2(value) {
-      // 限制输入为0到100之间的一位小数
-      this.newList.new = value
-        .toString()
-        .replace(/[^\d.]/g, "")
-        .replace(/\.{2,}/g, ".")
-        .replace(/^\./g, "")
-        .replace(".", "$#$")
-        .replace(/\./g, "")
-        .replace("$#$", ".")
-        .replace(/^(\-)*(\d+)\.(\d).*$/, "$1$2.$3");
-      if (this.newList.new > 100) {
-        this.newList.new = 100; // 如果超过100，设置为100
-      } else if (this.newList.new < 0) {
-        this.newList.new = 0; // 如果小于0，设置为0
-      }
+    getRulesList() {
+      //长租规则列表
+      ruleParkingLeasesListNoPage().then(response => {
+        this.ruleListLong = response.data;
+      });
+      let para = {};
+      //临停规则列表
+      ruleTemporaryParkingList(para).then(response => {
+        this.ruleList = response.data;
+      });
     },
 
+    handleInput2(value) {
+      // 限制输入为0到100之间的一位小数
+      this.newList.criticalValue = value
+        .toString()
+        .replace(/[^\d.]/g, "")
+        .replace(/\.{2,}/g, ".")
+        .replace(/^\./g, "")
+        .replace(".", "$#$")
+        .replace(/\./g, "")
+        .replace("$#$", ".")
+        .replace(/^(\-)*(\d+)\.(\d).*$/, "$1$2.$3");
+      if (this.newList.criticalValue > 100) {
+        this.newList.criticalValue = 100; // 如果超过100，设置为100
+      } else if (this.newList.criticalValue < 0) {
+        this.newList.criticalValue = 0; // 如果小于0，设置为0
+      }
+    },
+    //选择分成公司
+    sharingChange(name, index) {
+      let sharingList = this.temporaryStopSharingList;
+      sharingList[index].temporaryStopSharing = null;
+      if (
+        sharingList[0].temporaryStopSharing +
+          sharingList[1].temporaryStopSharing +
+          sharingList[2].temporaryStopSharing +
+          sharingList[3].temporaryStopSharing <
+        100
+      ) {
+        this.classList[0] = "";
+        this.classList[1] = "";
+        this.classList[2] = "";
+        this.classList[3] = "";
+      }
+      // if (!name) {
+      //   // this.$refs.parkingForm.validateField("temporaryStopSharing");
+      // }
+      function hasDuplicateField(array, field) {
+        // 提取指定字段的非空值
+        const values = array
+          .map(item => item[field])
+          .filter(val => val !== null && val !== undefined && val !== ""); // 忽略空值
+        // 使用 Set 去重后比较长度
+        return new Set(values).size !== values.length;
+      }
+      //判断分成公司是否重复
+      let hasDuplicate = hasDuplicateField(sharingList, "sharingName");
+      if (hasDuplicate) {
+        this.temporaryStopSharingError = "分成公司重复";
+      } else {
+        this.temporaryStopSharingError = "";
+      }
+    },
+    selectStatus(selectName) {
+      function hasDuplicateField(array, field) {
+        // 提取指定字段的非空值
+        const values = array
+          .map(item => item[field])
+          .filter(val => val !== null && val !== undefined && val !== ""); // 忽略空值
+
+        // 使用 Set 去重后比较长度
+        return new Set(values).size !== values.length;
+      }
+      if (selectName) {
+        let sharingList = this.temporaryStopSharingList;
+        //判断分成公司是否重复
+        let hasDuplicate = hasDuplicateField(sharingList, "sharingName");
+        if (hasDuplicate) {
+          // this.temporaryStopSharingError = "分成公司重复";
+          return true;
+        } else {
+          return false;
+        }
+      }
+    },
+    inputChange(inputName, inputValue, index) {
+      const regex = /^(([1-9]?\d{0,1}(\.\d{1,2})?)|100|100\.(0){1,2})$/; // 匹配数字和最多一位小数的数字
+      let sharingList = this.temporaryStopSharingList;
+      if (
+        sharingList[0].temporaryStopSharing +
+          sharingList[1].temporaryStopSharing +
+          sharingList[2].temporaryStopSharing +
+          sharingList[3].temporaryStopSharing >
+        100
+      ) {
+        this.temporaryStopSharingError = "收入分成比例总和不得超过100%";
+        this.classList[0] = "red-border";
+        this.classList[1] = "red-border";
+        this.classList[2] = "red-border";
+        this.classList[3] = "red-border";
+      } else {
+        this.classList[0] = "";
+        this.classList[1] = "";
+        this.classList[2] = "";
+        this.classList[3] = "";
+        if (inputName) {
+          if (!inputValue) {
+            this.temporaryStopSharingError =
+              "收入分成比例输入大于0小于等于100的数值，最多保留一位小数";
+            this.classList[index] = "red-border";
+          } else if (!regex.test(inputValue)) {
+            this.temporaryStopSharingError =
+              "收入分成比例输入大于0小于等于100的数值，最多保留一位小数";
+            this.classList[index] = "red-border";
+          } else {
+            this.temporaryStopSharingError = "";
+            this.classList[index] = "";
+          }
+        }
+      }
+    },
     toStep(step) {
       if (this.newList.id) {
         this.step = step;
@@ -553,9 +1106,9 @@ export default {
     },
     //停车场图片验证
     beforeAvatarUpload(file) {
-      const isLt100M = file.size / 1024 < 100000;
+      const isLt100M = file.size / 1024 < 10000;
       if (!isLt100M) {
-        this.$message.error("上传图片大小不能超过1M!");
+        this.$message.error("上传图片大小不能超过10M!");
       }
       return isLt100M;
     },
@@ -575,23 +1128,86 @@ export default {
     //删除照片
     delPic(index) {
       this.photos.splice(index, 1);
+      this.newList.photos = this.photos.toString();
       this.$refs.parkingForm.validateField("photos");
     },
 
     //地图获取地址信息
     getLocation(data) {
+      // let coordinate = this.convert2TencentMap(
+      //   data.coordinate.longitude,
+      //   data.coordinate.latitude
+      // );
       let arr = [data.coordinate.longitude, data.coordinate.latitude];
       this.newList.coordinate = arr.toString();
     },
-    //收费规则选择
+    convert2TencentMap(lng, lat) {
+      var x_pi = (3.14159265358979324 * 3000.0) / 180.0;
+      var x = lng - 0.0065;
+      var y = lat - 0.006;
+      var z = Math.sqrt(x * x + y * y) - 0.00002 * Math.sin(y * x_pi);
+      var theta = Math.atan2(y, x) - 0.000003 * Math.cos(x * x_pi);
+      var qqlng = z * Math.cos(theta);
+      var qqlat = z * Math.sin(theta);
+      let arr = [qqlng.toFixed(6), qqlat.toFixed(6)];
+      let coor = arr.toString();
+      return coor;
+
+      // return { longitude: qqlng.toFixed(6), latitude: qqlat.toFixed(6) };
+    },
+    convert2BaiduMap(coordinate) {
+      const list = coordinate.split(",");
+      let lng = list[0];
+      let lat = list[1];
+      const x_pi = (3.14159265358979324 * 3000.0) / 180.0;
+      const x = lng;
+      const y = lat;
+      const z = Math.sqrt(x * x + y * y) + 0.00002 * Math.sin(y * x_pi);
+      const theta = Math.atan2(y, x) + 0.000003 * Math.cos(x * x_pi);
+      const lngs = z * Math.cos(theta) + 0.0065;
+      const lats = z * Math.sin(theta) + 0.006;
+      let arr = [lngs.toFixed(6), lats.toFixed(6)];
+      let coor = arr.toString();
+      return coor;
+    },
+    leftRules(data) {
+      if (data.length > 1) {
+        data.splice(0, 1);
+      }
+    },
+
+    //外来临停规则选择
     getRules(data) {
+      if (data.length > 1) {
+        data.splice(0, 1);
+      }
       this.newList.feeRules = data.toString();
+    },
+    //内部临停规则选择
+    getRules2(data) {
+      if (data.length > 1) {
+        data.splice(0, 1);
+      }
+      this.newList.internalFeeRules = data.toString();
+    },
+    leftRulesLong(data) {
+      if (data.length > 1) {
+        data.splice(0, 1);
+      }
+    },
+
+    //长租规则选择
+    getRulesLong(data) {
+      if (data.length > 1) {
+        data.splice(0, 1);
+      }
     },
     //打开注册、编辑弹窗
     showDialog(id, pageType) {
       this.isShow = true;
       this.pageType = pageType;
       this.step = 1;
+      this.temporaryStopSharingError = "";
       if (this.$refs["parkingForm"]) {
         this.$refs["parkingForm"].resetFields();
       }
@@ -610,6 +1226,36 @@ export default {
         this.timeList = ["00:00:00", "23:59:59"]; //营业时间
         this.photos = [];
         this.feeRules = [];
+        this.internalFeeRules = [];
+        this.temporaryStopSharingList = [
+          {
+            parkingLotId: null,
+            sharingName: "",
+            temporaryStopSharing: null,
+            longTermRentalSharing: null
+          },
+          {
+            parkingLotId: null,
+            sharingName: "",
+            temporaryStopSharing: null,
+            longTermRentalSharing: null
+          },
+          {
+            parkingLotId: null,
+            sharingName: "",
+            temporaryStopSharing: null,
+            longTermRentalSharing: null
+          },
+          {
+            parkingLotId: null,
+            sharingName: "",
+            temporaryStopSharing: null,
+            longTermRentalSharing: null
+          }
+        ];
+        // this.ruleList = [];
+        // this.ruleListLong = [];
+
         this.newList = {
           id: null,
           name: "", //停车场名称
@@ -623,11 +1269,23 @@ export default {
           charge: null, //是否支持充电
           coupon: null, //是否支持优惠券
           photos: "", //停车场图片
+          accessType: 0, //放行规则
+          criticalValue: 90, //长租车位保障临界值
+          ruleParkingLeases: [],
+          temporaryStopSharing: null, //临停分成建设发展公司
+          temporaryStopSharingTwo: null, //临停分成海创物业公司
+          longTermRentalSharing: null, //长租分成建设发展公司
+          longTermRentalSharingTwo: null, //长租分成海创物业公司
+          sharingList: [], //新版分成数组
           address: "", //停车场区域地址
           addressId: "", //停车场区域地址id
           coordinate: "", //地图坐标
-          feeRules: "" //收费规则
+          feeRules: null, //外来临停收费规则
+          internalFeeRules: null, //内部临停收费规则
+          ruleParkingLeasesIds: [] //长租收费规则
         };
+        this.editName = null;
+
         if (this.$refs["parkingForm"]) {
           this.$nextTick(() => {
             this.$refs["parkingForm"].clearValidate();
@@ -641,10 +1299,109 @@ export default {
       }
     },
     //获取详情
-    getDetials(id) {
+    getDetials(id, isAdd) {
       let para = { id: id };
       parkingInfo(para).then(response => {
         this.newList = response.data;
+        let coor = this.convert2BaiduMap(this.newList.coordinate);
+        this.newList.coordinate = coor;
+        let temporaryStopSharingList;
+        if (this.newList.sharingList.length == 0) {
+          temporaryStopSharingList = [
+            {
+              parkingLotId: null,
+              sharingName: "",
+              temporaryStopSharing: null,
+              longTermRentalSharing: null
+            },
+            {
+              parkingLotId: null,
+              sharingName: "",
+              temporaryStopSharing: null,
+              longTermRentalSharing: null
+            },
+            {
+              parkingLotId: null,
+              sharingName: "",
+              temporaryStopSharing: null,
+              longTermRentalSharing: null
+            },
+            {
+              parkingLotId: null,
+              sharingName: "",
+              temporaryStopSharing: null,
+              longTermRentalSharing: null
+            }
+          ];
+        } else if (this.newList.sharingList.length == 1) {
+          temporaryStopSharingList = [
+            ...this.newList.sharingList,
+            {
+              parkingLotId: null,
+              sharingName: "",
+              temporaryStopSharing: null,
+              longTermRentalSharing: null
+            },
+            {
+              parkingLotId: null,
+              sharingName: "",
+              temporaryStopSharing: null,
+              longTermRentalSharing: null
+            },
+            {
+              parkingLotId: null,
+              sharingName: "",
+              temporaryStopSharing: null,
+              longTermRentalSharing: null
+            }
+          ];
+        } else if (this.newList.sharingList.length == 2) {
+          temporaryStopSharingList = [
+            ...this.newList.sharingList,
+            {
+              parkingLotId: null,
+              sharingName: "",
+              temporaryStopSharing: null,
+              longTermRentalSharing: null
+            },
+            {
+              parkingLotId: null,
+              sharingName: "",
+              temporaryStopSharing: null,
+              longTermRentalSharing: null
+            }
+          ];
+        } else if (this.newList.sharingList.length == 3) {
+          temporaryStopSharingList = [
+            ...this.newList.sharingList,
+            {
+              parkingLotId: null,
+              sharingName: "",
+              temporaryStopSharing: null,
+              longTermRentalSharing: null
+            }
+          ];
+        } else if (this.newList.sharingList.length == 4) {
+          temporaryStopSharingList = this.newList.sharingList;
+        }
+        this.temporaryStopSharingList = temporaryStopSharingList;
+        if (isAdd) {
+          this.toStep(2);
+        }
+        if (!this.newList.ruleParkingLeasesIds) {
+          this.newList.ruleParkingLeasesIds = [];
+        }
+        if (
+          this.newList.ruleParkingLeases &&
+          this.newList.ruleParkingLeases.length > 0 &&
+          this.newList.ruleParkingLeases[0]
+        ) {
+          this.newList.ruleParkingLeasesIds = [
+            this.newList.ruleParkingLeases[0].id
+          ];
+        } else {
+          this.newList.ruleParkingLeasesIds = [];
+        }
         this.newList.addressId = this.newList.addressId * 1;
         if (this.pageType == 2) {
           this.$refs.treedata.selectRegion(this.newList.addressId);
@@ -658,9 +1415,23 @@ export default {
         this.timeList = [response.data.startTime, response.data.endTime];
         if (response.data.feeRules) {
           this.feeRules = this.getFeeRuleNames(
-            response.data.feeRules.split(",")
+            response.data.feeRules.split(","),
+            1
           );
           this.feeRules = response.data.feeRules.split(",").map(Number);
+        } else {
+          this.feeRules = [];
+        }
+        if (response.data.internalFeeRules) {
+          this.internalFeeRules = this.getFeeRuleNames(
+            response.data.internalFeeRules.split(","),
+            2
+          );
+          this.internalFeeRules = response.data.internalFeeRules
+            .split(",")
+            .map(Number);
+        } else {
+          this.internalFeeRules = [];
         }
         let coordinate = response.data.coordinate.split(",");
         this.$nextTick(() => {
@@ -674,12 +1445,25 @@ export default {
       });
     },
     //获取收费规则名称
-    getFeeRuleNames(feeRules) {
+    getFeeRuleNames(feeRules, n) {
       let arr = [];
+      // if (feeRules.length == 1 && feeRules[0] === "全") {
+      //   this.ruleList.forEach(el => {
+      //     arr.push(el.name);
+      //   });
+      // } else {
       feeRules.map(item1 => {
-        arr.push(this.ruleList.find(item2 => item2.id == item1).name);
+        let item = this.ruleList.find(item2 => item2.id == item1);
+        if (item) {
+          arr.push(item.ruleName);
+        }
       });
-      this.feeRuleNames = arr.toString();
+      // }
+      if (n == 1) {
+        this.feeRuleNames = arr.toString();
+      } else {
+        this.internalFeeRuleNames = arr.toString();
+      }
     },
     //关闭新增/编辑弹窗
     closeDialog() {
@@ -698,11 +1482,30 @@ export default {
     //添加车场
     toAdd() {
       this.$refs["parkingForm"].validate(valid => {
-        if (valid) {
+        for (let i = 0; i < this.temporaryStopSharingList.length; i++) {
+          let el = this.temporaryStopSharingList[i];
+          if (el.sharingName && !el.temporaryStopSharing) {
+            this.temporaryStopSharingError =
+              "收入分成比例输入大于0小于等于100的数值，最多保留一位小数";
+            this.classList[i] = "red-border";
+          }
+        }
+
+        if (valid && !this.temporaryStopSharingError) {
           this.$confirm("确认提交保存停车场信息吗?", "提示", {
             type: "warning"
           }).then(() => {
             let para = this.newList;
+            let coor = this.newList.coordinate.split(",");
+            let coordinate = this.convert2TencentMap(coor[0], coor[1]);
+            let sharingList = [];
+            this.temporaryStopSharingList.forEach(sharing => {
+              if (sharing.sharingName) {
+                sharingList.push(sharing);
+              }
+            });
+            para.sharingList = sharingList;
+            para.coordinate = coordinate;
             parkingAdd(para)
               .then(response => {
                 if (response.code == "200") {
@@ -710,19 +1513,19 @@ export default {
                     type: "success",
                     message: "提交成功"
                   });
-                  // this.getDetials(response.id);
+                  this.getDetials(response.data.id, true);
                 } else {
-                  this.$message({
-                    type: "warning",
-                    message: "提交失败"
-                  });
+                  // this.$message({
+                  //   type: "error",
+                  //   message: "提交失败"
+                  // });
                 }
               })
               .catch(() => {
-                this.$message({
-                  type: "warning",
-                  message: "提交失败"
-                });
+                // this.$message({
+                //   type: "error",
+                //   message: "提交失败"
+                // });
               });
           });
         }
@@ -731,15 +1534,37 @@ export default {
     //编辑车场
     toEidt() {
       this.$refs["parkingForm"].validate(valid => {
-        if (valid) {
+        for (let i = 0; i < this.temporaryStopSharingList.length; i++) {
+          let el = this.temporaryStopSharingList[i];
+          if (el.sharingName && !el.temporaryStopSharing) {
+            this.temporaryStopSharingError =
+              "收入分成比例输入大于0小于等于100的数值，最多保留一位小数";
+            this.classList[i] = "red-border";
+          }
+        }
+
+        if (valid && !this.temporaryStopSharingError) {
           this.$confirm("确认提交编辑的停车场信息吗?", "提示", {
             type: "warning"
           }).then(() => {
-            if (this.step == 2) {
+            if (this.step == 2 || this.step == 3 || this.step == 4) {
               this.isShow = false;
               this.$emit("openLoading", {});
             }
             let para = this.newList;
+            // console.log(111, this.newList.coordinate);
+            let coor = this.newList.coordinate.split(",");
+            let coordinate = this.convert2TencentMap(coor[0], coor[1]);
+            para.coordinate = coordinate;
+            console.log(222, this.temporaryStopSharingList);
+            let sharingList = [];
+            this.temporaryStopSharingList.forEach(sharing => {
+              if (sharing.sharingName) {
+                sharingList.push(sharing);
+              }
+            });
+            para.sharingList = sharingList;
+
             parkingUpadte(para)
               .then(response => {
                 if (response.code == "200") {
@@ -748,24 +1573,24 @@ export default {
                     message: "提交成功"
                   });
                 } else {
-                  this.$message({
-                    type: "warning",
-                    message: "提交失败"
-                  });
+                  // this.$message({
+                  //   type: "error",
+                  //   message: "提交失败"
+                  // });
                 }
-                if (this.step == 2) {
+                if (this.step == 4 || this.step == 3 || this.step == 2) {
                   setTimeout(() => {
                     this.$emit("getList", {});
                   }, 300);
-                } else {
+                } else if (this.step == 1) {
                   this.step = 2;
                 }
               })
               .catch(() => {
-                this.$message({
-                  type: "warning",
-                  message: "提交失败"
-                });
+                // this.$message({
+                //   type: "error",
+                //   message: "提交失败"
+                // });
 
                 if (this.step == 2) {
                   setTimeout(() => {
@@ -787,7 +1612,7 @@ export default {
 <style lang="scss" scoped>
 .map_box {
   margin-left: 20px;
-  height: 340px;
+  height: 300px;
 }
 .base_dialog_condit {
   .photos_div {
@@ -858,5 +1683,40 @@ export default {
     width: 110px;
     height: 110px;
   }
+}
+.base_dialog_main_right {
+  position: relative;
+  .base_dialog_main_right_wenzi {
+    position: absolute;
+    top: 10px;
+  }
+}
+.base_dialog_main_prompt {
+  width: 72%;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  margin-left: 148px;
+  background: rgba($color: #ffd986, $alpha: 0.3);
+  color: #f50e0e;
+  margin-top: -24px;
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+</style>
+
+<style>
+.el-transfer-panel__list {
+  height: 500px !important;
+}
+.red-border .el-input__inner {
+  border: 1px solid #e84c3d;
+}
+.red-text {
+  position: absolute;
+  bottom: -28px;
+  margin-left: 148px;
+  color: #e84c3d;
+  font-size: 12px;
 }
 </style>

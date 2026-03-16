@@ -1,5 +1,5 @@
 <template>
-  <div class="parkingManagement_page">
+  <div class="commit_page">
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">角色名称</div>
@@ -13,14 +13,20 @@
       >
     </div>
     <div class="btn_box">
-      <el-button type="info" icon="el-icon-circle-plus-outline" @click="toAdd"
-        >添加</el-button
+      <el-button
+        type="info"
+        icon="el-icon-circle-plus-outline"
+        @click="toAdd"
+        v-has="{ red: 'rolesAdd', type: 1 }"
+        >新增</el-button
       >
-      <!-- v-has="{ red: 'addBox', type: 1 }" -->
-      <el-button type="danger" icon="el-icon-circle-plus-outline" @click="toDel"
+      <el-button
+        type="danger"
+        icon="el-icon-circle-close"
+        @click="toDel"
+        v-has="{ red: 'rolesDelete', type: 1 }"
         >删除</el-button
       >
-      <!-- v-has="{ red: 'deleteBox', type: 1 }" -->
     </div>
 
     <div class="content_box">
@@ -47,7 +53,7 @@
         <el-table-column
           label="角色名称"
           align="center"
-          width="160"
+          min-width="160"
           show-overflow-tooltip
         >
           <template slot-scope="scope">
@@ -55,9 +61,27 @@
           </template>
         </el-table-column>
         <el-table-column
+          label="角色类型"
+          align="center"
+          min-width="120"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">
+              {{
+                scope.row.rightType === 2
+                  ? "商户角色"
+                  : scope.row.rightType === 1
+                  ? "普通角色"
+                  : ""
+              }}
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column
           label="状态"
           align="center"
-          width="100"
+          min-width="100"
           show-overflow-tooltip
         >
           <template slot-scope="scope">
@@ -67,15 +91,25 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="权限菜单" align="center" show-overflow-tooltip>
+        <el-table-column
+          label="描述"
+          align="center"
+          min-width="100"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span class="content">{{ scope.row.remark }}</span>
+          </template>
+        </el-table-column>
+        <!-- <el-table-column label="权限菜单" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="content">{{ getNames(scope.row.resourceList) }}</span>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column
           label="创建时间"
           align="center"
-          width="160"
+          min-width="160"
           show-overflow-tooltip
         >
           <template slot-scope="scope">
@@ -86,7 +120,7 @@
           label="操作"
           align="center"
           header-align="center"
-          width="160"
+          min-width="160"
           class-name="small-padding fixed-width"
         >
           <template slot-scope="scope">
@@ -94,12 +128,14 @@
               v-if="!scope.row.admin"
               class="operation_button update_btn"
               @click="toEdit(scope.row)"
+              v-has="{ red: 'rolesEdit', type: 1 }"
             >
               编辑
             </span>
             <span
               class="operation_button update_btn"
               @click="toDetails(scope.row)"
+              v-has="{ red: 'rolesDetails', type: 1 }"
             >
               详情
             </span>
@@ -128,7 +164,6 @@ import {
   roleDeleteRole //删除用户
 } from "@/api/systemset";
 import Dialog from "./components/dialog";
-import { fieldTable } from "@/api/common";
 
 export default {
   name: "RolesManagement",
@@ -240,12 +275,17 @@ export default {
 
     //批量删除
     toDel() {
-      let arr = [];
-      this.selGateway.forEach(el => {
-        arr.push(el.roleId);
-      });
       if (this.selGateway.length > 0) {
-        this.$confirm("确认批量删除角色吗?", "提示", {
+        let arr = [];
+        this.selGateway.forEach(el => {
+          arr.push(el.roleId);
+        });
+        let text = "确认批量删除角色吗?";
+        if (this.selGateway.length == 1) {
+          text = "确认删除该角色吗?";
+        }
+
+        this.$confirm(text, "提示", {
           type: "warning"
         }).then(() => {
           let para = {
@@ -260,17 +300,17 @@ export default {
               this.openLoading();
               this.getList();
             } else {
-              this.$message({
-                type: "warning",
-                message: "删除失败"
-              });
+              // this.$message({
+              //   type: "error",
+              //   message: "删除失败"
+              // });
             }
           });
         });
       } else {
         this.$message({
           type: "warning",
-          message: "请选择删除的用户"
+          message: "请选择删除角色"
         });
       }
     },
@@ -303,7 +343,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.parkingManagement_page {
+.commit_page {
   position: relative;
 }
 .content_box {

@@ -1,5 +1,5 @@
 <template>
-  <div class="parkingManagement_page">
+  <div class="commit_page">
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">用户名</div>
@@ -47,14 +47,20 @@
       >
     </div>
     <div class="btn_box">
-      <el-button type="info" icon="el-icon-circle-plus-outline" @click="toAdd"
-        >添加</el-button
+      <el-button
+        type="info"
+        icon="el-icon-circle-plus-outline"
+        @click="toAdd"
+        v-has="{ red: 'userAdd', type: 1 }"
+        >新增</el-button
       >
-      <!-- v-has="{ red: 'addBox', type: 1 }" -->
-      <el-button type="danger" icon="el-icon-circle-plus-outline" @click="toDel"
+      <el-button
+        type="danger"
+        icon="el-icon-circle-close"
+        @click="toDel"
+        v-has="{ red: 'userDelete', type: 1 }"
         >删除</el-button
       >
-      <!-- v-has="{ red: 'deleteBox', type: 1 }" -->
     </div>
 
     <div class="content_box">
@@ -67,7 +73,11 @@
         @selection-change="handleSelectionChange"
         align="left"
       >
-        <el-table-column type="selection" width="34"></el-table-column>
+        <el-table-column
+          type="selection"
+          width="34"
+          :selectable="selectable"
+        ></el-table-column>
         <el-table-column
           label="序号"
           type="index"
@@ -89,7 +99,12 @@
             <span class="content">{{ scope.row.roles[0].roleName }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="备注" min-width="90px" align="center">
+        <el-table-column
+          label="备注"
+          min-width="90px"
+          align="center"
+          show-overflow-tooltip
+        >
           <template slot-scope="scope">
             <div class="content">
               {{ scope.row.remark }}
@@ -99,7 +114,7 @@
         <el-table-column label="状态" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="content">{{
-              scope.row.status == 1 ? "停用" : "正常"
+              scope.row.status == 1 ? "禁用" : "启用"
             }}</span>
           </template>
         </el-table-column>
@@ -119,12 +134,15 @@
               v-if="!scope.row.admin"
               class="operation_button update_btn"
               @click="toEdit(scope.row)"
+              v-has="{ red: 'userEdit', type: 1 }"
             >
               编辑
             </span>
             <span
               class="operation_button update_btn"
+              style="width:80px"
               @click="toChangePassword(scope.row)"
+              v-has="{ red: 'resetPassword', type: 1 }"
             >
               重置密码
             </span>
@@ -177,8 +195,8 @@ export default {
       },
       selGateway: null,
       statusList: [
-        { enumName: "正常", enumValue: 0 },
-        { enumName: "停用", enumValue: 1 }
+        { enumName: "启用", enumValue: 0 },
+        { enumName: "禁用", enumValue: 1 }
       ],
       roleList: [],
       Dictionaries: {
@@ -201,6 +219,14 @@ export default {
           this.roleList = response.data;
         })
         .catch(() => {});
+    },
+    //判断是否可选
+    selectable(e) {
+      if (!e.admin) {
+        return true;
+      } else {
+        return false;
+      }
     },
 
     //查询用户列表
@@ -279,13 +305,17 @@ export default {
 
     //批量删除
     toDel() {
-      let arr = [];
-      console.log(111, this.selGateway);
-      this.selGateway.forEach(el => {
-        arr.push(el.userId);
-      });
       if (this.selGateway.length > 0) {
-        this.$confirm("确认批量删除用户吗?", "提示", {
+        let arr = [];
+        this.selGateway.forEach(el => {
+          arr.push(el.userId);
+        });
+        let text = "确认批量删除用户吗?";
+        if (this.selGateway.length == 1) {
+          text = "确认删除该用户吗?";
+        }
+
+        this.$confirm(text, "提示", {
           type: "warning"
         }).then(() => {
           let para = {
@@ -300,10 +330,10 @@ export default {
               this.openLoading();
               this.getList();
             } else {
-              this.$message({
-                type: "warning",
-                message: "删除失败"
-              });
+              // this.$message({
+              //   type: "error",
+              //   message: "删除失败"
+              // });
             }
           });
         });
@@ -342,7 +372,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.parkingManagement_page {
+.commit_page {
   position: relative;
 }
 .content_box {

@@ -32,6 +32,7 @@
             name="username"
             type="text"
             tabindex="1"
+            @change="userNameChange"
             autocomplete="on"
             class="input-content"
           />
@@ -82,7 +83,8 @@
 <script>
 // import { validUsername } from "@/utils/validate";
 // import SocialSign from "./components/SocialSignin";
-import { setToken } from "@/utils/auth"; // get token from cookie
+import { setToken, removeToken } from "@/utils/auth";
+import { resetRouter } from "@/router";
 
 export default {
   name: "Login",
@@ -187,6 +189,9 @@ export default {
     // window.removeEventListener('storage', this.afterQRScan)
   },
   methods: {
+    userNameChange(e) {
+      this.loginForm.username = e;
+    },
     getList() {
       //获取系统信息
       // let queryList = {};
@@ -229,10 +234,14 @@ export default {
       });
     },
     handleLogin() {
-      // setToken("test");
+      setToken("");
+      removeToken();
+      resetRouter();
+
       // this.$router.push({
       //   path: "/homePage",
       // }); //登录成功，向首页跳转
+
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true;
@@ -245,13 +254,14 @@ export default {
             .then(() => {
               console.log("login ok"); //点击登录之后，在加载router之前会触发permission中的router.beforeEach周期
               this.$router.push({
-                path: this.redirect || "/homePage",
+                // path: this.redirect || "/",
+                path: "/",
                 query: this.otherQuery
               }); //登录成功，向首页跳转
               this.loading = false;
-              // setTimeout(() => {
-              //   location.reload();
-              // }, 100);
+              setTimeout(() => {
+                location.reload();
+              }, 300);
             })
             .catch(() => {
               console.log("login fail");

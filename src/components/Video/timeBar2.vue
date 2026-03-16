@@ -221,7 +221,7 @@ export default {
         12,
         this.scaleXpointArr[this.scaleXpointArr.length - 2] + 2,
         6,
-        { fillStyle: "#999" }
+        { fillStyle: "#e7f4f2" }
       );
     },
 
@@ -375,7 +375,7 @@ export default {
           12,
           this.vehicleStatusCanvas[i].width,
           5,
-          { fillStyle: "#30bee9" }
+          { fillStyle: "#037659" }
         );
       }
       // this.$emit("toIsHistory",);
@@ -468,7 +468,7 @@ export default {
 }
 .time-scale-container {
   position: relative;
-  margin-top: 20px;
+  margin-top: 10px;
   padding-top: 20px;
   height: 100px;
   overflow: hidden;

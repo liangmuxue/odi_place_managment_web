@@ -1,6 +1,8 @@
 <template>
-  <div class="parkingManagement_page">
-    <div class="totalMoney_box">收款统计：{{ totalMoney }}元</div>
+  <div class="commit_page">
+    <div class="totalMoney_box">
+      长租实收统计：{{ totalMoney | getMoney }}元
+    </div>
     <div class="search_box">
       <span class="search_content">
         <div class="search_content_title">订单号</div>
@@ -16,7 +18,7 @@
       </span>
       <span class="search_content">
         <div class="search_content_title">停车场</div>
-        <el-input v-model="listQuery.park" placeholder="请输入"> </el-input>
+        <el-input v-model="listQuery.parkName" placeholder="请输入"> </el-input>
       </span>
       <span class="search_content2">
         <div class="search_content_title">支付时间</div>
@@ -28,6 +30,7 @@
           range-separator="-"
           start-placeholder="请选择时间"
           end-placeholder
+          :default-time="['00:00:00', '23:59:59']"
         ></el-date-picker>
         <!-- :default-time="['00:00:00', '23:59:59']" -->
       </span>
@@ -57,7 +60,11 @@
       >
     </div>
     <div class="btn_box">
-      <el-button type="info" icon="el-icon-upload2" @click="toExport"
+      <el-button
+        type="info"
+        icon="el-icon-upload2"
+        @click="toExport"
+        v-has="{ red: 'monthlyRentalRecordExport', type: 1 }"
         >导出</el-button
       >
     </div>
@@ -89,6 +96,21 @@
             <span class="content">{{ scope.row.orderNum }}</span>
           </template>
         </el-table-column>
+        <el-table-column label="类型" align="center" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span class="content" v-if="scope.row.userType == 1"
+              >普通用户
+            </span>
+            <span class="content" v-if="scope.row.userType == 2"
+              >企业员工
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column label="车主姓名" align="center" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span class="content">{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="车主手机" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="content">{{ scope.row.phone }}</span>
@@ -105,7 +127,7 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.park }}</span>
+            <span class="content">{{ scope.row.parkName }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -116,7 +138,7 @@
         >
           <template slot-scope="scope">
             <span class="content"
-              >{{ scope.row.beginTime }} - {{ scope.row.dueTime }}</span
+              >{{ scope.row.admissionTime }} - {{ scope.row.exitTime }}</span
             ></template
           >
         </el-table-column>
@@ -137,12 +159,12 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.orderMoney }}</span>
+            <span class="content">{{ scope.row.orderMoney | getMoney }}</span>
           </template>
         </el-table-column>
         <el-table-column label="优惠" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.discount * 10 }}折</span>
+            <span class="content">{{ scope.row.orderDiscount || "无" }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -151,13 +173,19 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span class="content">{{ scope.row.payMoney }}</span>
+            <span class="content">{{ scope.row.payMoney | getMoney }}</span>
           </template>
         </el-table-column>
+        <el-table-column label="备注" align="center" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span class="content">{{ scope.row.remark }}</span>
+          </template>
+        </el-table-column>
+
         <el-table-column label="支付方式" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
             <span class="content">{{
-              scope.row.payType == 1 ? "微信" : "银联"
+              scope.row.payType == 1 ? "微信" : "钱包余额"
             }}</span>
           </template>
         </el-table-column>
@@ -185,8 +213,8 @@
 
 <script>
 import {
-  recordPageList, //月租记录分页
-  recordExport // 月租记录导出
+  orderPageList, //长租记录分页
+  orderExport // 长租记录导出
 } from "@/api/reconciliationCenter";
 import { fieldTable } from "@/api/common";
 
@@ -200,17 +228,19 @@ export default {
         pageSize: 10,
         total: 0,
         orderNum: "", //订单号
-        park: "", //停车场
+        phone: "", //手机号
         vehicle: "", //车牌号
-        phone: "", //车主手机
+        parkName: "", //停车场
         startTime: "", //开始时间
         endTime: "", //结束时间
-        payType: null //支付方式
+        invoice: null, //是否开票
+        payType: null, //支付方式
+        orderType: 2 //临停传1  长租传2
       },
       totalMoney: null, //收款统计
       typeList: [
         { enumName: "微信", enumValue: 1 },
-        { enumName: "银联", enumValue: 2 }
+        { enumName: "钱包余额", enumValue: 2 }
       ],
       selGateway: null,
       time: [],
@@ -260,12 +290,14 @@ export default {
         pageSize: 10,
         total: 0,
         orderNum: "", //订单号
-        park: "", //停车场
+        parkName: "", //停车场
         vehicle: "", //车牌号
-        phone: "", //车主手机
         startTime: "", //开始时间
         endTime: "", //结束时间
-        payType: null //支付方式
+        phone: "", //手机号
+        invoice: null, //是否开票
+        payType: null, //支付方式
+        orderType: 2 //临停传1  长租传2
       };
       this.time = [];
       this.openLoading();
@@ -290,11 +322,11 @@ export default {
     //获取数据列表
     getList() {
       let para = this.listQuery;
-      recordPageList(para)
+      orderPageList(para)
         .then(response => {
           this.list = response.data.list;
           this.totalMoney = response.data.totalMoney;
-          if (response.total > 0) {
+          if (response.data.total > 0) {
             this.listQuery.total = response.data.total; // 数据总条数
           } else {
             this.listQuery.pageSize = 40; //每页数量
@@ -322,16 +354,20 @@ export default {
     //导出
     toExport() {
       let para = {
-        name: this.listQuery.name,
+        orderNum: this.listQuery.orderNum,
+        phone: this.listQuery.phone,
         parkName: this.listQuery.parkName,
+        vehicle: this.listQuery.vehicle,
         startTime: this.listQuery.startTime,
         endTime: this.listQuery.endTime,
-        type: this.listQuery.type
+        invoice: this.listQuery.invoice,
+        payType: this.listQuery.payType,
+        orderType: 2
       };
-      recordExport(para).then(res => {
+      orderExport(para).then(res => {
         var content = res.data;
         var elink = document.createElement("a");
-        elink.download = "月租记录" + new Date().getTime() + ".xls";
+        elink.download = "长租记录" + new Date().getTime() + ".xls";
         elink.style.display = "none";
 
         var blob = new Blob([content]);
@@ -363,7 +399,7 @@ export default {
           //     this.getList();
           //   } else {
           //     this.$message({
-          //       type: "warning",
+          //       type: "error",
           //       message: "操作失败"
           //     });
           //   }
@@ -389,7 +425,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.parkingManagement_page {
+.commit_page {
   position: relative;
 }
 .content_box {

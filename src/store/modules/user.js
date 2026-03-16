@@ -13,6 +13,9 @@ import {
   setTenantId,
   setInitflag,
   setUserName,
+  setNickName,
+  setRoleName,
+  getRoleName,
   getUserName,
   getInitflag
 } from '@/utils/auth'
@@ -91,7 +94,7 @@ const actions = {
         // commit('SET_USERNAME', username)                                             //向vuex中存储username
         setToken(data.token) //调用utils/auth中的方法向cookie中存储token
         setUserId(data.userId) //调用utils/auth中的方法向cookie中存储userId
-        setUserName(username) //调用utils/auth中的方法向cookie中存储username
+        // setUserName(username) //调用utils/auth中的方法向cookie中存储username
         resolve()
       }).catch(error => {
         console.log('act login err', error)
@@ -107,15 +110,14 @@ const actions = {
   }) { //引入commit方法向vuex传值,提交变量
     return new Promise((resolve, reject) => { //异步获取
       getInfo().then(response => { //调用getInfo接口来获取权限表
-        const {
-          user
-        } = response
+        const user = response.data
         if (!user) {
           reject('Verification failed, please Login again.') //如果没有结果，报错
         }
         const {
           roles,
           nickName,
+          userName,
           avatar,
           introduction,
           resourceList,
@@ -128,10 +130,14 @@ const actions = {
           reject('此账号无权限,请联系管理员')
         } else {
           commit('SET_ROLES', roles) //将拥有的角色传给vuex
+          setRoleName(roles[0].roleName)
         }
         commit('SET_PERMISSION', resourceList) //将权限表传给vuex
         commit('SET_NAME', nickName)
         commit('SET_AVATAR', avatar)
+        setUserName(userName) //调用utils/auth中的方法向cookie中存储username
+        setNickName(nickName) //调用utils/auth中的方法向cookie中存储username
+
         // commit('SET_INTRODUCTION', introduction)
         // commit('SET_TID', tenantId) //向vuex中存储tenantId
         // setTenantId(data.tenantId) //调用utils/auth中的方法向cookie中存储userId
